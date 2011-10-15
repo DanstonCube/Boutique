@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/miko/dev/workspaces/plugins_bukkit/bukkit.jar"/>
+	<classpathentry kind="lib" path="/home/miko/dev/workspaces/plugins_bukkit/craftbukkit.jar"/>
+	<classpathentry kind="lib" path="/home/miko/dev/workspaces/plugins_bukkit/iConomy.jar"/>
+	<classpathentry kind="lib" path="/home/miko/dev/workspaces/plugins_bukkit/LWC.jar"/>
+	<classpathentry kind="lib" path="/home/miko/dev/workspaces/plugins_bukkit/Permissions.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

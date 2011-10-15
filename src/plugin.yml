@@ -1,0 +1,17 @@
+name: Boutique
+main: com.danstoncube.plugin.drzoid.Boutique.Boutique
+version: 1.6
+website: http://www.danstoncube.com
+author: DrZoid
+description: Panneaux pour boutiques
+commands:
+  boutique:
+    description: Permet la configuration des panneaux de vente.
+    usage: |
+           /<command>
+           Exemple: /<command> -sc - Pour relier un coffre et un panneau.
+  infoitem:
+    description: Donne des informations sur l'objet tenu en main.
+    usage: |
+           /<command>
+           Example: /<command>

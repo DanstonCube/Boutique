@@ -2,6 +2,7 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -12,33 +13,62 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 
+
+
 public class SignManager 
 {
 	private Boutique plugin;
+	
 	private String activeErr = "Ce panneau est inactif.";
+	
 	private String blacklistErr = "Cet objet ne peut être acheté ni vendu.";
+	
 	private String similarTypeErr = "Même objet, on ne peut les échanger.";
+	
 	private String formatErr = "Le panneau a un format incorrect.";
+	
 	private String plugName;
+	
 	private String globalStr = "global";
+	
 	private String personalStr = "personal";
+	
 	private int maxDist = 30; // max x or z dist away (to keep from putting signs far away in a different chunk.)
 
+	
+	private HashMap<String,BoutiqueSignInfo> boutique_signs; 
+	
+	
+	
 	public SignManager (Boutique bt) {
 		this.plugin = bt;
 		plugName = "" + ChatColor.BLUE + "[" + bt.displayname + "] " + ChatColor.WHITE;
 	}
 
-	public void setSign(Sign s, Player p) {
+	
+	
+	public void LoadSigns()
+	{	
+		//boutique_signs.put("",new BoutiqueSignInfo("","","","",""));
+	}
+	
+	
+	public void setSign(Sign s, Player p) 
+	{
 		signSetter(s.getLines(),p,s.getBlock());
 	}
 	
-	public void setSign(String[] lines, Player p, Block s) {
+	public void setSign(String[] lines, Player p, Block s) 
+	{
 		signSetter(lines, p, s);
 	}
 	
-	private void signSetter(String[] lines, Player p, Block s) {
+	
+	
+	private void signSetter(String[] lines, Player p, Block s) 
+	{
 		String type = SignOperator.getSignType(lines[0]);
+		
 		if (type == null)
 			return;
 		int[] lOneData = SignOperator.getTransFormat(lines[1]);
@@ -56,34 +86,43 @@ public class SignManager
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ()  + ":" + s.getWorld().getName();
 		String pName = p.getName();
 		
-		if (type.compareToIgnoreCase("global") == 0){
-			if (!PermissionsHandler.canSetGlobalSign(p)){
+		if (type.compareToIgnoreCase("global") == 0)
+		{
+			if (!PermissionsHandler.canSetGlobalSign(p))
+			{
 				p.sendMessage(PermissionsHandler.permissionErr);
 				return;
 			}
 			p.sendMessage(plugName + "Panneau serveur ajouté à la liste :)");
 			
 			Boutique.signLocs.put(location, pName);
-			
 			Boutique.signLine1.put(location, lines[0]);
 			Boutique.signLine2.put(location, lines[1]);
 			Boutique.signLine3.put(location, lines[2]);
-			
 			
 			
 			plugin.fileIO.saveGlobalSigns();
 			
 			lines[3] = ChatColor.AQUA + "[Active]";
 		}
-		else if(type.compareToIgnoreCase("personal")==0){
-			if (!PermissionsHandler.canSetPersonalSign(p)){
+		else if(type.compareToIgnoreCase("personal")==0)
+		{
+			
+			if (!PermissionsHandler.canSetPersonalSign(p))
+			{
 				p.sendMessage(PermissionsHandler.permissionErr);
 				return;
 			}
+			
 			p.sendMessage(plugName + "Panneau joueur ajouté à la liste :)");
 			
-			Boutique.signLocs.put(location, pName);
 			
+			//BoutiqueSignInfo newSign = new BoutiqueSignInfo(location, pName,  lines[0],  lines[1],  lines[2],  lines[3]);			
+			//this.boutique_signs.remove(location);
+			//this.boutique_signs.put(location, newSign);
+			
+			
+			Boutique.signLocs.put(location, pName);
 			Boutique.signLine1.put(location, lines[0]);
 			Boutique.signLine2.put(location, lines[1]);
 			Boutique.signLine3.put(location, lines[2]);
@@ -159,40 +198,55 @@ public class SignManager
 		
 		Chest chest = null;
 		
-		if (signType.compareToIgnoreCase("personal") == 0) {
+		if (signType.compareToIgnoreCase("personal") == 0) 
+		{
 			int chestFind = SignOperator.findChest(location, s, signOwner);
 			
 			if (chestFind == 1 || chestFind == 0)
+			{
 				chest = SignOperator.getChest(location, s);
-			else {
+			}
+			else 
+			{
 				p.sendMessage(plugName + SignOperator.sendChestErr(chestFind));
 				return;
 			}
+			
 		}
+		
+		
 		// See if player has permission to use signs.
-		if(!PermissionsHandler.canUseSign(p)){
+		if(!PermissionsHandler.canUseSign(p))
+		{
 			p.sendMessage(plugName + PermissionsHandler.permissionErr);
 			return;
 		}
-		if (lOneData[0] < -1){
+		
+		if (lOneData[0] < -1)
+		{
 			p.sendMessage(plugName + SignOperator.sendTransFormatErr(lOneData[0]));
 			return;
 		}
-		else if (lTwoData[0] < -1){
+		else if (lTwoData[0] < -1)
+		{
 			p.sendMessage(plugName + SignOperator.sendTransFormatErr(lTwoData[0]));
 			return;
 		}
-		if (!Boutique.signLocs.containsKey(location)){
+		
+		if (!Boutique.signLocs.containsKey(location))
+		{
 			p.sendMessage(plugName + activeErr);
 			return;
 		}
 		
 		// Check to see if the items were blacklisted
-		if ((lOneData[1] > 0) && (SignOperator.isBlackListed(lOneData[1]))){
+		if ((lOneData[1] > 0) && (SignOperator.isBlackListed(lOneData[1])))
+		{
 			p.sendMessage(plugName  + blacklistErr);
 			return;
 		}
-		if ((lTwoData[1] > 0) && (SignOperator.isBlackListed(lTwoData[1]))){
+		if ((lTwoData[1] > 0) && (SignOperator.isBlackListed(lTwoData[1])))
+		{
 			p.sendMessage(plugName + blacklistErr);
 			return;
 		}
@@ -354,35 +408,47 @@ public class SignManager
 		}
 	}
 
-	private void buyItem(String signType, Player p, Chest chest, int[] lOneData, int costAmount, String signOwner) {
-		if (signType.compareToIgnoreCase(globalStr) == 0){
-			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p)){
+	private void buyItem(String signType, Player p, Chest chest, int[] lOneData, int costAmount, String signOwner) 
+	{
+		if (signType.compareToIgnoreCase(globalStr) == 0)
+		{
+			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
+			{
 				p.sendMessage(plugName + PlayerOperator.playerStockErr);
 				return;
 			}
-			else {
+			else 
+			{
 				PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 				EconomyHandler.modifyMoney(p.getName(), costAmount);
 			}
 		}
-		else if (signType.compareToIgnoreCase(personalStr) == 0){
-			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p)){
+		else if (signType.compareToIgnoreCase(personalStr) == 0)
+		{
+			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
+			{
 				p.sendMessage(plugName + PlayerOperator.playerStockErr);
 				return;
 			}
-			if (!ChestOperator.hasEnoughSpace(lOneData[0], lOneData[1], lOneData[2], chest)){
+			if (!ChestOperator.hasEnoughSpace(lOneData[0], lOneData[1], lOneData[2], chest))
+			{
 				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
 				return;
 			}
+			
 			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
-			if (econ != 1){
+			
+			if (econ != 1)
+			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return;
 			}
+			
 			EconomyHandler.modifyMoney(signOwner, -costAmount);
 			ChestOperator.addToChestStock(lOneData[0], lOneData[1], lOneData[2], chest);
 			PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 			EconomyHandler.modifyMoney(p.getName(), costAmount);
+			
 			p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
 		}
 		
@@ -531,15 +597,29 @@ public class SignManager
 		p.sendMessage(plugName + "Panneau et coffre reliés !");
 	}
 
-	public void setOwner(Player p, String str, Sign s) {
-		if (!SignOperator.isSign(s)){
+	public void setOwner(Player p, String str, Sign s) 
+	{
+		if (!SignOperator.isSign(s))
+		{
 			p.sendMessage(plugName + "Ce panneau est mal configuré. Reposes le correctement avant.");
 			return;
 		}
+		
 		s.setLine(0, str);
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ()  + ":" + s.getWorld().getName();
 		Boutique.signLocs.put(location, str);
+		
+		//TODO: a changer
 		plugin.fileIO.saveGlobalSigns();
+		
 		//((CraftWorld)s.getWorld()).getHandle().g(s.getX(),s.getY(),s.getZ());
+	}
+
+	public HashMap<String,BoutiqueSignInfo> getSigns() {
+		return boutique_signs;
+	}
+
+	public void setSigns(HashMap<String,BoutiqueSignInfo> boutique_signs) {
+		this.boutique_signs = boutique_signs;
 	}
 }

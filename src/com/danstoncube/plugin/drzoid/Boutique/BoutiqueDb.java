@@ -86,7 +86,6 @@ public class BoutiqueDb
 	
 	public Boolean logTransaction(String trade_from, String trade_to, int item_id, int item_damage, int item_qty, Double costAmount, String item_shortname, String item_name) throws SQLException, MalformedURLException, InstantiationException, IllegalAccessException
 	{
-		
 		String query="";
 		query += "INSERT INTO " + sqlTablePrefix + "transactions";
 		query += "(trade_from, trade_to, item_id, item_damage, item_quantity, item_price, item_name, item_shortname)";

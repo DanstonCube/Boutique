@@ -8,6 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
+
+import org.bukkit.Location;
 
 
 /**
@@ -24,6 +28,7 @@ public class BoutiqueDb
 	public String sqlDb = "boutique";
 	public String sqlUser = "boutique_sqluser";
 	public String sqlPass = "boutique_sqlpass";
+	public Boolean useMysql = false;
 	
 	private DatabaseHandler manageDB;
 	
@@ -39,9 +44,8 @@ public class BoutiqueDb
 		
 	public boolean setup()
 	{
-		
-		plugin.getConfiguration();
-
+		useMysql =  this.plugin.config.getBoolean("useMysql", false);
+		sqlHost =  this.plugin.config.getString("sqlHost", "localhost");
 		sqlTablePrefix = this.plugin.config.getString("sqlTablePrefix", "Boutique_");
 		sqlHost =  this.plugin.config.getString("sqlHost", "localhost");
 		sqlUser = this.plugin.config.getString("sqlUser", "boutique_sqlpass");
@@ -51,11 +55,17 @@ public class BoutiqueDb
 		if (sqlTablePrefix.equals(null)) 	{plugin.log.severe(plugin.logPrefix + "MySQL table prefix is not defined"); }		
 		if (sqlHost.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL host is not defined"); }
 		if (sqlUser.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL username is not defined"); }
-		if (sqlPass.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL  password is not defined"); }
+		if (sqlPass.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL password is not defined"); }
 		if (sqlDb.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL database is not defined"); }
 		
 		plugin.config.save();
 		
+		
+		if(!useMysql) 
+		{
+			enabled = false;
+			return false;
+		}
 		
 		
 		initialize();
@@ -67,10 +77,11 @@ public class BoutiqueDb
 				close();
 				return false;
 			}
-			
-
+			else
+			{
+				enabled = true;
+			}
 			checkTables();
-
 		} 
 		catch (Exception e) 
 		{
@@ -84,34 +95,6 @@ public class BoutiqueDb
 	}
 	
 	
-	public Boolean logTransaction(String trade_from, String trade_to, int item_id, int item_damage, int item_qty, Double costAmount, String item_shortname, String item_name) throws SQLException, MalformedURLException, InstantiationException, IllegalAccessException
-	{
-		String query="";
-		query += "INSERT INTO " + sqlTablePrefix + "transactions";
-		query += "(trade_from, trade_to, item_id, item_damage, item_quantity, item_price, item_name, item_shortname)";
-		query += "VALUES (?,?,?,?,?,?,?,?)";
-		
-		//open();
-		
-		Connection conn = openConnection();
-		
-		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setString(1, trade_from);
-		stmt.setString(2, trade_to);
-		stmt.setInt(3, item_id);
-		stmt.setInt(4, item_damage);
-		stmt.setInt(5, item_qty);
-		stmt.setDouble(6, costAmount);
-		stmt.setString(7, item_name);
-		stmt.setString(8, item_shortname);
-		stmt.executeUpdate();
-
-		close();
-
-
-		return false;
-	}
-	
 	
 	
 	public Boolean checkTables() throws MalformedURLException, InstantiationException, IllegalAccessException 
@@ -119,8 +102,22 @@ public class BoutiqueDb
 		//Table transaction
 		if (!checkTable(sqlTablePrefix + "transactions")) 
 		{
-			plugin.log.info(plugin.logPrefix + "Creation de la table " + sqlTablePrefix + "transactions");
-			String query = "CREATE TABLE " + sqlTablePrefix + "transactions (id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), trade_from VARCHAR(255), trade_to VARCHAR(255), item_id INT, item_damage INT, item_quantity INT, item_price DOUBLE, item_name VARCHAR(255), item_shortname VARCHAR(12));";
+			writeInfo("Création de la table " + sqlTablePrefix + "transactions");
+			String query = "" + 
+			"CREATE TABLE " + sqlTablePrefix + "transactions (" +
+				"id INT NOT NULL AUTO_INCREMENT, " +
+				"PRIMARY KEY(id), " +
+				"ts TIMESTAMP, "+
+				"location VARCHAR(255), " +
+				"trade_from VARCHAR(255), " +
+				"trade_to VARCHAR(255), " +
+				"item_id INT, " +
+				"item_damage INT, " +
+				"item_quantity INT, " +
+				"item_price DOUBLE, " +
+				"item_name VARCHAR(255), " +
+				"item_shortname VARCHAR(12)" + 
+			");";
 			createTable(query.toString());
 		}
 		
@@ -132,26 +129,101 @@ public class BoutiqueDb
 	
 	
 	
-	public Boolean initialize() {
+	
+	
+	public Boolean logTransaction(Location location, String trade_from, String trade_to, int item_id, int item_damage, int item_qty, Double costAmount, String item_shortname, String item_name) throws SQLException, MalformedURLException, InstantiationException, IllegalAccessException
+	{
+		String sLocation = location.getX() + ":" + location.getY() + ":" + location.getZ() + ":" + location.getWorld().getName();
+		return logTransaction(sLocation, trade_from, trade_to, item_id, item_damage, item_qty, costAmount, item_shortname, item_name);
+	}
+	
+	public Boolean logTransaction(String location, String trade_from, String trade_to, int item_id, int item_damage, int item_qty, Double costAmount, String item_shortname, String item_name) throws SQLException, MalformedURLException, InstantiationException, IllegalAccessException
+	{
+		if(!enabled) return false;
 		
-		this.manageDB = new DatabaseHandler(this, this.sqlHost, this.sqlDb, this.sqlUser, this.sqlPass);
+		String query=""+
+		"INSERT INTO " + sqlTablePrefix + "transactions" +
+		"(location, trade_from, trade_to, item_id, item_damage, item_quantity, item_price, item_name, item_shortname,ts)" +
+		"VALUES (?,?,?,?,?,?,?,?,?,?);";
+		
+		if(trade_from.isEmpty())		trade_from = "[Serveur]";
+		if(trade_to.isEmpty())			trade_to = "[Serveur]";
+		
+
+		Connection conn = openConnection();
+		if(conn==null)
+		{
+			plugin.log.severe(plugin.logPrefix + " Mysql: impossible d'insèrer, connexion incorrecte.");
+			return false;
+		}
+		
+		PreparedStatement stmt = conn.prepareStatement(query);
+		
+		stmt.setString(1, location);
+		stmt.setString(2, trade_from);
+		stmt.setString(3, trade_to);
+		stmt.setInt(4, item_id);
+		stmt.setInt(5, item_damage);
+		stmt.setInt(6, item_qty);
+		stmt.setDouble(7, costAmount);
+		stmt.setString(8, item_name);
+		stmt.setString(9, item_shortname);
+		stmt.setTimestamp(10, new Timestamp(Calendar.getInstance().getTimeInMillis()));
+	
+		Boolean insertOk =  (stmt.executeUpdate() == 1);
+
+		//debug
+		//plugin.log.info(plugin.logPrefix + "INSERTION MYSQL");
+		
+		close();
+
+		if(insertOk)
+		{
+			plugin.log.info(plugin.logPrefix + "[Mysql] Transaction entre " + trade_from + " et " + trade_to + " @" + location +  " enregistrée.");
+			return true;
+		}
+		else
+		{
+			plugin.log.severe(plugin.logPrefix + "[Mysql] Echec de l'enregistrement de la transaction entre " + trade_from + " et " + trade_to + " @" + location +  " ! :(");
+		}
 		
 		return false;
 	}
 	
-	public void writeInfo(String toWrite) {
-		if (toWrite != null) {
+	
+	
+	
+	
+	
+	
+	public Boolean initialize() 
+	{
+		this.manageDB = new DatabaseHandler(this, this.sqlHost, this.sqlDb, this.sqlUser, this.sqlPass);
+		return false;
+	}
+	
+	
+	public void writeInfo(String toWrite) 
+	{
+		if (toWrite != null) 
+		{
 			plugin.log.info(plugin.logPrefix + toWrite);
 		}
 	}
 	
-	public void writeError(String toWrite, Boolean severe) {
-		if (severe) {
-			if (toWrite != null) {
+	public void writeError(String toWrite, Boolean severe) 
+	{
+		if (severe) 
+		{
+			if (toWrite != null) 
+			{
 				plugin.log.severe(plugin.logPrefix + toWrite);
 			}
-		} else {
-			if (toWrite != null) {
+		} 
+		else 
+		{
+			if (toWrite != null) 
+			{
 				plugin.log.warning(plugin.logPrefix + toWrite);
 			}
 		}
@@ -194,12 +266,18 @@ public class BoutiqueDb
 		return this.manageDB.getConnection();
 	}
 	
-	public void close() {
-		this.manageDB.closeConnection();
+	public void close() 
+	{
+		if(this.manageDB!=null)
+			this.manageDB.closeConnection();
 	}
 	
-	public Boolean checkConnection() throws MalformedURLException, InstantiationException, IllegalAccessException {
-		return this.manageDB.checkConnection();
+	public Boolean checkConnection() throws MalformedURLException, InstantiationException, IllegalAccessException 
+	{
+		if(this.manageDB!=null)
+			return this.manageDB.checkConnection();
+		else
+			return false;
 	}
 	
 	

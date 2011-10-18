@@ -8,7 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 
-public class CommandOperator {
+public class CommandOperator 
+{
 
 	Boutique plugin;
 	
@@ -16,17 +17,22 @@ public class CommandOperator {
 		plugin = p;
 	}
 	
-	public boolean command(CommandSender sender, Command command, String commandLabel, String[] args) {
+	public boolean command(CommandSender sender, Command command, String commandLabel, String[] args) 
+	{
 		Player p = null;
+		
 		if (sender instanceof Player)
 			p = (Player)sender;
-		else{
+		else
+		{
 			System.out.println("[" + plugin.displayname + "] Seuls les joueurs ont accès aux commandes.");
 			return true;
 		}
 		
-		if ((commandLabel.compareToIgnoreCase("boutique") == 0)||(commandLabel.compareToIgnoreCase("signtrader") == 0)) {
-			if (args.length < 1){
+		if ((commandLabel.compareToIgnoreCase("boutique") == 0)||(commandLabel.compareToIgnoreCase("signtrader") == 0)) 
+		{
+			if (args.length < 1)
+			{
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Pour utiliser cette commande utilisez la syntaxe suivante:");
 				p.sendMessage("'/boutique argument p' le 'p' est facultatif.");
 				p.sendMessage("Les arguments disponibles sont: ");
@@ -35,16 +41,18 @@ public class CommandOperator {
 				p.sendMessage(ChatColor.AQUA + "-so" + ChatColor.WHITE + " pour redéfinir le proprio d'un panneau. Attention aux majuscules");
 				return true;
 			}
-			else {
-				
+			else 
+			{
 				boolean bool = true;
-				if (plugin.playerListener.playerSetSign.containsKey(p)){
+				if (plugin.playerListener.playerSetSign.containsKey(p))
+				{
 					plugin.playerListener.playerSetSign.remove(p);
 					p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu ne configures plus de panneau.");
 					if (args[0].compareToIgnoreCase("-s") == 0)
 						return bool;
 				}
-				if(plugin.playerListener.playerSetChest.containsKey(p)){
+				if(plugin.playerListener.playerSetChest.containsKey(p))
+				{
 					plugin.playerListener.playerSetChest.remove(p);
 					plugin.playerListener.playerSign.remove(p);
 					plugin.playerListener.playerChest.remove(p);
@@ -52,46 +60,61 @@ public class CommandOperator {
 					if (args[0].compareToIgnoreCase("-sc") == 0)
 						return bool;
 				}
-				if (plugin.playerListener.setOwner.containsKey(p)){
+				if (plugin.playerListener.setOwner.containsKey(p))
+				{
 					plugin.playerListener.playerSetSign.remove(p);
 					p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu ne redéfinis plus les propriétaires des panneaux.");
 					if (args[0].compareToIgnoreCase("-so") == 0)
 						return bool;
 				}
 				
-				if (args[0].compareToIgnoreCase("-s") == 0) {
+				
+				if (args[0].compareToIgnoreCase("-s") == 0) 
+				{
 					bool = sCommand(p, args);
 				}
-				else if (args[0].compareToIgnoreCase("-sc") == 0) {
+				else if (args[0].compareToIgnoreCase("-sc") == 0) 
+				{
 					bool = scCommand(p,args);
 				}
-				else if (args[0].compareToIgnoreCase("-so") == 0){
+				else if (args[0].compareToIgnoreCase("-so") == 0)
+				{
 					bool = soCommand(p,args);
 				}
 				else
+				{
 					bool = false;
+				}
+				
 				
 				return bool;
 			}
 		}
-		else if (commandLabel.compareToIgnoreCase("getdata") == 0) {
+		else if (commandLabel.compareToIgnoreCase("getdata") == 0) 
+		{
 			return getData(p);
 		}
-		else if (commandLabel.compareToIgnoreCase("infoitem") == 0) {
+		else if (commandLabel.compareToIgnoreCase("infoitem") == 0) 
+		{
 			return getData(p);
 		}
 		
 		return false;
 	}
 
-	private boolean soCommand(Player p, String[] args) {
-		if (!PermissionsHandler.canSetOwner(p)) {
+	private boolean soCommand(Player p, String[] args) 
+	{
+		if (!PermissionsHandler.canSetOwner(p)) 
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + PermissionsHandler.permissionErr);
 			return true;	
 		}
 		else if (args.length != 2)
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu ne peux mettre que le nom que d'un seul joueur.");
-		else {
+		}
+		else 
+		{
 			plugin.playerListener.setOwner.put(p, args[1]);
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Le prochain panneau que tu poses sera le panneau de: " + args[1] + ".");
 		}
@@ -99,43 +122,59 @@ public class CommandOperator {
 		
 	}
 
-	private boolean scCommand(Player p, String[] args) {
-		if (!PermissionsHandler.canSetPersonalSign(p)) {
+	private boolean scCommand(Player p, String[] args) 
+	{
+		if (!PermissionsHandler.canSetPersonalSign(p)) 
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + PermissionsHandler.permissionErr);
 			return true;
-	}
-		else if (args.length == 2) {
-			if (args[1].compareToIgnoreCase("-p") == 0){
+		}
+		else if (args.length == 2) 
+		{
+			if (args[1].compareToIgnoreCase("-p") == 0)
+			{
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Clic-gauche sur un panneau puis sur le coffre à relier. Tu peux faire çà tant que tu ne retappes pas cette commande.");
 				plugin.playerListener.playerSetChest.put(p, true);
 			}
 			else
+			{
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Argument incorrect.");
+			}
 		}
-		else if (args.length == 1){
+		else if (args.length == 1)
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Clic-gauche sur un panneau puis sur le coffre à relier.");
 			plugin.playerListener.playerSetChest.put(p, false);
 		}
 		else
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Arguments incorrects.");
+		}
 		
 		return true;
 	}
 
-	private boolean sCommand(Player p, String[] args) {
-		if (!PermissionsHandler.canSetPersonalSign(p)) {
+	private boolean sCommand(Player p, String[] args) 
+	{
+		if (!PermissionsHandler.canSetPersonalSign(p)) 
+		{
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + PermissionsHandler.permissionErr);
 			return true;
 		}
-		else if (args.length == 2) {
-			if (args[1].compareToIgnoreCase("p") == 0){
+		else if (args.length == 2) 
+		{
+			if (args[1].compareToIgnoreCase("p") == 0)
+			{
 				plugin.playerListener.playerSetSign.put(p, true);
-					p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu peux configurer des panneaux. Tu peux le refaire jusqu'a ce que tu retappes cette commande.");
+				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu peux configurer des panneaux. Tu peux le refaire jusqu'a ce que tu retappes cette commande.");
 			}
 			else
+			{
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Arguments incorrects.");
+			}
 		}
-		else {
+		else 
+		{
 			plugin.playerListener.playerSetSign.put(p, false);
 			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu peux configurer des panneaux.");
 		}
@@ -143,7 +182,9 @@ public class CommandOperator {
 		return true;
 	}
 
-	private boolean getData(Player p) {
+	
+	private boolean getData(Player p) 
+	{
 		p.sendMessage("Tu as " + p.getItemInHand().getAmount() + "x " + p.getItemInHand().getType().toString().toLowerCase(Locale.ENGLISH) + " avec " + p.getItemInHand().getDurability() + " de durabilité, ayant pour ID: " + p.getItemInHand().getTypeId() + ".");
 		return true;
 	}

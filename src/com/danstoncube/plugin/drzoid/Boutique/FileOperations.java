@@ -36,7 +36,7 @@ public class FileOperations
 	{
         if(!plugin.makeFolder.exists())
         {
-        	plugin.log.info(plugin.logPrefix + "Folder missing, creating.");
+        	plugin.log.info(plugin.logPrefix + "Création du dossier Boutique");
         	plugin.makeFolder.mkdir();
         }
         
@@ -74,58 +74,81 @@ public class FileOperations
 			String obj = entry.getKey();
 			String s = entry.getValue();
 			strings.add(obj + ":" + s);			
-			if (Boutique.signLine1.containsKey(entry.getKey())){
+			if (Boutique.signLine1.containsKey(entry.getKey()))
+			{
 				strings.add(line1data + Boutique.signLine1.get(entry.getKey()));
 			}
-			if (Boutique.signLine2.containsKey(entry.getKey())){
+			if (Boutique.signLine2.containsKey(entry.getKey()))
+			{
 				strings.add(line2data + Boutique.signLine2.get(entry.getKey()));
 			}
-			if (Boutique.signLine3.containsKey(entry.getKey())){
+			if (Boutique.signLine3.containsKey(entry.getKey()))
+			{
 				strings.add(line3data + Boutique.signLine3.get(entry.getKey()));
 			}
-			if (Boutique.SignChest.containsKey(entry.getKey())){
+			if (Boutique.SignChest.containsKey(entry.getKey()))
+			{
 				strings.add(prechest + Boutique.SignChest.get(entry.getKey()));
 			}
 		}
+		
 		String[] lines = new String[strings.size()];
-		for(int i = 0; i < strings.size(); i++){
+		
+		for(int i = 0; i < strings.size(); i++)
+		{
 			lines[i] = strings.get(i);
 		}
+		
 		writeGlobalSignFile(lines);
 		
 	}
 	
-	public HashMap<String,String> loadGlobalSignData(){
+	public HashMap<String,String> loadGlobalSignData()
+	{
 		HashMap<String,String> signLocs = new HashMap<String,String>();
-		try{
+		try
+		{
 			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "GlobalSigns.txt");
-			if (!globalFile.exists()){ 
+			
+			if (!globalFile.exists())
+			{ 
 				System.out.print("[" + plugin.name + "] Sign data list file is missing, creating...");
 				writeGlobalSignFile(null);
 				System.out.println("done.");
 			}
+			
 			FileInputStream fstream = new FileInputStream(globalFile);
 			DataInputStream in = new DataInputStream(fstream);
 	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	        
 	        String strLine;
 	        String pName = "";
 	        String coords = "";
-	        while ((strLine = br.readLine()) != null){
+	        
+	        while ((strLine = br.readLine()) != null)
+	        {
 	        	strLine = strLine.trim();
-	        	if(!strLine.startsWith("#")){
-	        		if (strLine.startsWith(prechest)){
+	        	
+	        	if(!strLine.startsWith("#"))
+	        	{
+	        		if (strLine.startsWith(prechest))
+	        		{
 	        			Boutique.SignChest.put(coords, strLine.replace(prechest,""));
 	        		}
-	        		else if (strLine.startsWith(line1data)){
+	        		else if (strLine.startsWith(line1data))
+	        		{
 	        			Boutique.signLine1.put(coords, strLine.replace(line1data,""));
 	        		}
-	        		else if (strLine.startsWith(line2data)){
+	        		else if (strLine.startsWith(line2data))
+	        		{
 	        			Boutique.signLine2.put(coords, strLine.replace(line2data,""));
 	        		}
-	        		else if (strLine.startsWith(line3data)){
+	        		else if (strLine.startsWith(line3data))
+	        		{
 	        			Boutique.signLine3.put(coords, strLine.replace(line3data,""));
 	        		}
-		        	else {
+		        	else 
+		        	{
 		            	String[] brokeText = strLine.split(":");
 		            	try{
 		            		coords = brokeText[0] + ":" + brokeText[1] + ":" + brokeText[2]+ ":" + brokeText[3]; // X,Y,Z,World
@@ -139,30 +162,38 @@ public class FileOperations
 	        	}
 	        }
 		}
-		catch(Exception e){
+		catch(Exception e)
+		{
 			e.printStackTrace();
 		}
 		return signLocs;
 		
 	}
 	
-	private void writeGlobalSignFile(String[] sLines) {
+	private void writeGlobalSignFile(String[] sLines) 
+	{
 		String[] s = new String[3];
 		s[0] = "# Save Format(x:y:z:WorldName:PlayerThatActivatedTheSign)";
 		s[1] = "# Chest are displayed under the signs preceded with '" + prechest + "'";
 		s[2] = "# --Global Signs--";
-		try {
+		try 
+		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "GlobalSigns.txt")));
-			for(int i=0;i<s.length;i++){
+			for(int i=0;i<s.length;i++)
+			{
 				writer.write(s[i]);
 				writer.newLine();
 			}
-			if(sLines != null){
-				for(String line : sLines){
+			
+			if(sLines != null)
+			{
+				for(String line : sLines)
+				{
 					writer.write(line);
 					writer.newLine();
 				}
 			}
+			
 			writer.close();
 		} 
 		catch (Exception ex) 
@@ -172,15 +203,18 @@ public class FileOperations
 		}
 	}
 
-	public void loadItemData(){
-		try{
+	
+	public void loadItemData()
+	{
+		try
+		{
 	        // Open the file that is the first 
 	        // command line parameter
-			
 			File itemFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "items.txt");
 			
 			//If the file doesn't exist, write it.
-			if(!itemFile.exists()){
+			if(!itemFile.exists())
+			{
 				System.out.print("[" + plugin.name + "] Traduction des items manquante, creation...");
 				writeItemDataFile();
 				System.out.println("done.");
@@ -195,27 +229,34 @@ public class FileOperations
 	        
 	        //Read File Line By Line
 	        int version = 0;
-	        while ((strLine = br.readLine()) != null){
-	        	strLine = strLine .toLowerCase(Locale.ENGLISH).trim();
-	        	if(strLine.startsWith("version=")){
+	        while ((strLine = br.readLine()) != null)
+	        {
+	        	strLine = strLine.toLowerCase(Locale.ENGLISH).trim();
+	        	if(strLine.startsWith("version="))
+	        	{
 	        		String getVer = strLine.replace("version=","");
-	        		try{
+	        		try
+	        		{
 	        			version = Integer.parseInt(getVer);
-	        			if (version < itemListVersion){
+	        			if (version < itemListVersion)
+	        			{
 	        				System.out.println("[" + plugin.name + "] Updating item list to Version:" + itemListVersion + "from Version: " + version + ".");
 	        				writeItemDataFile();
 	        				loadItemData();
 	        				break;
 	        			}
 	        		}
-	        		catch(Exception e){
+	        		catch(Exception e)
+	        		{
 	        			//do nothing clearly in wrong format
 	        		}
 	        		
 	        	}
-	        	else if(!strLine.startsWith("#")){
+	        	else if(!strLine.startsWith("#"))
+	        	{
 	            	String[] brokeText = strLine.split(":");
-	            	try{
+	            	try
+	            	{
 	            		int id = Integer.parseInt(brokeText[0]);
 	            		String name = brokeText[1];
 	            		int stackSize = Integer.parseInt(brokeText[2]);
@@ -223,34 +264,42 @@ public class FileOperations
 	            		Boutique.itemNameId.put(name, id);
 	            		Boutique.itemIdName.put(id, name);
 	            	}
-	           		catch (Exception e){
+	           		catch (Exception e)
+	           		{
 	           			System.err.println(unexpectedFormat);
 	            	}
 	        	}
 	       	}
 	        in.close(); //Close the input stream
 	    }
-		catch (Exception e){
+		catch (Exception e)
+		{
 			//Catch exception if any
 			e.printStackTrace();
 	    }
 	}
 	
-	public void writeItemDataFile(){
+	public void writeItemDataFile()
+	{
 		String[] s = getItemsText();
-		try {
+		try 
+		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "items.txt")));
-			for(int i=0;i<s.length;i++){
+			for(int i=0;i<s.length;i++)
+			{
 				writer.write(s[i]);
 				writer.newLine();
 			}
 			writer.close();
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) 
+		{
 			System.out.println(ex);
 		}
 	}
 	
-	private String[] getItemsText() {
+	private String[] getItemsText() 
+	{
 		ArrayList<String> s = new ArrayList<String>();
 		s.add("Version=" + itemListVersion);
 		s.add("# Put a # in front of items you wish to blacklist");
@@ -470,6 +519,7 @@ public class FileOperations
 			str[i] = addStr;
 			i++;
 		}
+		
 		return str;
 	}
 }

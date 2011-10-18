@@ -24,11 +24,9 @@ public class EconomyHandler {
 	
 	
 	
-	
-	
 	public static void setupEconomy(Boutique plugin) 
 	{
-		plugin.log.info(plugin.logPrefix + "Recherche d'iConomy.");
+		//plugin.log.info(plugin.logPrefix + "Recherche d'iConomy.");
 		
 		for (Plugin p : plugin.getServer().getPluginManager().getPlugins())
 		{
@@ -36,12 +34,14 @@ public class EconomyHandler {
 			{
 				plugin.log.info(plugin.logPrefix + "utilise iConomy5");
 				balance = new iConomy5Balance(plugin, (com.iConomy.iConomy)p);
+				currencyEnabled = true;
 			}
 
 			if (p.getClass().getName().equals("com.iCo6.iConomy")) 
 			{
 				plugin.log.info(plugin.logPrefix + "utilise iConomy6");
 				balance = new iConomy6Balance(plugin, (com.iCo6.iConomy)p);
+				currencyEnabled = true;
       		}
 		}
 		
@@ -53,9 +53,11 @@ public class EconomyHandler {
 		}
 		
 		
-	  }
+	}
 
-	public static int hasEnough(String p, double amount) {
+	
+	public static int hasEnough(String p, double amount) 
+	{
 		// returns -3 if something odd happened
 		// returns -2 if account doesnt have enough
 		// returns -1 if no money system
@@ -98,8 +100,11 @@ public class EconomyHandler {
 		*/
 	}
 	
+	
+	
 	//@SuppressWarnings("deprecation")
-	public static int modifyMoney(String pName, int amount) {
+	public static int modifyMoney(String pName, int amount) 
+	{
 		// returns -3 if something odd happened.
 		// returns -2 if they don't have enough money.
 		// returns -1 if no money system
@@ -171,20 +176,11 @@ public class EconomyHandler {
 
 	public static String playerHave(String pName) 
 	{
-		/*
-		if (iconomy != null)
-		{
-			return "" + iConomy.getAccount(pName).getHoldings().balance() + " " + currencyName;
-		}
-		*/
-		
 		
 		if(balance != null)
 		{
-			//return balance.
+			return Double.toString(balance.balance(pName));
 		}
-		
-		
 		
 		return noConomyErr;
 	}

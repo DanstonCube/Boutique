@@ -40,13 +40,12 @@ public class SignManager
 	
 	
 	
-	public SignManager (Boutique bt) {
+	public SignManager (Boutique bt) 
+	{
 		this.plugin = bt;
 		plugName = "" + ChatColor.BLUE + "[" + bt.displayname + "] " + ChatColor.WHITE;
 	}
 
-	
-	
 	public void LoadSigns()
 	{	
 		//boutique_signs.put("",new BoutiqueSignInfo("","","","",""));
@@ -381,30 +380,39 @@ public class SignManager
 
 	private void tradeItems(String signType, Player p, Chest chest, int[] lOneData, int[] lTwoData) 
 	{
-		
-		
-		if (signType.compareToIgnoreCase(globalStr) == 0){
+		if (signType.compareToIgnoreCase(globalStr) == 0)
+		{
 			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
+			{
 				p.sendMessage(plugName + PlayerOperator.playerStockErr);
-			else {
+			}
+			else 
+			{
 				PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 				PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
 			}
 		}
-		else if (signType.compareToIgnoreCase(personalStr) == 0){
+		else if (signType.compareToIgnoreCase(personalStr) == 0)
+		{
 			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
+			{
 				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+			}
 			else if (!ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest))
+			{
 				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+			}
 			else if (!ChestOperator.hasEnoughSpace(lOneData[0], lOneData[1], lOneData[2], chest))
+			{
 				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
-			
-			else {
+			}
+			else 
+			{
 				ChestOperator.removeFromChestStock(lTwoData[0], lTwoData[1], lTwoData[2], chest);
 				ChestOperator.addToChestStock(lOneData[0], lOneData[1], lOneData[2], chest);
 				PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 				PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
-			}
+			}				
 		}
 	}
 
@@ -453,11 +461,12 @@ public class SignManager
 		}
 		
 		
-		this.plugin.log.info(plugin.logPrefix + "insert" );
+		//this.plugin.log.info(plugin.logPrefix + "insert" );
 		
 		try 
 		{
-			this.plugin.db.logTransaction(p.getName(), signOwner, lOneData[1] , lOneData[2] , lOneData[0], Double.parseDouble(Integer.toString(costAmount)),"toto","titi");
+			
+			this.plugin.db.logTransaction(p.getLocation(), p.getName(), signOwner, lOneData[1] , lOneData[2] , lOneData[0], Double.parseDouble(Integer.toString(costAmount)),"toto","titi");
 		}
 		catch (SQLException e) 
 		{
@@ -495,16 +504,20 @@ public class SignManager
 		else if (signType.compareToIgnoreCase(personalStr) == 0)
 		{
 			int econPlayer = EconomyHandler.hasEnough(p.getName(), costAmount);
-			if (econPlayer != 1){
+			if (econPlayer != 1)
+			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econPlayer));
 				return;
 			}
-			else if (!ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest)){
+			else if (!ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest))
+			{
 				p.sendMessage(plugName + ChestOperator.notEnoughErr);
 				return;
 			}
+			
 			int econOwner = EconomyHandler.modifyMoney(signOwner, costAmount);
-			if (econOwner != 1){
+			if (econOwner != 1)
+			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econPlayer));
 				return;
 			}
@@ -515,13 +528,11 @@ public class SignManager
 		}
 		
 		
-		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()) + ".");
-		
-		this.plugin.log.info(plugin.logPrefix + "insert" );
-		
+		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
+			
 		try 
 		{
-			this.plugin.db.logTransaction(p.getName(), signOwner, lTwoData[1] , lTwoData[2] , lTwoData[0], Double.parseDouble(Integer.toString(costAmount)),"toto","titi");
+			this.plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(), lTwoData[1] , lTwoData[2] , lTwoData[0], Double.parseDouble(Integer.toString(costAmount)),"toto","titi");
 		}
 		catch (SQLException e) 
 		{

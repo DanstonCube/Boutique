@@ -26,7 +26,7 @@ public class PermissionsHandler
 		if (test != null) 
 		{
 			((Permissions)test).getHandler();
-			plugin.log.info("["+plugin.displayname+"] Utilisation de Permissions");
+			plugin.log.info("["+plugin.displayname+"] utilise Permissions");
 			permissionsEnabled = true;
 			return;
 		}

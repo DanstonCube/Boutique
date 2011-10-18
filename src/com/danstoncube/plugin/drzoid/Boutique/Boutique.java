@@ -60,26 +60,30 @@ public class Boutique extends JavaPlugin
 	
 	public void onEnable() 
 	{
-		log.info(logPrefix + "Chargement");
+		log.info(logPrefix + "Chargement de Boutique !");
 			
 		
 		
 		makeFolder = this.getDataFolder();
+		
+		
 		config = this.getConfiguration();
 		
 		fileIO.checkDataFolder();
 		fileIO.loadItemData();
+		
 		signLocs = fileIO.loadGlobalSignData();
 		
-		
-		if(!db.setup())
-		{
-			log.info(logPrefix + "version " + version + " désactivé.");			
-			return;
-		}
+	
 		
 		
-		EconomyHandler.setupEconomy(this);
+		
+		//log.info(logPrefix + "version " + version + " désactivé.");			
+		//return;
+		
+		
+		
+		
 		
 		PluginManager pm = this.getServer().getPluginManager();
 
@@ -90,15 +94,40 @@ public class Boutique extends JavaPlugin
         pm.registerEvent(Event.Type.PLAYER_INTERACT, this.playerListener, Event.Priority.Normal, this);
         
         //pour être au courant de l'activation/désactivation d'autres plugins (iConomy surtout)
-        pm.registerEvent(Event.Type.PLUGIN_ENABLE, this.serverListener, Priority.Monitor, this);
+        //pm.registerEvent(Event.Type.PLUGIN_ENABLE, this.serverListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLUGIN_DISABLE, this.serverListener, Priority.Monitor, this);
         
+        
+        //On teste si iConomy est up
+        if (EconomyHandler.balance == null) 
+        {
+        	EconomyHandler.setupEconomy(this);
+        }
+        
+        //On teste la présence de permissions
+        if(PermissionsHandler.permissions == null)
+        {
+        	PermissionsHandler.setupPermissions(this);
+        }        
+    	
+        //On teste la connexion Mysql
+		if(db.setup())
+		{
+			log.info(logPrefix + "Logs Mysql activées");	
+			//db.enabled = true;
+		}
+		else
+		{
+			log.info(logPrefix + "Logs Mysql désactivées");
+		}
+		
+		
         
 		log.info(logPrefix + "version " + version + " activé.");
 	}
 	
 	public void onDisable() 
-	{
+	{		
 		db.close();
 		log.info(logPrefix + "version " + version + " désactivé.");
 	}

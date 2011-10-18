@@ -3,7 +3,7 @@ package  com.danstoncube.plugin.drzoid.Boutique;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
-import org.bukkit.plugin.Plugin;
+import com.danstoncube.tools.Banque.DummyBalance;
 
 
 
@@ -19,20 +19,36 @@ public class BoutiqueServerListener extends ServerListener {
    
     @Override
     public void onPluginDisable(PluginDisableEvent event) 
-    {
-        /*
-    	if (EconomyHandler.iconomy != null) {
-            if (event.getPlugin().getDescription().getName().equals("iConomy")) {
-            	EconomyHandler.iconomy = null;
-                plugin.log.info("["+plugin.displayname+"] Un-hooked from iConomy.");
+    {        
+    	
+    	if (EconomyHandler.balance != null) 
+    	{
+            if (event.getPlugin().getDescription().getName().equals("iConomy")) 
+            {
+            	EconomyHandler.balance = new DummyBalance(this.plugin);
+            	EconomyHandler.currencyEnabled = false;
+                plugin.log.info("["+plugin.displayname+"] iConomy désactivé.");
             }
-        }
-        */
+        }    
+    	
+        
+       	if (PermissionsHandler.permissions != null) 
+       	{      		
+               if (event.getPlugin().getDescription().getName().equals("Permissions")) 
+               {
+            	   PermissionsHandler.permissions = null;
+            	   PermissionsHandler.permissionsEnabled = false;
+                   plugin.log.info("["+plugin.displayname+"] Permissions désactivé.");
+               }
+        }    
+
     }
 
     @Override
-    public void onPluginEnable(PluginEnableEvent event) {
+    public void onPluginEnable(PluginEnableEvent event) 
+    {
     	
+    	/*
     	//On teste si permissions est up
     	if(PermissionsHandler.permissions == null)
     	{
@@ -43,15 +59,13 @@ public class BoutiqueServerListener extends ServerListener {
     			PermissionsHandler.setupPermissions(this.plugin);
     		}
     	}
-    	
-    	/*
-    	//On teste si iConomy est up
-        if (EconomyHandler.balance == null) 
-        {
-        	EconomyHandler.setupEconomy(plugin);
-        }
-        
     	*/
+    	//EconomyHandler.setupEconomy(this);
+    	
+    	
+    	
+        
+    	
     	
     	
     	

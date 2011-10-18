@@ -6,7 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 
-public class PlayerOperator {
+public class PlayerOperator 
+{
 	
 	public static String playerStockErr = "Il te faut plus de cet objet dans la main quand tu fais un clic-droit sur le panneau.";
 

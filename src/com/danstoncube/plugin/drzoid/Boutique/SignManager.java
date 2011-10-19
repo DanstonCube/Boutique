@@ -429,7 +429,9 @@ public class SignManager
 			{
 				PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 				EconomyHandler.modifyMoney(p.getName(), costAmount);
+				signOwner = "";
 			}
+			
 		}
 		else if (signType.compareToIgnoreCase(personalStr) == 0)
 		{
@@ -457,11 +459,10 @@ public class SignManager
 			PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 			EconomyHandler.modifyMoney(p.getName(), costAmount);
 			
-			p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
+			
 		}
 		
-		
-		//this.plugin.log.info(plugin.logPrefix + "insert" );
+		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
 		
 		try 
 		{
@@ -489,16 +490,16 @@ public class SignManager
 		//Signe Serveur
 		if (signType.compareToIgnoreCase(globalStr) == 0)
 		{
-			signOwner = "";
-			
 			int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
-			if (econ != 1){
+			if (econ != 1)
+			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return;
 			}
 
 			EconomyHandler.modifyMoney(p.getName(), -costAmount);
 			PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
+			signOwner = "";
 		}
 		//Signe Joueur
 		else if (signType.compareToIgnoreCase(personalStr) == 0)

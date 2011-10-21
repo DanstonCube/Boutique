@@ -7,7 +7,8 @@ import com.danstoncube.tools.Banque.iConomy6Balance;
 import com.danstoncube.tools.Banque.DummyBalance;
 import com.danstoncube.tools.Banque.Balance;
 
-public class EconomyHandler {
+public class EconomyHandler 
+{
 	
 	//public static Plugin iconomy = null;
 	
@@ -24,9 +25,12 @@ public class EconomyHandler {
 	
 	
 	
-	public static void setupEconomy(Boutique plugin) 
+	public static void setupEconomy(Boutique pluginold) 
 	{
 		//plugin.log.info(plugin.logPrefix + "Recherche d'iConomy.");
+		
+		
+		Boutique plugin = Boutique.getInstance();
 		
 		for (Plugin p : plugin.getServer().getPluginManager().getPlugins())
 		{
@@ -103,7 +107,7 @@ public class EconomyHandler {
 	
 	
 	//@SuppressWarnings("deprecation")
-	public static int modifyMoney(String pName, int amount) 
+	public static int modifyMoney(String pName, Double costAmount) 
 	{
 		// returns -3 if something odd happened.
 		// returns -2 if they don't have enough money.
@@ -118,15 +122,15 @@ public class EconomyHandler {
 		if(balance != null)
 		{
 			
-			if(amount > -1)
+			if(costAmount > -1)
 			{
-				balance.add(pName, amount);
+				balance.add(pName, costAmount);
 			}
 			else
 			{
-				if(balance.hasEnough(pName, amount))
+				if(balance.hasEnough(pName, costAmount))
 				{
-					balance.add(pName, amount);
+					balance.add(pName, costAmount);
 				}
 				else
 				{
@@ -137,51 +141,25 @@ public class EconomyHandler {
 			return 1;
 			
 		}
-		
-		
-		return -3;
-				
-		/*
-		if (iconomy != null)
-		{
-			if (!(iConomy.hasAccount(pName)))
-			{
-				return 0;
-			}
-	
-			Account account = iConomy.getAccount(pName);
-			
-			
-			if (amount > -1)
-			{
-				account.getHoldings().add(amount);
-			}
-			else
-			{
-				if (account.getHoldings().hasEnough(amount))
-				{
-					account.getHoldings().add(amount);
-				}
-				else
-				{
-					return -2;
-				}
-			}
-			
-			return 1;
-		}
-		return -3;
-		*/
-	}
 
-	public static String playerHave(String pName) 
+		return -3;
+	}
+	
+	
+
+	@Deprecated
+	public static int modifyMoney(String pName, Integer costAmount) 
 	{
-		
+		return modifyMoney(pName, Double.parseDouble(Integer.toString(costAmount)));
+	}
+	
+	
+	public static String playerHave(String pName) 
+	{		
 		if(balance != null)
 		{
 			return Double.toString(balance.balance(pName));
-		}
-		
+		}		
 		return noConomyErr;
 	}
 

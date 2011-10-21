@@ -10,27 +10,39 @@ import org.bukkit.entity.Player;
 
 
 
-public class SignOperator {
+public class SignOperator 
+{
 
-	private static String noProtErr = "Les coffres ne sont pas protègés.";
-	private static String notOwnerErr = "Le proprio du panneau n'est pas le proprio du coffre.";
-	private static String noChestErr = "Ce panneau n'est pas relié à un coffre.";
-	private static String oddErr = "Hum y'a une erreur pas cool...";
-	private static String needOwnerErr = "Le coffre relié a besoin d'un proprio.";
-	private static String itemTypeErr = "Hein, je connais pas cet item oO";
-	private static String formattingErr = "Tu sais pas faire un panneau mec, je pige keudal.";
+	private String noProtErr = "Les coffres ne sont pas protègés.";
+	private String notOwnerErr = "Le proprio du panneau n'est pas le proprio du coffre.";
+	private String noChestErr = "Ce panneau n'est pas relié à un coffre.";
+	private String oddErr = "Hum y'a une erreur pas cool...";
+	private String needOwnerErr = "Le coffre relié a besoin d'un proprio.";
+	private String itemTypeErr = "Hein, je connais pas cet item oO";
+	private String formattingErr = "Tu sais pas faire un panneau mec, je pige keudal.";
 	
-	public static String getSignType(String str) {
-		if (str.compareToIgnoreCase("global") == 0 ||
-				str.compareToIgnoreCase("[Global]") == 0)
+	private Boutique plugin;
+	
+	SignOperator(Boutique p)
+	{
+		plugin = p;
+	}
+	
+	
+	public static String getSignType(String str) 
+	{
+		if (str.compareToIgnoreCase("global") == 0 || str.compareToIgnoreCase("[Global]") == 0)
 			return "global";
+		else if (str.compareToIgnoreCase("web") == 0 || str.compareToIgnoreCase("[Web]") == 0)
+			return "web";
 		else if (str.length() > 0)
 			return "personal";
 		
 		return null;
 	}
 	
-	public static boolean isSign(Block b) {
+	public boolean isSign(Block b) 
+	{
 		if (!(b.getState() instanceof Sign))
 			return false;
 		
@@ -39,7 +51,7 @@ public class SignOperator {
 		return Boutique.signLocs.containsKey(location);
 	}
 	
-	public static boolean isSign(Sign s) 
+	public boolean isSign(Sign s) 
 	{
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
 		if(Boutique.signLocs.containsKey(location))
@@ -48,15 +60,18 @@ public class SignOperator {
 		return false;
 	}
 	
-	public static boolean isBlackListed (int type) {
-		return !Boutique.itemIdName.containsKey(type);
+	public boolean isBlackListed (int type) 
+	{
+		return !Boutique.sign.containsKey(type);
 	}
 	
-	public static boolean isBlackListed (String type) {
+	public boolean isBlackListed (String type) 
+	{
 		return !Boutique.itemNameId.containsKey(type);
 	}
 	
-	public static int[] getTransFormat(String str) {
+	public int[] getTransFormat(String str) 
+	{
 		//Returns int,int,int for amount : type : damage
 		//Returns 0,0,0 if Free
 		//Returns int,-1,0 if it is using money
@@ -68,52 +83,67 @@ public class SignOperator {
 		retInt[1] = 0;
 		retInt[2] = 0; // if no damage set, defaults to 0
 		
-		if(str.startsWith("Free")) {
+		if(str.startsWith("Free")) 
+		{
 			return retInt;	
 		}
-		else {
+		else 
+		{
 			String[] s = str.split(":");
-			if (s.length == 2){
-				if (str.endsWith("$")){
-					if(!EconomyHandler.currencyEnabled){
+			if (s.length == 2)
+			{
+				if (str.endsWith("$"))
+				{
+					if(!EconomyHandler.currencyEnabled)
+					{
 						retInt[0] = -2;
 						return retInt;
 					}
-					try{
+					try
+					{
 						retInt[0] = Integer.parseInt(s[0]);
 						retInt[1] = -1;
 						return retInt;
 					}
-					catch(Exception e){
+					catch(Exception e)
+					{
 						return null;
 					}
 				}
-				else{
-					try{
+				else
+				{
+					try
+					{
 						retInt[0] = Integer.parseInt(s[0]);
 						retInt[1] = Integer.parseInt(s[1]);
-						if(Material.getMaterial(retInt[1]) == null){
+						if(Material.getMaterial(retInt[1]) == null)
+						{
 							retInt[0] = -3;
 						}
 						return retInt;
 					}
-					catch(Exception e){
+					catch(Exception e)
+					{
 						return null;
 					}
 				}
 			}
 			//for handling itemdata
-			else if (s.length == 3){
-				try{
+			else if (s.length == 3)
+			{
+				try
+				{
 					retInt[0] = Integer.parseInt(s[0]);
 					retInt[1] = Integer.parseInt(s[1]);
 					retInt[2] = Integer.parseInt(s[2]);
-					if(Material.getMaterial(retInt[1]) == null){
+					if(Material.getMaterial(retInt[1]) == null)
+					{
 						retInt[0] = -3;
 					}
 					return retInt;
 				}
-				catch(Exception e){
+				catch(Exception e)
+				{
 					return null;
 				}
 			}
@@ -122,7 +152,7 @@ public class SignOperator {
 	}
 	
 	
-	public static void UpdateSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
+	public void UpdateSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
 	{			
 		
 		if(signType.compareToIgnoreCase("global") == 0)
@@ -170,8 +200,10 @@ public class SignOperator {
 		
 	}
 	
-	public static void UpdateFreeSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
+	public void UpdateFreeSign(Sign s,Chest chest, String waplayer, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
 	{			
+		if(chest==null && signType.compareToIgnoreCase("personal")==0) return;
+		if(waplayer=="" && signType.compareToIgnoreCase("web")==0) return;
 		
 		if(signType.compareToIgnoreCase("global") == 0)
 		{
@@ -185,31 +217,42 @@ public class SignOperator {
 		}
 		else
 		{
-			//Sign Player
-			//recherche chest
-			if(c!=null)
+			int lots=0;
+			
+			if(signType.compareToIgnoreCase("personal") == 0)
 			{
+				//Sign Player, recherche dans chest
 				//compte le nombre de stacks dispos au total dans le chest						
-				int lots = (int)(ChestOperator.contains(giveType, giveDamage, c) / giveAmount);		
-				
-				//couleur suivant la quantité
-				String strLot = "";						
-				if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
-				else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
-				else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
-				
-				String strNbLot = "";
-				if(lots > 1)	strNbLot = "Lots de ";
-				else			strNbLot = "Lot de ";
-				
-				//mise a jour du panneau
-				
-				s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
-				s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
-				s.setLine(2, ChatColor.AQUA + giveTypeText);
-				s.setLine(3, "");
-				s.update();
+				lots = (int)(ChestOperator.contains(giveType, giveDamage, chest) / giveAmount);		
 			}
+			else if(signType.compareToIgnoreCase("web") == 0)
+			{
+				//compte le nombre de stacks dispos au total dans le chest	
+				lots = plugin.webitems.contains(waplayer, giveType, giveDamage) / giveAmount;		
+			}
+			else
+			{
+				return;
+			}
+			
+			//couleur suivant la quantité
+			String strLot = "";						
+			if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
+			else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
+			else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
+			
+			String strNbLot = "";
+			if(lots > 1)	strNbLot = "Lots de ";
+			else			strNbLot = "Lot de ";
+			
+			//mise a jour du panneau
+			
+			s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
+			s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
+			s.setLine(2, ChatColor.AQUA + giveTypeText);
+			s.setLine(3, "");
+			s.update();
+			
 			
 		}
 		
@@ -282,8 +325,8 @@ public class SignOperator {
 	}
 	
 	
-	
-	public static void displaySignInfo(Sign s, Player p) 
+	@Deprecated
+	public void displaySignInfo(Sign s, Player p) 
 	{
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
 		String separator = "-----------------------------------";
@@ -295,6 +338,9 @@ public class SignOperator {
 			p.sendMessage(ChatColor.YELLOW + "Activez le en reposant le panneau.");
 			return;
 		}		
+		
+		
+		String signOwner = Boutique.signLocs.get(location);
 		
 		String signLine1 = "";
 		if (Boutique.signLine1.containsKey(location))
@@ -318,8 +364,8 @@ public class SignOperator {
 		if(signType == null)
 			return;
 		
-		int[] lOneData = getTransFormat(signLine2);
-		int[] lTwoData = getTransFormat(signLine3);
+		int[] lOneData = this.getTransFormat(signLine2);
+		int[] lTwoData = this.getTransFormat(signLine3);
 		if ((lOneData == null)||(lTwoData == null))
 			return;
 		
@@ -438,7 +484,7 @@ public class SignOperator {
 					Chest c = SignOperator.getChest(location,s);
 					if(c != null) 
 					{
-						SignOperator.UpdateFreeSign(s, c, signType, giveAmount, giveType, giveDamage, giveTypeText, getAmount, getTypeText);
+						plugin.signoperator.UpdateFreeSign(s, c, signOwner, signType, giveAmount, giveType, giveDamage, giveTypeText, getAmount, getTypeText);
 					}
 				}				
 			}
@@ -472,7 +518,7 @@ public class SignOperator {
 			
 				
 				Chest c = SignOperator.getChest(location,s);
-				SignOperator.UpdateSellSign(s, c, signType, giveAmount, giveType, giveDamage, giveTypeText, getAmount, getTypeText);
+				this.UpdateSellSign(s, c, signType, giveAmount, giveType, giveDamage, giveTypeText, getAmount, getTypeText);
 				
 				
 				
@@ -654,51 +700,53 @@ public class SignOperator {
 		}
 	}
 
-	public static String sendChestErr(int errorNum) 
+	public String sendChestErr(int errorNum) 
 	{
 		if (errorNum == 0) {
-			return noProtErr;
+			return this.noProtErr;
 		}
 		else if (errorNum == -1) {
-			return notOwnerErr;
+			return this.notOwnerErr;
 		}
 		else if (errorNum == -2) {
-			return noChestErr;
+			return this.noChestErr;
 		}
 		else if (errorNum == -3) {
-			return oddErr;
+			return this.oddErr;
 		}
 		else if (errorNum == -4) {
-			return needOwnerErr;
+			return this.needOwnerErr;
 		}
 		else if (errorNum == -5) {
-			return noChestErr;
+			return this.noChestErr;
 		}
 		return "Could not find error code.";
 	}
 	
 	
-	public static String sendTransFormatErr(int errorNum) {
+	public String sendTransFormatErr(int errorNum) {
 		
 		if (errorNum == -2) {
 			return EconomyHandler.noConomyErr;
 		}
 		else if (errorNum == -3) {
-			return itemTypeErr;
+			return this.itemTypeErr;
 		}
 		else if (errorNum == -4) {
-			return formattingErr;
+			return this.formattingErr;
 		}
 		return "Could not find error code.";
 	}
 	
 	
-	public static boolean isSignOwner(Sign s, String str){
+	public static boolean isSignOwner(Sign s, String str)
+	{
 		
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
 		if(Boutique.signLocs.containsKey(location))
 			if (Boutique.signLocs.get(location).compareToIgnoreCase(str) == 0)
 				return true;
+		
 		return false;
 	}
 
@@ -737,8 +785,8 @@ public class SignOperator {
 		    return signs;
 		  }
 	
-	public static boolean canBreakSign(Sign s, Player p) {
-		if (!isSign(s))
+	public boolean canBreakSign(Sign s, Player p) {
+		if (!this.isSign(s))
 			return false;
 		
 		boolean bool = false;

@@ -15,7 +15,8 @@ public class ChestOperator
 	public static String notEnoughSpaceErr = "Le coffre n'a plus assez de place !";
 	
 	//Thanks @YOGODA!
-	private static Chest getDoubleChest(Chest chest)	{
+	private static Chest getDoubleChest(Chest chest)	
+	{
         if(chest.getBlock().getRelative(BlockFace.NORTH).getType() == Material.CHEST)
              return (Chest)chest.getBlock().getRelative(BlockFace.NORTH).getState();
         else if(chest.getBlock().getRelative(BlockFace.SOUTH).getType() == Material.CHEST)
@@ -27,7 +28,8 @@ public class ChestOperator
         return null;
     }
 	
-	public static void removeFromChestStock(int amount, int type, int damage, Chest chest) 	{
+	public static void removeFromChestStock(int amount, int type, int damage, Chest chest) 	
+	{
 		int count = amount;
 		count = removeRunner(chest, count, damage, type);
 		if (count < 1)
@@ -38,28 +40,36 @@ public class ChestOperator
 			removeRunner(chestTwo, count, damage, type);
 	}
 
-	private static int removeRunner(Chest chest, int amt, int damage, int type) {
+	private static int removeRunner(Chest chest, int amt, int damage, int type) 
+	{
 		int count = amt;
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
-		for (int i = 0; i < chestSize; i++){
+		
+		for (int i = 0; i < chestSize; i++)
+		{
 			item = inv.getItem(i);
-			if (item.getTypeId() == type && item.getDurability() == damage){
-				if (item.getAmount() - count < 1){
+			if (item.getTypeId() == type && item.getDurability() == damage)
+			{
+				if (item.getAmount() - count < 1)
+				{
 					count -= item.getAmount();
 					inv.clear(i);
 				}
-				else{
+				else
+				{
 					item.setAmount(item.getAmount() - count);
 					return 0;
 				}
 					
 			}
 		}
+		
 		return count;
 	}
 	
-	public static void addToChestStock(int amount, int type, int damage, Chest chest) {
+	public static void addToChestStock(int amount, int type, int damage, Chest chest) 
+	{
 		int count = amount;
 		count = addRunner(count, type, damage, chest);
 		
@@ -71,7 +81,8 @@ public class ChestOperator
 			addRunner(count, type, damage, chestTwo);
 	}
 	
-	private static int addRunner(int amount, int type, int damage, Chest chest) {
+	private static int addRunner(int amount, int type, int damage, Chest chest) 
+	{
 		int count = amount;
 		int maxStack = getItemMaxStack(type);
 		Inventory inv = chest.getInventory();
@@ -79,21 +90,27 @@ public class ChestOperator
 		ItemStack stacker = new ItemStack(type);
 		stacker.setDurability((short)damage);
 		
-		for (int i = 0; i < chestSize; i++){
+		for (int i = 0; i < chestSize; i++)
+		{
 			item = inv.getItem(i);
-			if (item.getTypeId() == type && item.getDurability() == damage){
-				if (item.getAmount() < maxStack){
-					if (item.getAmount() + count > maxStack){
+			if (item.getTypeId() == type && item.getDurability() == damage)
+			{
+				if (item.getAmount() < maxStack)
+				{
+					if (item.getAmount() + count > maxStack)
+					{
 						count -= maxStack - item.getAmount();
 						item.setAmount(maxStack);
 					}
-					else {
+					else 
+					{
 						item.setAmount(item.getAmount() + count);
 						return 0;
 					}
 				}
 			}
-			else if (item.getType() == Material.AIR){
+			else if (item.getType() == Material.AIR)
+			{
 				if (count >= maxStack){
 					stacker.setAmount(maxStack);
 					inv.setItem(i, stacker);
@@ -101,7 +118,8 @@ public class ChestOperator
 					if (count == 0)
 						return 0;
 				}
-				else if (count < maxStack){
+				else if (count < maxStack)
+				{
 					stacker.setAmount(count);
 					inv.setItem(i, stacker);
 					return 0;
@@ -112,20 +130,23 @@ public class ChestOperator
 		
 	}
 
-	static int getItemMaxStack(int type) {
+	static int getItemMaxStack(int type) 
+	{
 		if (Boutique.itemMaxIdStack.containsKey(type))
 			return Boutique.itemMaxIdStack.get(type);
 		return 64;
 	}
 	
-	public static boolean containsEnough(int amount, int type, int damage, Chest chest) {
+	public static boolean containsEnough(int amount, int type, int damage, Chest chest) 
+	{
 		int count = amount;
 		count = containsRunner(count, type, damage, chest);
 		if (count < 1)
 			return true;
 		
 		Chest chestTwo = getDoubleChest(chest);
-		if (chestTwo != null){
+		if (chestTwo != null)
+		{
 			count = containsRunner(count, type, damage, chestTwo);
 			if (count < 1)
 				return true;
@@ -138,9 +159,11 @@ public class ChestOperator
 		int count = 0;
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
-		for (int i = 0; i < chestSize; i++){
+		for (int i = 0; i < chestSize; i++)
+		{
 			item = inv.getItem(i);
-			if (item.getTypeId() == type && item.getDurability() == (short)damage){
+			if (item.getTypeId() == type && item.getDurability() == (short)damage)
+			{
 				count += item.getAmount();
 			}
 		}
@@ -148,13 +171,16 @@ public class ChestOperator
 	}
 	
 	
-	public static int containsRunner(int amount, int type, int damage, Chest chest){
+	public static int containsRunner(int amount, int type, int damage, Chest chest)
+	{
 		int count = amount;
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
-		for (int i = 0; i < chestSize; i++){
+		for (int i = 0; i < chestSize; i++)
+		{
 			item = inv.getItem(i);
-			if (item.getTypeId() == type && item.getDurability() == (short)damage){
+			if (item.getTypeId() == type && item.getDurability() == (short)damage)
+			{
 				count -= item.getAmount();
 				if (count < 1)
 					return 0;
@@ -170,7 +196,8 @@ public class ChestOperator
 			return true;
 		
 		Chest chestTwo = getDoubleChest(chest);
-		if (chestTwo != null){
+		if (chestTwo != null)
+		{
 			count = emptyRunner(count, type, damage, chestTwo);
 			if (count < 1)
 				return true;
@@ -178,19 +205,23 @@ public class ChestOperator
 		return false;
 	}
 	
-	private static int emptyRunner(int amount, int type, int damage, Chest chest) {
+	private static int emptyRunner(int amount, int type, int damage, Chest chest) 
+	{
 		int count = amount;
 		int maxStack = getItemMaxStack(type);
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
-		for (int i = 0; i < chestSize; i++){
+		for (int i = 0; i < chestSize; i++)
+		{
 			item = inv.getItem(i);
-			if (item.getType() == Material.AIR){
+			if (item.getType() == Material.AIR)
+			{
 				count -= maxStack;
 				if (count < 1)
 					return 0;
 			}
-			else if (item.getTypeId() == type && item.getDurability() == (short)damage) {
+			else if (item.getTypeId() == type && item.getDurability() == (short)damage) 
+			{
 				count -= maxStack - item.getAmount();
 				if (count < 1)
 					return 0;

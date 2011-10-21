@@ -2,14 +2,12 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 
 import java.sql.SQLException;
-import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 
 import org.bukkit.block.Sign;
-//import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 
 
@@ -29,14 +27,16 @@ public class SignManager
 	
 	private String plugName;
 	
-	private String globalStr = "global";
+	private String globalStr = "global";	
+	private String personalStr = "personal";	
+	private String webitemsStr = "web";
 	
-	private String personalStr = "personal";
+	
 	
 	private int maxDist = 30; // max x or z dist away (to keep from putting signs far away in a different chunk.)
 
 	
-	private HashMap<String,BoutiqueSignInfo> boutique_signs; 
+	//private HashMap<String,BoutiqueSignInfo> boutique_signs; 
 	
 	
 	
@@ -70,10 +70,10 @@ public class SignManager
 		
 		if (type == null)
 			return;
-		int[] lOneData = SignOperator.getTransFormat(lines[1]);
+		int[] lOneData = plugin.signoperator.getTransFormat(lines[1]);
 		if (lOneData == null)
 			return;
-		int[] lTwoData = SignOperator.getTransFormat(lines[2]);
+		int[] lTwoData = plugin.signoperator.getTransFormat(lines[2]);
 		if (lTwoData == null)
 			return;
 		
@@ -133,6 +133,27 @@ public class SignManager
 			
 			plugin.fileIO.saveGlobalSigns();
 		}
+		else if(type.compareToIgnoreCase("web")==0)
+		{
+			
+			if (!PermissionsHandler.canSetPersonalSign(p))
+			{
+				p.sendMessage(PermissionsHandler.permissionErr);
+				return;
+			}
+			
+			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
+			
+			Boutique.signLocs.put(location, pName);
+			Boutique.signLine1.put(location, lines[0]);
+			Boutique.signLine2.put(location, lines[1]);
+			Boutique.signLine3.put(location, lines[2]);
+			
+			lines[0] = p.getName();
+			
+			lines[3] = ChatColor.GREEN + "[Active]";
+			plugin.fileIO.saveGlobalSigns();
+		}
 		
 		/*
 		lines[0] = "VENTE DE x LOT DE";
@@ -148,6 +169,7 @@ public class SignManager
 		//((CraftWorld)s.getWorld()).getHandle().g(s.getX(),s.getY(),s.getZ());
 	}
 	
+	@Deprecated
 	public void useSign(Sign s, Player p) 
 	{
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
@@ -185,8 +207,8 @@ public class SignManager
 			return;
 		
 		//Get transaction data and check it.
-		int[] lOneData = SignOperator.getTransFormat(signLine2);
-		int[] lTwoData = SignOperator.getTransFormat(signLine3);
+		int[] lOneData = plugin.signoperator.getTransFormat(signLine2);
+		int[] lTwoData = plugin.signoperator.getTransFormat(signLine3);
 		
 		if (lOneData == null || lTwoData == null){
 			return;
@@ -207,9 +229,13 @@ public class SignManager
 			}
 			else 
 			{
-				p.sendMessage(plugName + SignOperator.sendChestErr(chestFind));
+				p.sendMessage(plugName + plugin.signoperator.sendChestErr(chestFind));
 				return;
 			}
+			
+		}
+		else if(signType.compareToIgnoreCase("web") == 0) 
+		{
 			
 		}
 		
@@ -223,28 +249,30 @@ public class SignManager
 		
 		if (lOneData[0] < -1)
 		{
-			p.sendMessage(plugName + SignOperator.sendTransFormatErr(lOneData[0]));
+			p.sendMessage(plugName + plugin.signoperator.sendTransFormatErr(lOneData[0]));
 			return;
 		}
 		else if (lTwoData[0] < -1)
 		{
-			p.sendMessage(plugName + SignOperator.sendTransFormatErr(lTwoData[0]));
+			p.sendMessage(plugName + plugin.signoperator.sendTransFormatErr(lTwoData[0]));
 			return;
 		}
-		
+
 		if (!Boutique.signLocs.containsKey(location))
 		{
 			p.sendMessage(plugName + activeErr);
 			return;
 		}
 		
+		
+		
 		// Check to see if the items were blacklisted
-		if ((lOneData[1] > 0) && (SignOperator.isBlackListed(lOneData[1])))
+		if ((lOneData[1] > 0) && (plugin.signoperator.isBlackListed(lOneData[1])))
 		{
 			p.sendMessage(plugName  + blacklistErr);
 			return;
 		}
-		if ((lTwoData[1] > 0) && (SignOperator.isBlackListed(lTwoData[1])))
+		if ((lTwoData[1] > 0) && (plugin.signoperator.isBlackListed(lTwoData[1])))
 		{
 			p.sendMessage(plugName + blacklistErr);
 			return;
@@ -280,7 +308,7 @@ public class SignManager
 			}
 			
 			
-			SignOperator.UpdateFreeSign(s, chest, signType, itemAmount, itemType, itemDamage, itemText, itemPrice, "Eu");
+			plugin.signoperator.UpdateFreeSign(s, chest, signOwner, signType, itemAmount, itemType, itemDamage, itemText, itemPrice, "Eu");
 			//</MIKO>
 		}
 		//DONATION
@@ -315,7 +343,7 @@ public class SignManager
 			}
 			
 			
-			SignOperator.UpdateSellSign(s, chest, signType, itemAmount, itemType, itemDamage, itemText, itemPrice, "Eu");
+			plugin.signoperator.UpdateSellSign(s, chest, signType, itemAmount, itemType, itemDamage, itemText, itemPrice, "Eu");
 			//</MIKO>
 			
 		}
@@ -377,9 +405,18 @@ public class SignManager
 			p.sendMessage(plugName + formatErr );
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	private void tradeItems(String signType, Player p, Chest chest, int[] lOneData, int[] lTwoData) 
-	{
+	{		
 		if (signType.compareToIgnoreCase(globalStr) == 0)
 		{
 			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
@@ -428,9 +465,35 @@ public class SignManager
 			else 
 			{
 				PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
-				EconomyHandler.modifyMoney(p.getName(), costAmount);
+				EconomyHandler.modifyMoney(p.getName(), (double) costAmount);
 				signOwner = "";
 			}
+			
+		}
+		else if(signType.compareToIgnoreCase(webitemsStr) == 0)
+		{
+			if (!PlayerOperator.playerHasEnough(lOneData[0], lOneData[1], lOneData[2], p))
+			{
+				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				return;
+			}
+			
+			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
+			if (econ != 1)
+			{
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				return;
+			}
+			
+			if(!plugin.webitems.addToWebStock(signOwner, lOneData[0], lOneData[1], lOneData[2]))
+			{
+				p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
+				return;
+			}
+			
+			PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);			
+			EconomyHandler.modifyMoney(signOwner, -costAmount);
+			EconomyHandler.modifyMoney(p.getName(), costAmount);
 			
 		}
 		else if (signType.compareToIgnoreCase(personalStr) == 0)
@@ -458,15 +521,13 @@ public class SignManager
 			ChestOperator.addToChestStock(lOneData[0], lOneData[1], lOneData[2], chest);
 			PlayerOperator.removeFromPlayer(lOneData[0], lOneData[1], lOneData[2], p);
 			EconomyHandler.modifyMoney(p.getName(), costAmount);
-			
-			
 		}
+		
 		
 		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
 		
 		try 
 		{
-			
 			this.plugin.db.logTransaction(p.getLocation(), p.getName(), signOwner, lOneData[1] , lOneData[2] , lOneData[0], Double.parseDouble(Integer.toString(costAmount)),"toto","titi");
 		}
 		catch (SQLException e) 
@@ -487,10 +548,13 @@ public class SignManager
 	
 	private void sellItem(String signType, Player p, Chest chest, int costAmount, int[] lTwoData, String signOwner) 
 	{
+		
+		int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
+		
+		
 		//Signe Serveur
 		if (signType.compareToIgnoreCase(globalStr) == 0)
 		{
-			int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
 			if (econ != 1)
 			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
@@ -504,10 +568,9 @@ public class SignManager
 		//Signe Joueur
 		else if (signType.compareToIgnoreCase(personalStr) == 0)
 		{
-			int econPlayer = EconomyHandler.hasEnough(p.getName(), costAmount);
-			if (econPlayer != 1)
+			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econPlayer));
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return;
 			}
 			else if (!ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest))
@@ -519,7 +582,7 @@ public class SignManager
 			int econOwner = EconomyHandler.modifyMoney(signOwner, costAmount);
 			if (econOwner != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econPlayer));
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return;
 			}
 			
@@ -527,6 +590,34 @@ public class SignManager
 			ChestOperator.removeFromChestStock(lTwoData[0], lTwoData[1], lTwoData[2], chest);
 			PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
 		}
+		else if(signType.compareToIgnoreCase(webitemsStr) == 0)
+		{
+			if (econ != 1)
+			{
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				return;
+			}
+			else if (!this.plugin.webitems.containEnough(signOwner, lTwoData[1], lTwoData[2], lTwoData[0]))
+			{
+				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				return;
+			}
+			
+			int econOwner = EconomyHandler.modifyMoney(signOwner, costAmount);
+			if (econOwner != 1)
+			{
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				return;
+			}
+			
+			if(this.plugin.webitems.removeFromWebStock(signOwner, lTwoData[0],lTwoData[1], lTwoData[2]))
+			{
+				EconomyHandler.modifyMoney(p.getName(), -costAmount);
+				PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);	
+			}
+			//ChestOperator.removeFromChestStock(lTwoData[0], lTwoData[1], lTwoData[2], chest);
+		}
+		
 		
 		
 		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
@@ -573,14 +664,24 @@ public class SignManager
 
 	private void giveFree(String signType, Player p, Chest chest, int[] lTwoData) {
 		if (signType.compareToIgnoreCase(globalStr) == 0)
+		{
 			PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
-		else if (signType.compareToIgnoreCase(personalStr) == 0){
-			if (ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest)){
+		}
+		else if (signType.compareToIgnoreCase(personalStr) == 0)
+		{
+			if (ChestOperator.containsEnough(lTwoData[0], lTwoData[1], lTwoData[2], chest))
+			{
 				ChestOperator.removeFromChestStock(lTwoData[0], lTwoData[1], lTwoData[2], chest);
 				PlayerOperator.givePlayerItem(lTwoData[0], lTwoData[1], lTwoData[2], p);
 			}
 			else
+			{
 				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+			}
+		}
+		else if (signType.compareToIgnoreCase(webitemsStr) == 0)
+		{
+			p.sendMessage(plugName + "Les panneaux FREE sont pas encore disponible pour le web");
 		}
 	}
 	
@@ -611,7 +712,7 @@ public class SignManager
 
 	public void setOwner(Player p, String str, Sign s) 
 	{
-		if (!SignOperator.isSign(s))
+		if (!plugin.signoperator.isSign(s))
 		{
 			p.sendMessage(plugName + "Ce panneau est mal configuré. Reposes le correctement avant.");
 			return;
@@ -626,7 +727,7 @@ public class SignManager
 		
 		//((CraftWorld)s.getWorld()).getHandle().g(s.getX(),s.getY(),s.getZ());
 	}
-
+/*
 	public HashMap<String,BoutiqueSignInfo> getSigns() {
 		return boutique_signs;
 	}
@@ -634,4 +735,5 @@ public class SignManager
 	public void setSigns(HashMap<String,BoutiqueSignInfo> boutique_signs) {
 		this.boutique_signs = boutique_signs;
 	}
+*/
 }

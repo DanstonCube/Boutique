@@ -34,13 +34,19 @@ public class BoutiquePlayerListener extends PlayerListener {
 		plugName = "" + ChatColor.BLUE + "[" + signTrader.displayname + "] " + ChatColor.WHITE;
 	}	
 
-	public void onPlayerInteract(PlayerInteractEvent e) {
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getState() instanceof Sign) {
-			if (SignOperator.isSign(e.getClickedBlock()))
+	public void onPlayerInteract(PlayerInteractEvent e) 
+	{
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getState() instanceof Sign) 
+		{
+			if (plugin.signoperator.isSign(e.getClickedBlock()))
+			{
 				e.setCancelled(true);
-			plugin.sm.useSign((Sign)e.getClickedBlock().getState(), e.getPlayer());
+
+				this.rightClickSign(e.getPlayer(), (Sign)e.getClickedBlock().getState());
+			}
 		}	
-		if (e.getAction() == Action.LEFT_CLICK_BLOCK){
+		if (e.getAction() == Action.LEFT_CLICK_BLOCK)
+		{
 			if (e.getClickedBlock().getState() instanceof Sign){
 				leftClickSign(e.getPlayer(), e.getClickedBlock());
 			}
@@ -50,7 +56,8 @@ public class BoutiquePlayerListener extends PlayerListener {
 		}
 	}
 
-	private void leftClickChest(Player p, Block b) {
+	private void leftClickChest(Player p, Block b) 
+	{
 		if (playerSetChest.containsKey(p)){
 			if (playerChest.get(p) == (Chest)b.getState())
 				p.sendMessage(plugName + "Tu as déjà choisi ce coffre.");
@@ -71,27 +78,41 @@ public class BoutiquePlayerListener extends PlayerListener {
 		
 	}
 
-	private void leftClickSign(Player p, Block b) {
-		if (playerSetSign.containsKey(p)){
+	
+	private void rightClickSign(Player p, Sign s)
+	{	
+		plugin.signmanager.useSign(s, p);
+	}
+	
+	
+	private void leftClickSign(Player p, Block b) 
+	{
+		if (playerSetSign.containsKey(p))
+		{
 			plugin.sm.setSign((Sign) b.getState(), p);
 			if (!playerSetSign.get(p))
 				playerSetSign.remove(p);
 		}
-		else if (setOwner.containsKey(p)) {
+		else if (setOwner.containsKey(p)) 
+		{
 			plugin.sm.setOwner(p, setOwner.get(p), (Sign) b.getState());
 			setOwner.remove(p);
 		}
-		else if (playerSetChest.containsKey(p)){
+		else if (playerSetChest.containsKey(p))
+		{
 			if (playerSign.get(p) == (Sign)b.getState())
 				p.sendMessage(plugName + "Tu as déjà choisi ce panneau.");
-			else {
-				if (!SignOperator.isSignOwner((Sign)b.getState(), p.getName())){
+			else 
+			{
+				if (!SignOperator.isSignOwner((Sign)b.getState(), p.getName()))
+				{
 					p.sendMessage(plugName + "Ce n'est pas ton panneau.");
 					return;
 				}
 				playerSign.put(p, (Sign)b.getState());
 				p.sendMessage(plugName + "Panneau mémorisé.");
-				if (playerChest.containsKey(p) && playerSign.containsKey(p)) {
+				if (playerChest.containsKey(p) && playerSign.containsKey(p)) 
+				{
 					plugin.sm.setChest(playerSign.get(p), playerChest.get(p), p);
 					if (playerSetChest.get(p) == false)
 						playerSetChest.remove(p);
@@ -103,15 +124,10 @@ public class BoutiquePlayerListener extends PlayerListener {
 		}
 		else
 		{
+			Sign s = (Sign) b;
 			
-			Sign s = (Sign)b.getState();
-			String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
-			
-			if (Boutique.signLocs.containsKey(location))
-			{
-				SignOperator.displaySignInfo(s, p);
-			}
-			
+			if(plugin.signmanager.isBoutiqueSign(s))			
+				plugin.signmanager.displaySignInfo(s, p);
 			
 		}
 		

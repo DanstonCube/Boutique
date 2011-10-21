@@ -34,7 +34,9 @@ public class Boutique extends JavaPlugin
 	public static HashMap<String,Integer> itemNameId = new HashMap<String,Integer>(); // Contains the name and id of the item associated with it
 	public static HashMap<Integer,String> itemIdName = new HashMap<Integer,String>(); // Contains the name and id of the item associated with it
 	
+	@Deprecated
 	public static HashMap<String,String> signLocs = new HashMap<String,String>(); //Contains Sign location, and playerName
+	
 	public static HashMap<String,String> SignChest = new HashMap<String,String>(); // Contains Sign location and chest Location.
 	public static HashMap<String,String> SignSlab = new HashMap<String,String>(); // Contains Sign location and stone slab (showcase).
 	
@@ -50,12 +52,39 @@ public class Boutique extends JavaPlugin
 	public final BoutiqueServerListener serverListener = new BoutiqueServerListener(this);
 
 	
-	
-	public SignManager sm = new SignManager(this);
-	
 	public BoutiqueDb db = new BoutiqueDb(this);
 	
+	@Deprecated
+	public SignManager sm = new SignManager(this);
+	
+	public BoutiqueSignManager signmanager = new BoutiqueSignManager(this);
+	
+	
+	public SignOperator signoperator = new SignOperator(this);
+	
+	
+	public WebItemsOperator webitems = new WebItemsOperator(this);
+	
+	
+	
+	
 	public Configuration config;
+	
+	public BoutiqueConfiguration configuration;
+	
+	
+	private static Boutique _instance = null;
+	
+	Boutique()
+	{
+		Boutique._instance = this;
+	}
+	
+	public static Boutique getInstance()
+	{
+		return _instance;
+	}
+	
 	
 	
 	public void onEnable() 
@@ -68,6 +97,7 @@ public class Boutique extends JavaPlugin
 		
 		
 		config = this.getConfiguration();
+		configuration = new BoutiqueConfiguration(this);
 		
 		fileIO.checkDataFolder();
 		fileIO.loadItemData();

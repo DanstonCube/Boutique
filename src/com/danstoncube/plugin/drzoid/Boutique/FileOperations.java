@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
+
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
+
 
 public class FileOperations 
 {
@@ -20,15 +24,9 @@ public class FileOperations
 	private final String unexpectedFormat = "Error: Unexpected format.";
 	private final int itemListVersion = 3;
 	
-	private String prechest = "^^^^";
-	private String line1data = "^---";
-	private String line2data = "^^--";
-	private String line3data = "^^^-";
-	
-	
-	FileOperations(Boutique plugind)
+	FileOperations()
 	{
-		this.plugin = plugind;
+		this.plugin = Boutique.getInstance();
 		//plugin.makeFolder = plugind.getDataFolder();
 	}
 	
@@ -47,7 +45,7 @@ public class FileOperations
 		if (!plugin.makeFolder.exists())
 	    {
 			checkDataFolder();
-	      
+			
 			File fWhitelist = new File(plugin.makeFolder.getAbsolutePath() + File.separator + "config.txt");
 			if (!fWhitelist.exists())
 			{
@@ -66,30 +64,28 @@ public class FileOperations
 	    }
 	}
 	
+	
+	
+	
+	
 	public void saveGlobalSigns() 
 	{
 		ArrayList<String> strings = new ArrayList<String>();
-		for (Entry<String, String> entry : Boutique.signLocs.entrySet()) 
+		for (Entry<Location, BoutiqueSign> entry : plugin.signmanager.entrySet()) 
 		{
-			String obj = entry.getKey();
-			String s = entry.getValue();
-			strings.add(obj + ":" + s);			
-			if (Boutique.signLine1.containsKey(entry.getKey()))
-			{
-				strings.add(line1data + Boutique.signLine1.get(entry.getKey()));
-			}
-			if (Boutique.signLine2.containsKey(entry.getKey()))
-			{
-				strings.add(line2data + Boutique.signLine2.get(entry.getKey()));
-			}
-			if (Boutique.signLine3.containsKey(entry.getKey()))
-			{
-				strings.add(line3data + Boutique.signLine3.get(entry.getKey()));
-			}
-			if (Boutique.SignChest.containsKey(entry.getKey()))
-			{
-				strings.add(prechest + Boutique.SignChest.get(entry.getKey()));
-			}
+			Location loc = entry.getKey();
+			BoutiqueSign bs = entry.getValue();
+			strings.add
+			( 
+				//Coordonnees du panneau
+				loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ";" +
+				//Lignes textes du panneau
+				bs.getLine1() + ":" + bs.getLine2()+ ":" + bs.getLine3() + ":" + bs.getLine4()  + ";" +
+				//Poseur/propriétaire du panneau
+				(bs.getOwner() != null ? bs.getOwner() : "") + ";" +
+				//Coffre relié eventuellement au panneau
+				(bs.getChest() != null ? bs.getChest().getX() + ":" + bs.getChest().getY() + ":" + bs.getChest().getZ() : "")
+			);
 		}
 		
 		String[] lines = new String[strings.size()];
@@ -103,12 +99,16 @@ public class FileOperations
 		
 	}
 	
+	
+	
+	
+	@Deprecated	
 	public HashMap<String,String> loadGlobalSignData()
 	{
 		HashMap<String,String> signLocs = new HashMap<String,String>();
 		try
 		{
-			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "GlobalSigns.txt");
+			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiquedb.txt");
 			
 			if (!globalFile.exists())
 			{ 
@@ -122,13 +122,18 @@ public class FileOperations
 	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	        
 	        String strLine;
-	        String pName = "";
-	        String coords = "";
+	        
+	        //String pName = "";
+	        //String coords = "";
 	        
 	        while ((strLine = br.readLine()) != null)
 	        {
 	        	strLine = strLine.trim();
 	        	
+	        	//TODO
+	        	
+	        	/*
+
 	        	if(!strLine.startsWith("#"))
 	        	{
 	        		if (strLine.startsWith(prechest))
@@ -159,7 +164,10 @@ public class FileOperations
 		            		System.err.println(unexpectedFormat);
 		            	}
 	        		}
+	        		
+	        		
 	        	}
+	        	*/
 	        }
 		}
 		catch(Exception e)
@@ -172,19 +180,16 @@ public class FileOperations
 	
 	private void writeGlobalSignFile(String[] sLines) 
 	{
-		String[] s = new String[3];
+		String[] s = new String[1];
 		s[0] = "# Save Format(x:y:z:WorldName:PlayerThatActivatedTheSign)";
-		s[1] = "# Chest are displayed under the signs preceded with '" + prechest + "'";
-		s[2] = "# --Global Signs--";
 		try 
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "GlobalSigns.txt")));
+			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiquedb.txt")));
 			for(int i=0;i<s.length;i++)
 			{
 				writer.write(s[i]);
 				writer.newLine();
 			}
-			
 			if(sLines != null)
 			{
 				for(String line : sLines)
@@ -193,7 +198,6 @@ public class FileOperations
 					writer.newLine();
 				}
 			}
-			
 			writer.close();
 		} 
 		catch (Exception ex) 
@@ -298,6 +302,7 @@ public class FileOperations
 		}
 	}
 	
+	@Deprecated
 	private String[] getItemsText() 
 	{
 		ArrayList<String> s = new ArrayList<String>();

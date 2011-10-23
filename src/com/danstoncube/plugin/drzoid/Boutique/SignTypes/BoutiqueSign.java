@@ -1,6 +1,7 @@
 package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
 
 import org.bukkit.Location;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
@@ -422,7 +423,18 @@ public abstract class BoutiqueSign
 
 
 
+	private Chest _chest = null;
 
+	public Chest getChest()
+	{
+		// TODO Auto-generated method stub
+		return this._chest;
+	} 
+	
+	public void setChest(Chest chest)
+	{
+		this._chest = chest;
+	}
 
 
 	

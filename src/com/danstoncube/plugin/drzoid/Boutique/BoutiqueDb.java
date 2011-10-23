@@ -356,6 +356,13 @@ public class BoutiqueDb
 
 
 
+	public void loadGlobalSignData()
+	{
+		// TODO Auto-generated method stub
+	}
+
+
+
 	
 	
 	

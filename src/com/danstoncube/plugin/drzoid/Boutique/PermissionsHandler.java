@@ -1,6 +1,5 @@
 package com.danstoncube.plugin.drzoid.Boutique;
 
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -61,6 +60,7 @@ public class PermissionsHandler
 		return true;
 	}
 	
+	/*
 	public static boolean isSignOwner(Sign s, String name)
 	{
 		String location = s.getX() + ":" + s.getY() + ":" + s.getZ() + ":" + s.getWorld().getName();
@@ -71,6 +71,7 @@ public class PermissionsHandler
 		
 		return false;
 	}
+	*/
 	
 	public static boolean canUseSign(Player p)
 	{
@@ -85,6 +86,14 @@ public class PermissionsHandler
 		if (permissionsEnabled)
 			return checkNode(p, "signtrader.admin.SetOwner")|| checkNode(p, "boutique.admin.SetOwner");
 		return p.isOp();
+	}
+
+	public static boolean canSetWebAuctionSign(Player p)
+	{		
+		if (!permissionsEnabled)
+			return p.isOp();
+		else
+			return checkNode(p, "signtrader.MakeWebAuctionSign") || checkNode(p, "boutique.MakeWebAuctionSign");
 	}
 	
 }

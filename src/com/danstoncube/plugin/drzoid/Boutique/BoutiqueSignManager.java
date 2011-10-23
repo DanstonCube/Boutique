@@ -2,9 +2,12 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -93,6 +96,11 @@ public class BoutiqueSignManager
 	}
 	
 
+	public void saveSignData()	
+	{
+		
+	}
+	
 
 	public void useSign(Sign s, Player p) 
 	{
@@ -127,14 +135,76 @@ public class BoutiqueSignManager
 	
 	
 	
-	public static boolean giveFree(BoutiqueSign bs, Player p)
-	{
-		return false;
-		// TODO Auto-generated method stub
+	
+
+
+	private void signSetter(String[] lines, Player p, Block s) 
+	{		
+		//TODO: verifier instanceof sign sur le block
+		
+		
+		BoutiqueSign bs = plugin.signmanager.getBoutiqueSign((Sign)s);
+		
+		// Vérifie les items / lignes
+		if(!bs.checkLines(p))
+			return;
+		
+		if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		{
+			if (!PermissionsHandler.canSetGlobalSign(p))
+			{
+				p.sendMessage(PermissionsHandler.permissionErr);
+				return;
+			}
+			p.sendMessage(plugName + "Panneau serveur ajouté à la liste :)");
+			
+			//TODO : signmanager.addsign
+			//TODO : prerender
+			
+			bs.setLine4(ChatColor.GREEN + "[Actif]");
+			
+			plugin.signmanager.saveGlobalSigns();
+		}
+		else if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		{
+			if (!PermissionsHandler.canSetPersonalSign(p))
+			{
+				p.sendMessage(PermissionsHandler.permissionErr);
+				return;
+			}
+			
+			p.sendMessage(plugName + "Panneau joueur ajouté à la liste :)");
+			
+			//TODO : signmanager.addsign
+			//TODO : prerender
+			
+			bs.setLine4(ChatColor.GREEN + "[Actif]");
+			
+			plugin.signmanager.saveGlobalSigns();
+		}	
+		else if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		{
+			if (!PermissionsHandler.canSetWebAuctionSign(p))
+			{
+				p.sendMessage(PermissionsHandler.permissionErr);
+				return;
+			}
+			
+			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
+			
+			//TODO : signmanager.addsign
+			//TODO : prerender
+			
+			bs.setLine4(ChatColor.GREEN + "[Actif]");
+			
+			plugin.signmanager.saveGlobalSigns();
+		}
+		
+		
 		
 	}
-
-
+	
+	
 	public void displaySignInfo(Sign s, Player p) 
 	{
 		BoutiqueSign bs = getBoutiqueSign(s);
@@ -309,6 +379,14 @@ public class BoutiqueSignManager
 	}
 
 
+	
+	public static boolean giveFree(BoutiqueSign bs, Player p)
+	{
+		return false;
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public static boolean getDonation(BoutiqueSign bs, Player p)
 	{
 		return false;
@@ -318,9 +396,6 @@ public class BoutiqueSignManager
 
 	public static boolean sellItem(BoutiqueSign bs, Player p)
 	{
-		// TODO Auto-generated method stub
-		
-		
 		Double costAmount = bs.getMoneyFrom();
 		String signOwner = bs.getOwnerString();
 		Integer qty = bs.getQtyTo();
@@ -463,6 +538,153 @@ public class BoutiqueSignManager
 		// TODO Auto-generated method stub
 		this._signs.remove(location);
 	}
+
+
+	public void saveGlobalSigns()
+	{
+		// TODO Auto-generated method stub
+	}
+
+
+	public Set<Entry<Location, BoutiqueSign>> entrySet()
+	{
+		return this._signs.entrySet();
+	}
+
+
+	/* Enregistre le coffre pour un BoutiqueSignChest */
+	public void setChest(Sign sign, Chest chest, Player p)
+	{
+		BoutiqueSign bs = this.getBoutiqueSign(sign);
+		
+		
+		if(bs == null)
+		{
+			// TODO: message "Impossible de trouver le panneau en question"
+			return;
+		}
+		else
+		{
+			Chest bsc = bs.getChest();
+			
+			/*
+			avant: verifiait que le panneau n'etait pas deja relié au coffre			
+			if (Boutique.SignChest.get(bsc) == cLoc)
+			{
+				p.sendMessage(plugName + "Ce panneau est déjà relié à ce coffre :/");
+				return;
+			}
+			*/
+				
+			int distX = sign.getBlock().getX() - chest.getBlock().getX();
+			int distZ = sign.getBlock().getZ() - chest.getBlock().getZ();
+			
+			int maxDist = 15;
+			if (distX > maxDist || distZ > maxDist ) 
+			{
+				p.sendMessage(plugName + "Le coffre est trop loin du panneau ! (" + maxDist + " blocs max.)");
+				return;
+			}
+			
+						
+			bs.setChest(chest);			
+			
+			p.sendMessage(plugName + "Panneau et coffre reliés !");
+		}		
+	}
+
+
+	public void setOwner(Sign s, Player p)
+	{
+		
+		
+		if (!isSign(s))
+		{
+			p.sendMessage(plugName + "Ce panneau est mal configuré. Reposes le correctement avant.");
+			return;
+		}
+		
+		
+		
+		Location location = s.getBlock().getLocation();
+		
+		//TODO
+		this.add(location, s);
+		
+		//TODO: a changer
+		plugin.fileio.saveGlobalSigns();
+			
+		
+	}
+
+
+	
+	///
+	/// Le joueur peut-il casser le panneau ?
+	///
+	public boolean canBreakSign(Sign s, Player p) 
+	{
+		if (!this.isSign(s))
+			return false;
+		
+		boolean bool = false;
+		bool = isSignOwner(s,p);
+		if (!bool)
+			bool = p.isOp();
+		
+		return bool;
+	}
+	
+	
+
+	private void add(Location location, Sign s)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void setSign(Sign s, Player p) 
+	{
+		this.signSetter(s.getLines(),p,s.getBlock());
+	}
+
+	public void setSign(String[] lines, Player p, Block s) 
+	{
+		this.signSetter(lines, p, s);
+	}
+	
+
+
+	public boolean isSign(Block b) 
+	{
+		if (!(b.getState() instanceof Sign))
+			return false;
+		
+		return isSign((Sign) b);
+	}
+	
+	public boolean isSign(Sign s) 
+	{
+		return haveLocation(s.getBlock().getLocation());
+	}
+	
+
+	/* Renvoi true si le player est le proprio du panneau */
+	public boolean isSignOwner(Sign sign, Player p)
+	{	
+		return this.getBoutiqueSign(sign).getOwner().getName().compareToIgnoreCase(p.getName()) == 0;
+	}
+
+
+	public void loadGlobalSignData()
+	{
+		// TODO Auto-generated method stub
+		plugin.fileio.loadGlobalSignData();
+	}
+
+
+	
 
 	
 

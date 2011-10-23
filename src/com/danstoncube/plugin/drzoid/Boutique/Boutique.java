@@ -26,7 +26,7 @@ public class Boutique extends JavaPlugin
 	//File Handler
 	public File makeFolder;
 	
-	FileOperations fileIO = new FileOperations(this);
+	FileOperations fileio = new FileOperations();
 	CommandOperator co = new CommandOperator(this);
 	
 	//Mapping
@@ -34,15 +34,15 @@ public class Boutique extends JavaPlugin
 	public static HashMap<String,Integer> itemNameId = new HashMap<String,Integer>(); // Contains the name and id of the item associated with it
 	public static HashMap<Integer,String> itemIdName = new HashMap<Integer,String>(); // Contains the name and id of the item associated with it
 	
-	@Deprecated
-	public static HashMap<String,String> signLocs = new HashMap<String,String>(); //Contains Sign location, and playerName
 	
-	public static HashMap<String,String> SignChest = new HashMap<String,String>(); // Contains Sign location and chest Location.
-	public static HashMap<String,String> SignSlab = new HashMap<String,String>(); // Contains Sign location and stone slab (showcase).
+	//public static HashMap<String,String> signLocs = new HashMap<String,String>(); //Contains Sign location, and playerName
 	
-	public static HashMap<String,String> signLine1 = new HashMap<String,String>(); //Contains Sign location, and playerName
-	public static HashMap<String,String> signLine2 = new HashMap<String,String>(); //Contains Sign location, and playerName
-	public static HashMap<String,String> signLine3 = new HashMap<String,String>(); //Contains Sign location, and playerName
+	//public static HashMap<String,String> SignChest = new HashMap<String,String>(); // Contains Sign location and chest Location.
+	//public static HashMap<String,String> SignSlab = new HashMap<String,String>(); // Contains Sign location and stone slab (showcase).
+	
+	//public static HashMap<String,String> signLine1 = new HashMap<String,String>(); //Contains Sign location, and playerName
+	//public static HashMap<String,String> signLine2 = new HashMap<String,String>(); //Contains Sign location, and playerName
+	//public static HashMap<String,String> signLine3 = new HashMap<String,String>(); //Contains Sign location, and playerName
 	
 	
 	
@@ -54,13 +54,13 @@ public class Boutique extends JavaPlugin
 	
 	public BoutiqueDb db = new BoutiqueDb(this);
 	
-	@Deprecated
-	public SignManager sm = new SignManager(this);
+	
+	//public SignManager sm = new SignManager(this);
 	
 	public BoutiqueSignManager signmanager = new BoutiqueSignManager(this);
 	
 	
-	public SignOperator signoperator = new SignOperator(this);
+	public SignOperatorOLD signoperator = new SignOperatorOLD(this);
 	
 	
 	public WebItemsOperator webitems = new WebItemsOperator(this);
@@ -99,25 +99,23 @@ public class Boutique extends JavaPlugin
 		config = this.getConfiguration();
 		configuration = new BoutiqueConfiguration(this);
 		
-		fileIO.checkDataFolder();
-		fileIO.loadItemData();
-		
-		signLocs = fileIO.loadGlobalSignData();
-		
-	
+		fileio.checkDataFolder();
+		fileio.loadItemData();
 		
 		
-		
-		//log.info(logPrefix + "version " + version + " désactivé.");			
-		//return;
-		
-		
-		
-		
+		if(db.setup())
+		{
+			log.info(logPrefix + "Logs Mysql activées");
+			db.loadGlobalSignData();
+		}
+		else
+		{
+			log.info(logPrefix + "Logs Mysql désactivées");
+			signmanager.loadGlobalSignData();
+		}
 		
 		PluginManager pm = this.getServer().getPluginManager();
 
-		
 		pm.registerEvent(Event.Type.SIGN_CHANGE, this.blockListener, Event.Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_BREAK, this.blockListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, this.blockListener, Event.Priority.High, this);
@@ -140,16 +138,8 @@ public class Boutique extends JavaPlugin
         	PermissionsHandler.setupPermissions(this);
         }        
     	
-        //On teste la connexion Mysql
-		if(db.setup())
-		{
-			log.info(logPrefix + "Logs Mysql activées");	
-			//db.enabled = true;
-		}
-		else
-		{
-			log.info(logPrefix + "Logs Mysql désactivées");
-		}
+        
+	
 		
 		
         

@@ -1,6 +1,10 @@
 package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
 
+import java.util.logging.Logger;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -10,19 +14,27 @@ import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItem;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItems;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSignManager;
 
-public abstract class BoutiqueSign
+public class BoutiqueSign
 {
-	private String[] _lines = new String[3];
+	private String[] _lines = new String[4];
 	
-	private String _stype = "err";
-	private Location _loc = null;
-	private Sign _sign = null;
-	private Player _owner = null;
+	private String _type = "err";
+	private String _location = "";
+	private String _owner = "";
+	
+	//eventuellement un coffre
+	private String _chest = "";
+	
 	private Boolean _enabled = true;
 	
 	
 	
-	//
+	
+	
+	
+	
+	
+	// calculé
 	private BoutiqueItem _itemFrom;
 	private BoutiqueItem _itemTo;
 	private Integer _qtyFrom;
@@ -31,34 +43,37 @@ public abstract class BoutiqueSign
 	private Double _moneyTo;
 	
 	
-	BoutiqueSign(Sign sign, Player owner, BoutiqueSign type)
+	public BoutiqueSign()
 	{
-		this._sign = sign;
-		this._loc = sign.getBlock().getLocation();
-		this._owner = owner;
-		
-		this._stype = type.getSignTypeString();
-		
 		this._itemFrom = null;
 		this._itemTo = null;
 		this._qtyFrom = null;
 		this._qtyTo = null;
 		this._moneyFrom = null;
 		this._moneyTo = null;
+	}
+	
+	
+	BoutiqueSign(Sign sign, Player owner, String type)
+	{
+		super();
 		
-		String[] lines = new String[3];
-		lines = this._sign.getLines();
-		
-		this.setLine1(lines[0]);
-		this.setLine2(lines[1]);
-		this.setLine3(lines[2]);
-		this.setLine4(lines[3]);
+		this.setLocation(sign.getBlock().getLocation());
+		this.setOwner(owner);
+		this.setType(type);
+		this.setLines(sign.getLines());			
 	}
 
 	
 	
 	
 	
+
+	private void setType(String type)
+	{
+		this._type = type;
+	}
+
 
 	public Boolean isEnabled()
 	{
@@ -73,23 +88,33 @@ public abstract class BoutiqueSign
 		return this._lines[0];
 	}
 	
-	private void setLine1(String line1) 
-	{
-		this._lines[0] = line1;
-		
-		
-		
-		
-	}
-	
-	/* ligne 2 */
 	public String getLine2()
 	{
 		return this._lines[1];
 	}
 	
+	public String getLine3()
+	{
+		return this._lines[2];
+	}
+	
+	public String getLine4()
+	{
+		return this._lines[3];
+	}
 	
 	
+	
+	
+	
+	private void setLine1(String line1) 
+	{
+		this._lines[0] = line1;
+		
+		//TODO: add check
+		
+		this.setType(line1);
+	}
 	
 	private void setLine2(String line2) 
 	{
@@ -110,7 +135,7 @@ public abstract class BoutiqueSign
 		
 		//FROM = MONEY
 		//TODO: extern key $
-		if(splited[1]=="$")
+		if(splited[1].compareTo("$")==0)
 		{
 			moneyFrom = Double.parseDouble(splited[0]);
 			this._moneyFrom = moneyFrom;
@@ -140,63 +165,103 @@ public abstract class BoutiqueSign
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/* ligne 3 */
-	public String getLine3()
-	{
-		return this._lines[2];
-	}
 	private void setLine3(String line3) 
 	{
-		this._lines[2] = line3;		
+		this._lines[2] = line3;	
+		
+		String[] splited = line3.split(":");
+		
+		//Teste validitée découpage
+		if(splited.length < 2 || splited.length > 3) 
+			return;
+		
+		Double moneyTo = null;
+		Integer itemId = null;
+		Integer itemDamage = null;
+		Integer itemQty = null;
+		
+		//TO = MONEY
+		//TODO: extern key $
+		if(splited[1].compareTo("$")==0)
+		{
+			moneyTo = Double.parseDouble(splited[0]);
+			this._moneyTo = moneyTo;
+			this._itemTo = null;
+			this._qtyTo = null;
+			return;
+		}
+		//TO = ITEM
+		else
+		{
+			//item = new BoutiqueItem();
+			
+			itemQty = Integer.parseInt(splited[0]);
+			itemId =  Integer.parseInt(splited[1]);
+			itemDamage = (splited.length == 3) ? Integer.parseInt(splited[2]) : null;
+			
+			this._itemTo = new BoutiqueItem(itemId,itemDamage);
+			this._qtyTo = itemQty;
+			this._moneyTo = null;			
+		}
+					
+		
+		
 	}
-
-	/* ligne 4 */
-	public String getLine4()
-	{
-		return this._lines[3];
-	}
+	
 	public void setLine4(String line4) 
 	{
 		this._lines[3] = line4;		
 	}
 	
 	
+	
+	
 	/* Location */
 	
-	public Location getLocation()
+	
+	public void setLocation(Location loc)
 	{
-		return this._loc;
+		//this._loc = loc;
+		this._location = getLocationString(loc); 
 	}
 	
-	public String getLocationString()
+	public void setLocation(String loc)
 	{
-		return this._loc.getBlockX() + ":" + this._loc.getBlockY() + ":" +  this._loc.getBlockZ() + ":" + this._loc.getWorld();
+		this._location = loc;
 	}
+	
+	
+	
+	
+	
+	public static String getLocationString(Location loc)
+	{
+		return loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" +  loc.getBlockZ(); 
+	}
+	
+	
+	
+	
 	
 	/* Owner */
-
-	public Player getOwner()
+	
+	
+	
+	public String getOwnerString()
 	{
 		return this._owner;
 	}
 	
-	public String getOwnerString()
+	public void setOwner(Player player)
 	{
-		return this._owner.getName();
+		this._owner = player.getName();
 	}
+	
+	public void setOwnerString(String playerName)
+	{
+		this._owner = playerName;
+	}
+	
 	
 	
 	/* Sign Type */
@@ -204,7 +269,7 @@ public abstract class BoutiqueSign
 	//a redeclarer
 	public String getSignTypeString()
 	{
-		return this._stype;
+		return this._type;
 	}
 	
 	
@@ -280,26 +345,64 @@ public abstract class BoutiqueSign
 
 	public boolean isFreebiesSign()
 	{
+		Logger l = Bukkit.getServer().getLogger();
+		
+		l.info("dbg: _moneyFrom = " + _moneyFrom );
+		l.info("dbg: _moneyTo = " + _moneyTo );
+		l.info("dbg: _itemFrom = " + _itemFrom );
+		l.info("dbg: _itemTo = " + _itemTo );
+		
+		
 		return this._moneyFrom == 0 && this._itemFrom == null;
 	}
 
 	public boolean isDonationSign()
 	{
-		return (this._moneyFrom > 0 || this._itemFrom != null) && (this._moneyTo == 0 && this._itemTo == null);
+		Logger l = Bukkit.getServer().getLogger();
+		
+		l.info("dbg: _moneyFrom = " + _moneyFrom );
+		l.info("dbg: _moneyTo = " + _moneyTo );
+		l.info("dbg: _itemFrom = " + _itemFrom );
+		l.info("dbg: _itemTo = " + _itemTo );
+		
+		
+		return (this._moneyFrom > 0 || this._itemFrom != null) &&	(this._itemTo == null && this._moneyTo == null);
 	}
 
 	public boolean isSellSign()
 	{
+		Logger l = Bukkit.getServer().getLogger();
+		
+		l.info("dbg: _moneyFrom = " + _moneyFrom );
+		l.info("dbg: _moneyTo = " + _moneyTo );
+		l.info("dbg: _itemFrom = " + _itemFrom );
+		l.info("dbg: _itemTo = " + _itemTo );
+		
 		return (this._moneyFrom > 0 &&  this._itemFrom == null && this._itemTo != null);
 	}
 	
 	public boolean isBuySign()
 	{
+		Logger l = Bukkit.getServer().getLogger();
+		
+		l.info("dbg: _moneyFrom = " + _moneyFrom );
+		l.info("dbg: _moneyTo = " + _moneyTo );
+		l.info("dbg: _itemFrom = " + _itemFrom );
+		l.info("dbg: _itemTo = " + _itemTo );
+		
 		return (this._moneyTo > 0 &&  this._itemTo == null && this._itemFrom != null);
 	}
 
 	public boolean isTradeSign()
 	{
+		
+		Logger l = Bukkit.getServer().getLogger();
+		
+		l.info("dbg: _moneyFrom = " + _moneyFrom );
+		l.info("dbg: _moneyTo = " + _moneyTo );
+		l.info("dbg: _itemFrom = " + _itemFrom );
+		l.info("dbg: _itemTo = " + _itemTo );
+		
 		return (this._itemTo != null && this._itemFrom != null);
 	}
 
@@ -410,8 +513,7 @@ public abstract class BoutiqueSign
 					return false;
 				}
 			}
-			
-			if(moneyTo == null)
+			else if(moneyTo == null)
 			{
 				p.sendMessage("Somme d'argent incorrecte sur la troisième ligne");
 				return false;
@@ -423,17 +525,153 @@ public abstract class BoutiqueSign
 
 
 
-	private Chest _chest = null;
 
-	public Chest getChest()
+	
+	
+	public String getChestString()
 	{
-		// TODO Auto-generated method stub
 		return this._chest;
+	} 
+	
+	public static String getChestString(Chest chest)
+	{
+		return (chest != null) ? chest.getWorld().getName() + ":" + chest.getBlock().getX() + ":" + chest.getBlock().getY() + ":" + chest.getBlock().getZ() : "";		
 	} 
 	
 	public void setChest(Chest chest)
 	{
-		this._chest = chest;
+		//this._chest = chest;
+		this._chest = BoutiqueSign.getChestString(chest);
+	}
+
+	public void setChest(String chest)
+	{
+		this._chest = getChestString();
+	}
+
+
+
+
+
+	public String getLinesString()
+	{
+		return this.getLine1() + ";" + this.getLine2()+ ";" + this.getLine3() + ";" + this.getLine4();
+	}
+
+
+	public boolean parseString(String objet)
+	{
+		String[] brokeText = objet.split(";");
+    	
+    	if(brokeText.length < 6) 
+    	{
+    		Bukkit.getServer().getLogger().severe("Incorrect: brokeText.length=" + brokeText.length);
+    		return false;
+    	}
+    	
+    	String strLocPanneau = brokeText[0];
+    	
+    	String strProprio = brokeText[1];
+    	
+    	String strLigne1Panneau = brokeText[2];
+    	String strLigne2Panneau = brokeText[3];
+    	String strLigne3Panneau = brokeText[4];
+    	String strLigne4Panneau = brokeText[5];
+    	
+    	String strLocCoffre = (brokeText.length > 6) ? brokeText[6] : ""; 
+  
+    	setLocation(strLocPanneau);
+    	setOwnerString(strProprio);
+    	setLine1(strLigne1Panneau);
+    	setLine2(strLigne2Panneau);
+    	setLine3(strLigne3Panneau);
+    	setLine4(strLigne4Panneau);
+    	setChestLocation(strLocCoffre);
+		
+    	return true;
+	}
+
+
+	public String serializeString()
+	{
+		return
+	
+			//Coordonnees du panneau
+			this.getLocationString() + ";" +
+			//Poseur/propriétaire du panneau
+			this.getOwnerString() + ";" +
+			//Lignes textes du panneau
+			this.getLinesString() + ";" +
+			//Coffre relié eventuellement au panneau
+			this.getChestString()
+		;
+	}
+
+
+
+	public String getLocationString()
+	{
+		return this._location;
+	}
+
+	public void setLines(String[] split)
+	{
+		/*
+		if(split.length<4)
+		{
+			
+			return;
+		}
+		 */
+		
+		this.setLine1(split[0]);
+		this.setLine2(split[1]);
+		this.setLine3(split[2]);
+		this.setLine4(split[3]);
+	}
+
+	public void setChestLocation(String strLocCoffre)
+	{
+	}
+
+
+	public Chest getChest()
+	{
+		
+		// TODO: parser les coordonnées
+		
+		Block blockTest = Bukkit.getWorld("e").getBlockAt(0, 0 ,0);
+		Chest chest = null;
+		
+		if(blockTest instanceof Chest)
+		{
+			chest = (Chest) blockTest;
+		}
+		
+		
+		
+		return chest;
+	}
+
+	public Location getChestLocation()
+	{
+		String[] strings = this.getChestString().split(":");
+		
+		if(strings.length<4) 
+			return null;
+		
+		org.bukkit.World W = Bukkit.getWorld(strings[0]);
+		Double X = Double.parseDouble(strings[1]);
+		Double Y = Double.parseDouble(strings[2]);
+		Double Z = Double.parseDouble(strings[3]);
+
+		return new Location(W,X,Y,Z);
+	}
+
+
+	public String getType()
+	{
+		return _type;
 	}
 
 

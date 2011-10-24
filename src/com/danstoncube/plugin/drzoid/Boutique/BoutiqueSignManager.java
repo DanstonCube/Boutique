@@ -21,46 +21,22 @@ import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignWebAuction;
 @SuppressWarnings("unused")
 public class BoutiqueSignManager
 {
-/*
- * 
- * add
- * remove
- * update
- * 
- * isboutiquesign(sign)
- * getboutiquesign(sign)
- * getboutiquesign(key)
- * 
- * 
- * LoadSigns();
- * SaveSigns();	
-*/
 	
-/*	
- * isbuysign
- * isfreesign
- * isdonationsign
- * issellsign
- * istradesign
- * 
- * 
- * 
- * 
- * 
- */
-	
-	
-	private HashMap<Location,BoutiqueSign> _signs = new HashMap<Location,BoutiqueSign>();
+	private HashMap<String,BoutiqueSign> _signs = new HashMap<String,BoutiqueSign>();
 	
 	//TODO: changer ca
-	private String plugName = "TOTO";
+	private String plugName = "Boutique";
 	
-	private Boutique plugin;
+	private Boutique plugin = null;
 	
+	private static BoutiqueSignManager _instance = null;
+	public static BoutiqueSignManager getInstance()
+	{
+		return _instance;
+	}
 	
 	public BoutiqueSignManager(Boutique boutique)
 	{
-		// TODO Auto-generated constructor stub
 		this.plugin = boutique;
 	}
 
@@ -73,11 +49,20 @@ public class BoutiqueSignManager
 		return _signs.containsKey(signLoc);			
 	}
 	
-	public Boolean haveLocation(Location l)
+	public Boolean haveLocation(String l)
 	{
 		return _signs.containsKey(l);			
 	}
 	
+	public Boolean haveLocation(Location l)
+	{		
+		return _signs.containsKey(getLocationString(l));			
+	}
+	
+	private String getLocationString(Location l)
+	{
+		return l.getWorld().getName() + ":" + l.getBlockX() + ":" +  l.getBlockY() + ":" + l.getBlockZ(); 
+	}
 	
 	public Boolean isEnabled(Sign s)
 	{
@@ -89,10 +74,9 @@ public class BoutiqueSignManager
 		return bs.isEnabled();		
 	}
 	
-	public BoutiqueSign getBoutiqueSign(Sign s)
+	public BoutiqueSign getBoutiqueSign(Block b)
 	{
-		BoutiqueSign bs = _signs.get(s.getBlock().getLocation());
-		return bs;		
+		return _signs.get(getLocationString(b.getLocation()));	
 	}
 	
 
@@ -102,9 +86,9 @@ public class BoutiqueSignManager
 	}
 	
 
-	public void useSign(Sign s, Player p) 
+	public void useSign(Block b, Player p) 
 	{
-		BoutiqueSign bs = getBoutiqueSign(s);
+		BoutiqueSign bs = getBoutiqueSign(b);
 		
 		if (!bs.isEnabled())
 		{
@@ -138,25 +122,50 @@ public class BoutiqueSignManager
 	
 
 
-	private void signSetter(String[] lines, Player p, Block s) 
+	//private void signSetter(String[] lines, Player p, Block s) 
+	
+	private void signSetter(Block b, Player p, String[] lines) 
 	{		
-		//TODO: verifier instanceof sign sur le block
+		p.sendMessage("dbg1");
 		
 		
-		BoutiqueSign bs = plugin.signmanager.getBoutiqueSign((Sign)s);
-		
-		// Vérifie les items / lignes
-		if(!bs.checkLines(p))
+		if(b==null) 
 			return;
 		
-		if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		BoutiqueSign bs = new BoutiqueSign();
+		
+		bs.setOwner(p);
+		bs.setLocation(b.getLocation());
+		bs.setLines(lines);
+
+		p.sendMessage("dbg1 : line1 = " + bs.getLine1());
+		p.sendMessage("dbg1 : line2 = " + bs.getLine2());
+		p.sendMessage("dbg1 : line3 = " + bs.getLine3());
+		p.sendMessage("dbg1 : line4 = " + bs.getLine4());
+		
+		p.sendMessage("dbg2 : type = " + bs.getType());
+		
+		// Vérifie les items / lignes
+		
+		
+		if(bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
 		{
+			
 			if (!PermissionsHandler.canSetGlobalSign(p))
 			{
 				p.sendMessage(PermissionsHandler.permissionErr);
 				return;
 			}
+			
+			if(!bs.checkLines(p))
+			{
+				
+				return;
+			}
+			
 			p.sendMessage(plugName + "Panneau serveur ajouté à la liste :)");
+			
+			this.put(bs);
 			
 			//TODO : signmanager.addsign
 			//TODO : prerender
@@ -165,7 +174,8 @@ public class BoutiqueSignManager
 			
 			plugin.signmanager.saveGlobalSigns();
 		}
-		else if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		
+		else if(bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
 		{
 			if (!PermissionsHandler.canSetPersonalSign(p))
 			{
@@ -173,16 +183,20 @@ public class BoutiqueSignManager
 				return;
 			}
 			
+			if(!bs.checkLines(p))
+			{
+				return;
+			}
+			
 			p.sendMessage(plugName + "Panneau joueur ajouté à la liste :)");
 			
-			//TODO : signmanager.addsign
-			//TODO : prerender
+			this.put(bs);
 			
 			bs.setLine4(ChatColor.GREEN + "[Actif]");
 			
 			plugin.signmanager.saveGlobalSigns();
 		}	
-		else if(bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if(bs.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
 		{
 			if (!PermissionsHandler.canSetWebAuctionSign(p))
 			{
@@ -190,10 +204,14 @@ public class BoutiqueSignManager
 				return;
 			}
 			
+			if(!bs.checkLines(p))
+				return;
+			
 			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
 			
 			//TODO : signmanager.addsign
 			//TODO : prerender
+			this.put(bs);
 			
 			bs.setLine4(ChatColor.GREEN + "[Actif]");
 			
@@ -205,9 +223,12 @@ public class BoutiqueSignManager
 	}
 	
 	
-	public void displaySignInfo(Sign s, Player p) 
+	public void displaySignInfo(Block b, Player p) 
 	{
-		BoutiqueSign bs = getBoutiqueSign(s);
+		
+		p.sendMessage(plugName + "displaySignInfo");
+		
+		BoutiqueSign bs = getBoutiqueSign(b);
 		
 		String signOwnerString = bs.getOwnerString();
 		String signTypeStr = bs.getSignTypeString();
@@ -229,21 +250,27 @@ public class BoutiqueSignManager
 		
 		//TODO: extern. messages
 		
+		p.sendMessage("dbg1: Type=" + bs.getType());
+		
+		
 		//Type BoutiqueSignServer
-		if(signTypeStr.compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if(bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
 		{
 			p.sendMessage("Ce panneau fait partie du magasin du serveur.");
 		}
 		
 		//Type BoutiqueSignChest
-		else if(signTypeStr.compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if(bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
 		{
 			p.sendMessage("Ce panneau fait partie du magasin de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");			
-			Chest signChest = ((BoutiqueSignChest) bs).getChest();			
-			if(signChest == null) 
+			
+			String signchest = bs.getChestString();			
+			
+			if(signchest.isEmpty()) 
 			{
 				p.sendMessage(ChatColor.AQUA + "Aucun coffre n'est relié au panneau pour le moment !");				
 			}
+				
 		}
 		
 		//Type BoutiqueSignWebAuction
@@ -468,7 +495,7 @@ public class BoutiqueSignManager
 				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return false;
 			}
-			else if (!Boutique.getInstance().webitems.containEnough(signOwner, id, damage, qty))
+			else if (!WebItemsOperator.containEnough(signOwner, id, damage, qty))
 			{
 				p.sendMessage(plugName + ChestOperator.notEnoughErr);
 				return false;
@@ -481,7 +508,7 @@ public class BoutiqueSignManager
 				return false;
 			}
 			
-			if(Boutique.getInstance().webitems.removeFromWebStock(signOwner, qty, id, damage))
+			if(WebItemsOperator.removeFromWebStock(signOwner, qty, id, damage))
 			{
 				EconomyHandler.modifyMoney(p.getName(), -costAmount);
 				PlayerOperator.givePlayerItem(qty, id, damage, p);	
@@ -516,11 +543,132 @@ public class BoutiqueSignManager
 		
 	}
 
-
-	public static boolean buyItem(BoutiqueSign bs, Player p)
+	public static  boolean buyItem(BoutiqueSign bs, Player p)
 	{
-		return false;
-		// TODO Auto-generated method stub
+		Double costAmount = bs.getMoneyTo();
+		String signOwner = bs.getOwnerString();
+		Integer qty = bs.getQtyFrom();
+		Integer id = bs.getItemFrom().itemId;
+		Integer damage = bs.getItemFrom().itemDamage;
+		
+		//int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
+		
+		//TODO changer plugname par chatprefix
+		String plugName = "";
+		
+		if (!PlayerOperator.playerHasEnough( qty, id, damage, p))
+		{
+			p.sendMessage(plugName + PlayerOperator.playerStockErr);
+			return false;
+		}
+		
+		// Panneau "Serveur"
+		if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		{
+			//Enleve les objets dans l'inventaire du joueur
+			PlayerOperator.removeFromPlayer(qty, id ,damage, p);
+			
+			//Ajoute les thunes au compte du joueur
+			EconomyHandler.modifyMoney(p.getName(), (double) costAmount);
+			
+			//Enleve le propriétaire du panneau pour les logs (car panneau serveur) !
+			signOwner = "";
+		}
+		
+		// Panneau "webauctions"
+		// Achete des objet, et les met dans le stock "webauctions"
+		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		{
+			
+			// Vérifie que l'acheteur à assez d'argent
+			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
+			if (econ != 1)
+			{
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				return false;
+			}
+			
+			// Ajoute les objets au stock WebAuctions
+			if(!WebItemsOperator.addToWebStock(signOwner, id, damage, qty))
+			{
+				p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
+				return false;
+			}
+			
+			
+			// Enleve les objets de l'inventaire du vendeur
+			PlayerOperator.removeFromPlayer(qty, id, damage, p);
+			
+			// Enleve la somme du compte de l'acheteur
+			EconomyHandler.modifyMoney(signOwner, -costAmount);
+			
+			// Credite le vendeur
+			EconomyHandler.modifyMoney(p.getName(), costAmount);
+			
+		}
+		
+		// Panneau "coffre"
+		// Achete des objet, et les met dans le coffre relié
+		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		{
+			
+			// Cherche le coffre relié au panneau
+			Chest chest = bs.getChest();
+			if(chest==null)	
+			{
+				//TODO:  symbole debug ici
+				return false;
+			}
+				
+			
+			
+			// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
+			if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
+			{
+				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+				return false;
+			}			
+			
+			// Vérifie que l'acheteur possède assez d'argent
+			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
+			if (econ != 1)
+			{
+				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				return false;
+			}
+			
+			// Debitte la somme au a l'acheteur
+			EconomyHandler.modifyMoney(signOwner, -costAmount);
+			
+			// Credite le coffre de l'acheteur
+			ChestOperator.addToChestStock(qty, id, damage, chest);
+			
+			// Retire les objets au vendeur
+			PlayerOperator.removeFromPlayer(qty, id, damage, p);
+			
+			// Credite le compte du vendeur
+			EconomyHandler.modifyMoney(p.getName(), costAmount);
+		}
+		
+		
+		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
+		
+		try 
+		{
+			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id, damage, qty, costAmount,"toto","titi");
+		}
+		catch (SQLException e) 
+		{
+			// TODO
+			e.printStackTrace();
+		} 
+		catch (Exception e) 
+		{
+			// TODO
+			e.printStackTrace();
+		} 
+		
+		return true;
 	}
 
 
@@ -530,12 +678,18 @@ public class BoutiqueSignManager
 		// TODO Auto-generated method stub
 	}
 
-
+	public void put(String locationstr, BoutiqueSign bs)
+	{
+		this._signs.put(locationstr, bs);
+	}
 	
+	public void put(Location location, BoutiqueSign bs)
+	{
+		this._signs.put(getLocationString(location), bs);
+	}
 	
 	public void remove(Location location)
 	{
-		// TODO Auto-generated method stub
 		this._signs.remove(location);
 	}
 
@@ -543,10 +697,11 @@ public class BoutiqueSignManager
 	public void saveGlobalSigns()
 	{
 		// TODO Auto-generated method stub
+		plugin.fileio.saveGlobalSigns();
 	}
 
 
-	public Set<Entry<Location, BoutiqueSign>> entrySet()
+	public Set<Entry<String, BoutiqueSign>> entrySet()
 	{
 		return this._signs.entrySet();
 	}
@@ -555,7 +710,7 @@ public class BoutiqueSignManager
 	/* Enregistre le coffre pour un BoutiqueSignChest */
 	public void setChest(Sign sign, Chest chest, Player p)
 	{
-		BoutiqueSign bs = this.getBoutiqueSign(sign);
+		BoutiqueSign bs = this.getBoutiqueSign(sign.getBlock());
 		
 		
 		if(bs == null)
@@ -594,7 +749,7 @@ public class BoutiqueSignManager
 	}
 
 
-	public void setOwner(Sign s, Player p)
+	public void setOwner(Sign s, Player p, String newowner)
 	{
 		
 		
@@ -608,8 +763,12 @@ public class BoutiqueSignManager
 		
 		Location location = s.getBlock().getLocation();
 		
-		//TODO
-		this.add(location, s);
+		
+		BoutiqueSign bs = getBoutiqueSign(s.getBlock());
+		if(bs==null)
+			return;
+		
+		bs.setOwnerString(newowner);
 		
 		//TODO: a changer
 		plugin.fileio.saveGlobalSigns();
@@ -637,22 +796,13 @@ public class BoutiqueSignManager
 	
 	
 
-	private void add(Location location, Sign s)
+
+	public void setSign(Block b, Player p, String[] lines) 
 	{
-		// TODO Auto-generated method stub
-		
+		this.signSetter(b,p,lines);
 	}
 
-
-	public void setSign(Sign s, Player p) 
-	{
-		this.signSetter(s.getLines(),p,s.getBlock());
-	}
-
-	public void setSign(String[] lines, Player p, Block s) 
-	{
-		this.signSetter(lines, p, s);
-	}
+	
 	
 
 
@@ -673,14 +823,24 @@ public class BoutiqueSignManager
 	/* Renvoi true si le player est le proprio du panneau */
 	public boolean isSignOwner(Sign sign, Player p)
 	{	
-		return this.getBoutiqueSign(sign).getOwner().getName().compareToIgnoreCase(p.getName()) == 0;
+		return getBoutiqueSign(sign.getBlock()).getOwnerString().compareToIgnoreCase(p.getName()) == 0;
 	}
 
 
 	public void loadGlobalSignData()
 	{
-		// TODO Auto-generated method stub
 		plugin.fileio.loadGlobalSignData();
+	}
+
+	public void put(BoutiqueSign bs)
+	{
+		put(bs.getLocationString(), bs);		
+	}
+
+	public boolean isBoutiqueSign(Block clickedBlock)
+	{
+		// TODO Auto-generated method stub
+		return haveLocation(clickedBlock.getLocation());
 	}
 
 

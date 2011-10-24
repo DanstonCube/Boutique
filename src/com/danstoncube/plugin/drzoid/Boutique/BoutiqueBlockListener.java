@@ -1,16 +1,10 @@
 package com.danstoncube.plugin.drzoid.Boutique;
 
 import org.bukkit.Location;
-import org.bukkit.block.Sign;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignChest;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignServer;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignWebAuction;
 
 public class BoutiqueBlockListener extends BlockListener
 {
@@ -29,39 +23,9 @@ public class BoutiqueBlockListener extends BlockListener
 		if ((!e.isCancelled()) && (plugin.signmanager.haveLocation(location)))
 			plugin.signmanager.remove(location);
 		
+		e.getPlayer().sendMessage("dbg0");
 		
-		//this.plugin.sm.setSign(e.getLines(), e.getPlayer(), e.getBlock());
-		
-		
-		String lines[] = e.getLines();
-		
-		BoutiqueSign bs = null;
-		
-		if(lines[0].compareToIgnoreCase(BoutiqueSignServer.getTypeStr())==0)
-		{
-			bs = new BoutiqueSignServer((Sign)e.getBlock(), e.getPlayer(), bs);
-		}
-		else if(lines[0].compareToIgnoreCase(BoutiqueSignChest.getTypeStr())==0)
-		{
-			bs = new BoutiqueSignChest((Sign)e.getBlock(), e.getPlayer(), bs);
-		}
-		else if(lines[0].compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr())==0)
-		{
-			bs = new BoutiqueSignWebAuction((Sign)e.getBlock(), e.getPlayer(), bs);
-		}
-		else
-		{
-			return;
-		}
-			
-			
-		 //BoutiqueSign.Create((Sign) e.getBlock(), e.getPlayer(), e.getLines());
-		
-		
-		
-		
-		
-		
+		this.plugin.signmanager.setSign(e.getBlock(), e.getPlayer(), e.getLines());
 	}
 
 	public void onBlockPlace(BlockPlaceEvent e) 

@@ -9,11 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
-
-import org.bukkit.Location;
 
 import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 
@@ -24,9 +21,9 @@ public class FileOperations
 	private final String unexpectedFormat = "Error: Unexpected format.";
 	private final int itemListVersion = 3;
 	
-	FileOperations()
+	FileOperations(Boutique boutique)
 	{
-		this.plugin = Boutique.getInstance();
+		this.plugin = boutique;
 		//plugin.makeFolder = plugind.getDataFolder();
 	}
 	
@@ -71,21 +68,10 @@ public class FileOperations
 	public void saveGlobalSigns() 
 	{
 		ArrayList<String> strings = new ArrayList<String>();
-		for (Entry<Location, BoutiqueSign> entry : plugin.signmanager.entrySet()) 
+		for (Entry<String, BoutiqueSign> entry : plugin.signmanager.entrySet()) 
 		{
-			Location loc = entry.getKey();
 			BoutiqueSign bs = entry.getValue();
-			strings.add
-			( 
-				//Coordonnees du panneau
-				loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ";" +
-				//Lignes textes du panneau
-				bs.getLine1() + ":" + bs.getLine2()+ ":" + bs.getLine3() + ":" + bs.getLine4()  + ";" +
-				//Poseur/propriétaire du panneau
-				(bs.getOwner() != null ? bs.getOwner() : "") + ";" +
-				//Coffre relié eventuellement au panneau
-				(bs.getChest() != null ? bs.getChest().getX() + ":" + bs.getChest().getY() + ":" + bs.getChest().getZ() : "")
-			);
+			strings.add(bs.serializeString());
 		}
 		
 		String[] lines = new String[strings.size()];
@@ -101,20 +87,60 @@ public class FileOperations
 	
 	
 	
-	
-	@Deprecated	
-	public HashMap<String,String> loadGlobalSignData()
+	public void loadItemsData()
 	{
-		HashMap<String,String> signLocs = new HashMap<String,String>();
+		try
+		{
+			File itemsFiles = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiqueitems.txt");
+			
+			if (!itemsFiles.exists())
+			{ 
+				System.out.print("[" + plugin.name + "] Creation du fichier items...");
+				writeItemsFile(null);
+			}
+			
+			FileInputStream fstream = new FileInputStream(itemsFiles);
+			DataInputStream in = new DataInputStream(fstream);
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	        
+	        String strLine;
+	       
+	        while ((strLine = br.readLine()) != null)
+	        {
+	        	strLine = strLine.trim();
+	        	
+	        	if(strLine.isEmpty() || strLine.startsWith("#"))
+	        		continue;
+	        
+	        	BoutiqueItem bi = new BoutiqueItem();
+	        	
+	        	
+	        	if(bi.parseString(strLine))
+	        	{
+	        		BoutiqueItems.put(bi);
+	        	}
+        		
+	        		
+	        }
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+		
+
+
+	public void loadGlobalSignData()
+	{
 		try
 		{
 			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiquedb.txt");
 			
 			if (!globalFile.exists())
 			{ 
-				System.out.print("[" + plugin.name + "] Sign data list file is missing, creating...");
+				System.out.print("[" + plugin.name + "] Creation du fichier db...");
 				writeGlobalSignFile(null);
-				System.out.println("done.");
 			}
 			
 			FileInputStream fstream = new FileInputStream(globalFile);
@@ -130,51 +156,57 @@ public class FileOperations
 	        {
 	        	strLine = strLine.trim();
 	        	
-	        	//TODO
+	        	if(strLine.isEmpty() || strLine.startsWith("#"))
+	        		continue;
 	        	
-	        	/*
-
-	        	if(!strLine.startsWith("#"))
+	        	BoutiqueSign bs = new BoutiqueSign();
+	        	
+	        	
+	        	if(bs.parseString(strLine))
 	        	{
-	        		if (strLine.startsWith(prechest))
-	        		{
-	        			Boutique.SignChest.put(coords, strLine.replace(prechest,""));
-	        		}
-	        		else if (strLine.startsWith(line1data))
-	        		{
-	        			Boutique.signLine1.put(coords, strLine.replace(line1data,""));
-	        		}
-	        		else if (strLine.startsWith(line2data))
-	        		{
-	        			Boutique.signLine2.put(coords, strLine.replace(line2data,""));
-	        		}
-	        		else if (strLine.startsWith(line3data))
-	        		{
-	        			Boutique.signLine3.put(coords, strLine.replace(line3data,""));
-	        		}
-		        	else 
-		        	{
-		            	String[] brokeText = strLine.split(":");
-		            	try{
-		            		coords = brokeText[0] + ":" + brokeText[1] + ":" + brokeText[2]+ ":" + brokeText[3]; // X,Y,Z,World
-			           		pName = brokeText[4]; // Player that activated the sign.
-			           		signLocs.put(coords, pName);
-		            	}
-		            	catch(Exception e){
-		            		System.err.println(unexpectedFormat);
-		            	}
-	        		}
-	        		
-	        		
+	        		plugin.log.info("Ajout sign : " + strLine);
+	        		plugin.signmanager.put(bs);
 	        	}
-	        	*/
+	        	
+
 	        }
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		return signLocs;
+		
+	}
+	
+	
+	private void writeItemsFile(String[] sLines)
+	{
+		String[] s = new String[1];
+		s[0] = "#";
+		
+		try 
+		{
+			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiqueitems.txt")));
+			for(int i=0;i<s.length;i++)
+			{
+				writer.write(s[i]);
+				writer.newLine();
+			}
+			if(sLines != null)
+			{
+				for(String line : sLines)
+				{
+					writer.write(line);
+					writer.newLine();
+				}
+			}
+			writer.close();
+		} 
+		catch (Exception ex) 
+		{
+			plugin.log.severe(plugin.logPrefix + "Impossible de sauvegarder le fichier items !!!");
+			ex.printStackTrace();
+		}
 		
 	}
 	
@@ -207,7 +239,7 @@ public class FileOperations
 		}
 	}
 
-	
+	@Deprecated
 	public void loadItemData()
 	{
 		try
@@ -283,6 +315,7 @@ public class FileOperations
 	    }
 	}
 	
+	@Deprecated
 	public void writeItemDataFile()
 	{
 		String[] s = getItemsText();

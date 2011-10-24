@@ -43,10 +43,16 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (e.getClickedBlock().getState() instanceof Sign)
 			{
-				if (plugin.signmanager.isBoutiqueSign((Sign)e.getClickedBlock()))
+				e.getPlayer().sendMessage(plugName + "Click sign");
+				
+				if (plugin.signmanager.isBoutiqueSign(e.getClickedBlock()))
 				{
 					e.setCancelled(true);
 					this.rightClickSign(e.getPlayer(), (Sign)e.getClickedBlock().getState());
+				}
+				else
+				{
+					e.getPlayer().sendMessage(plugName + "je connais pas ce panneau !");
 				}
 			}
 			
@@ -103,7 +109,7 @@ public class BoutiquePlayerListener extends PlayerListener
 	
 	private void rightClickSign(Player p, Sign s)
 	{	
-		plugin.signmanager.useSign(s, p);
+		plugin.signmanager.useSign(s.getBlock(), p);
 	}
 	
 	
@@ -111,14 +117,14 @@ public class BoutiquePlayerListener extends PlayerListener
 	{
 		if (playerSetSign.containsKey(p))
 		{
-			plugin.signmanager.setSign((Sign) b.getState(), p);
+			//plugin.signmanager.setSign(b, p);
+			
 			if (!playerSetSign.get(p))
 				playerSetSign.remove(p);
 		}
 		else if (setOwner.containsKey(p)) 
 		{
-			//TODO: probleme avec le setOwner !
-			//plugin.signmanager.setOwner(p, setOwner.get(p), (Sign) b.getState());
+			plugin.signmanager.setOwner((Sign) b.getState(), p, setOwner.get(p));
 			setOwner.remove(p);
 		}
 		else if (playerSetChest.containsKey(p))
@@ -157,10 +163,19 @@ public class BoutiquePlayerListener extends PlayerListener
 		}
 		else
 		{
-			Sign s = (Sign) b;
+			//Sign s = (Sign) b.getState();
 			
-			if(plugin.signmanager.isBoutiqueSign(s))			
-				plugin.signmanager.displaySignInfo(s, p);
+			p.sendMessage(plugName + "Click panneau");
+			
+			if(plugin.signmanager.haveLocation(b.getLocation()))
+			{
+				plugin.signmanager.displaySignInfo(b, p);
+			}
+			else
+			{
+				p.sendMessage(plugName + "Connais pas ce panneau");
+			}
+				
 			
 		}
 		

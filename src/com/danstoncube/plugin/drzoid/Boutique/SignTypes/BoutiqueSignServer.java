@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 public class BoutiqueSignServer extends BoutiqueSign
 {
 	
-	public BoutiqueSignServer(Sign sign, Player owner, BoutiqueSign type)
+	public BoutiqueSignServer(Sign sign, Player owner)
 	{
-		super(sign, owner, type);
+		super(sign, owner, BoutiqueSignServer.getTypeStr());
 		// TODO Auto-generated constructor stub
 	}
 

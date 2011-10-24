@@ -36,7 +36,7 @@ public class CommandOperator
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Pour utiliser cette commande utilisez la syntaxe suivante:");
 				p.sendMessage("'/boutique argument p' le 'p' est facultatif.");
 				p.sendMessage("Les arguments disponibles sont: ");
-				p.sendMessage(ChatColor.AQUA + "-s" + ChatColor.WHITE + " pour modifier les panneaux.");
+				//p.sendMessage(ChatColor.AQUA + "-s" + ChatColor.WHITE + " pour modifier les panneaux.");
 				p.sendMessage(ChatColor.AQUA + "-sc" + ChatColor.WHITE + " pour relier les coffres aux panneaux.");
 				p.sendMessage(ChatColor.AQUA + "-so" + ChatColor.WHITE + " pour redéfinir le proprio d'un panneau. Attention aux majuscules");
 				return true;
@@ -44,6 +44,7 @@ public class CommandOperator
 			else 
 			{
 				boolean bool = true;
+				/*
 				if (plugin.playerListener.playerSetSign.containsKey(p))
 				{
 					plugin.playerListener.playerSetSign.remove(p);
@@ -51,6 +52,8 @@ public class CommandOperator
 					if (args[0].compareToIgnoreCase("-s") == 0)
 						return bool;
 				}
+				*/
+				
 				if(plugin.playerListener.playerSetChest.containsKey(p))
 				{
 					plugin.playerListener.playerSetChest.remove(p);
@@ -60,6 +63,7 @@ public class CommandOperator
 					if (args[0].compareToIgnoreCase("-sc") == 0)
 						return bool;
 				}
+				
 				if (plugin.playerListener.setOwner.containsKey(p))
 				{
 					plugin.playerListener.playerSetSign.remove(p);
@@ -68,12 +72,14 @@ public class CommandOperator
 						return bool;
 				}
 				
-				
+				/*
 				if (args[0].compareToIgnoreCase("-s") == 0) 
 				{
 					bool = sCommand(p, args);
 				}
-				else if (args[0].compareToIgnoreCase("-sc") == 0) 
+				*/
+				
+				if (args[0].compareToIgnoreCase("-sc") == 0) 
 				{
 					bool = scCommand(p,args);
 				}
@@ -90,11 +96,7 @@ public class CommandOperator
 				return bool;
 			}
 		}
-		else if (commandLabel.compareToIgnoreCase("getdata") == 0) 
-		{
-			return getData(p);
-		}
-		else if (commandLabel.compareToIgnoreCase("infoitem") == 0) 
+		else if (commandLabel.compareToIgnoreCase("getdata") == 0 || commandLabel.compareToIgnoreCase("infoitem") == 0) 
 		{
 			return getData(p);
 		}
@@ -153,7 +155,8 @@ public class CommandOperator
 		
 		return true;
 	}
-
+	
+	/*
 	private boolean sCommand(Player p, String[] args) 
 	{
 		if (!PermissionsHandler.canSetPersonalSign(p)) 
@@ -181,11 +184,11 @@ public class CommandOperator
 		
 		return true;
 	}
-
+	*/
 	
 	private boolean getData(Player p) 
 	{
-		p.sendMessage("Tu as " + p.getItemInHand().getAmount() + "x " + p.getItemInHand().getType().toString().toLowerCase(Locale.ENGLISH) + " avec " + p.getItemInHand().getDurability() + " de durabilité, ayant pour ID: " + p.getItemInHand().getTypeId() + ".");
+		p.sendMessage("Tu as " + p.getItemInHand().getAmount() + "x " + p.getItemInHand().getType().toString().toLowerCase(Locale.FRENCH) + " avec " + p.getItemInHand().getDurability() + " de durabilité, ayant pour ID: " + p.getItemInHand().getTypeId() + ".");
 		return true;
 	}
 	

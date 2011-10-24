@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 
 public class BoutiqueSignWebAuction extends BoutiqueSign
 {
-	public BoutiqueSignWebAuction(Sign sign, Player owner, BoutiqueSign type)
+	public BoutiqueSignWebAuction(Sign sign, Player owner)
 	{
-		super(sign, owner, type);
+		super(sign, owner, BoutiqueSignWebAuction.getTypeStr());
 		// TODO Auto-generated constructor stub
 	}
 

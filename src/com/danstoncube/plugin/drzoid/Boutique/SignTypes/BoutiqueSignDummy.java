@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 
 public class BoutiqueSignDummy extends BoutiqueSign
 {
-	BoutiqueSignDummy(Sign sign, Player owner, BoutiqueSign type)
+	BoutiqueSignDummy(Sign sign, Player owner)
 	{
-		super(sign, owner, type);
+		super(sign, owner, BoutiqueSignDummy.getTypeString());
 		// TODO Auto-generated constructor stub
 	}
 

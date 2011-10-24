@@ -26,7 +26,7 @@ public class Boutique extends JavaPlugin
 	//File Handler
 	public File makeFolder;
 	
-	FileOperations fileio = new FileOperations();
+	FileOperations fileio = new FileOperations(this);
 	CommandOperator co = new CommandOperator(this);
 	
 	//Mapping
@@ -63,7 +63,7 @@ public class Boutique extends JavaPlugin
 	public SignOperatorOLD signoperator = new SignOperatorOLD(this);
 	
 	
-	public WebItemsOperator webitems = new WebItemsOperator(this);
+	//public WebItemsOperator webitems = new WebItemsOperator();
 	
 	
 	
@@ -75,10 +75,7 @@ public class Boutique extends JavaPlugin
 	
 	private static Boutique _instance = null;
 	
-	Boutique()
-	{
-		Boutique._instance = this;
-	}
+	
 	
 	public static Boutique getInstance()
 	{
@@ -91,7 +88,7 @@ public class Boutique extends JavaPlugin
 	{
 		log.info(logPrefix + "Chargement de Boutique !");
 			
-		
+		Boutique._instance = this;
 		
 		makeFolder = this.getDataFolder();
 		
@@ -100,18 +97,22 @@ public class Boutique extends JavaPlugin
 		configuration = new BoutiqueConfiguration(this);
 		
 		fileio.checkDataFolder();
-		fileio.loadItemData();
+		fileio.loadItemsData();
+		
+		// TODO: flag use / not use flat file
+		signmanager.loadGlobalSignData();
 		
 		
 		if(db.setup())
 		{
 			log.info(logPrefix + "Logs Mysql activées");
+			
+			// TODO:
 			db.loadGlobalSignData();
 		}
 		else
 		{
 			log.info(logPrefix + "Logs Mysql désactivées");
-			signmanager.loadGlobalSignData();
 		}
 		
 		PluginManager pm = this.getServer().getPluginManager();

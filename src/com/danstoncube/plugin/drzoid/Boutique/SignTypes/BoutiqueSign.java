@@ -17,6 +17,7 @@ import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItem;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItems;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSignManager;
 import com.danstoncube.plugin.drzoid.Boutique.ChestOperator;
+import com.danstoncube.plugin.drzoid.Boutique.WebItemsOperator;
 
 public class BoutiqueSign
 {
@@ -114,9 +115,6 @@ public class BoutiqueSign
 	private void setLine1(String line1) 
 	{
 		this._lines[0] = line1;
-		
-		//TODO: add check
-		
 		this.setType(line1);
 	}
 	
@@ -268,13 +266,7 @@ public class BoutiqueSign
 	
 	
 	
-	/* Sign Type */
-	
-	//a redeclarer
-	public String getSignTypeString()
-	{
-		return this._type;
-	}
+
 	
 	
 	
@@ -439,14 +431,53 @@ public class BoutiqueSign
 	{
 		Sign s = bs.getSign();
 		if(s==null) return;
+		
 		s.setLine(3, ChatColor.RED + "[Err. type]");
+		s.update();
 	}
 
 
-	private static void RenderSellSignWebAuction(BoutiqueSign boutiqueSign)
+	private static void RenderSellSignWebAuction(BoutiqueSign bs)
 	{
-		// TODO Auto-generated method stub
+		Sign s = bs.getSign();
+		if(s==null)
+			return;
 		
+		Integer giveType = bs.getItemTo().itemId;
+		Integer giveDamage = bs.getItemTo().itemDamage;
+		Integer giveAmount = bs.getQtyTo();
+		String player  = bs.getOwnerString();
+		String giveTypeText = bs.getItemTo().itemShortname;
+		
+		Double getAmount = bs.getMoneyFrom();
+		
+		//TODO: chaine currency depuis iConomy ou config ?
+		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (int)(WebItemsOperator.contains(player, giveType, giveDamage) / giveAmount);		
+		
+		//couleur suivant la quantité
+		String strLot = "";	
+		
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
+		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
+		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
+		
+		String strNbLot = "";
+		if(lots > 1)	strNbLot = "Lots de ";
+		else			strNbLot = "Lot de ";
+		
+		String strAmount = ChatColor.YELLOW + String.valueOf(getAmount) + getTypeText;
+		
+		//mise a jour du panneau
+		
+		s.setLine(0, ChatColor.GREEN + "VEND " + strLot); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, strAmount + ChatColor.WHITE + " / lot");
+		s.update();
 	}
 
 
@@ -532,7 +563,7 @@ public class BoutiqueSign
 	
 	public boolean isSignWebAuction()
 	{
-		return this.getType() == BoutiqueSignWebAuction.getTypeStr();		
+		return this.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr())==0;		
 	}
 	
 	

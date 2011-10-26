@@ -140,7 +140,7 @@ public class BoutiqueSignManager
 		// Vérifie les items / lignes
 		
 		
-		if(bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if(bs.isSignServer())
 		{
 			
 			if (!PermissionsHandler.canSetGlobalSign(p))
@@ -164,10 +164,11 @@ public class BoutiqueSignManager
 			
 			bs.setLine4(ChatColor.GREEN + "[Actif]");
 			
+			
 			plugin.signmanager.saveGlobalSigns();
 		}
 		
-		else if(bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if(bs.isSignChest())
 		{
 			if (!PermissionsHandler.canSetPersonalSign(p))
 			{
@@ -188,7 +189,7 @@ public class BoutiqueSignManager
 			
 			plugin.signmanager.saveGlobalSigns();
 		}	
-		else if(bs.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if(bs.isSignWebAuction())
 		{
 			if (!PermissionsHandler.canSetWebAuctionSign(p))
 			{
@@ -223,7 +224,7 @@ public class BoutiqueSignManager
 		BoutiqueSign bs = getBoutiqueSign(b);
 		
 		String signOwnerString = bs.getOwnerString();
-		String signTypeStr = bs.getSignTypeString();
+		String signTypeStr = bs.getType();
 		String separator = "-----------------------------------";
 		
 
@@ -240,42 +241,35 @@ public class BoutiqueSignManager
 					
 		/* Affiche le type de panneau et le propriétaire */
 		
-		//TODO: extern. messages
-		
+
 		p.sendMessage("dbg1: Type=" + bs.getType());
 		
-		
-		//Type BoutiqueSignServer
 		if(bs.isSignServer())
 		{
+			//Type BoutiqueSignServer
 			p.sendMessage("Ce panneau fait partie du magasin du serveur.");
 		}
-		//Type BoutiqueSignChest
 		else if(bs.isSignChest())
-		{
+		{	
+			//Type BoutiqueSignChest
+			
 			p.sendMessage("Ce panneau fait partie du magasin de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");			
 			
 			String signchest = bs.getChestString();			
-			
-			//DEBUG
-			p.sendMessage("DEBUG: " + signchest);		
-			
-			
 			if(signchest.isEmpty()) 
 			{
-				p.sendMessage(ChatColor.AQUA + "Aucun coffre n'est relié au panneau pour le moment !");				
+				p.sendMessage(ChatColor.RED + "Aucun coffre n'est relié au panneau pour le moment !");
 			}
+			
 		}
-		//Type BoutiqueSignWebAuction
 		else if(bs.isSignWebAuction())
 		{
+			//Type BoutiqueSignWebAuction
 			p.sendMessage("Ce panneau fait partie du magasin web de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");
 		}
-		//Type Dummy ou autres
 		else
 		{
-			//TODO: message : panneau de type inconnu
-			//TODO: virer le panneau de la hashmap et de la bdd ?
+			//Type inconnu
 			p.sendMessage(ChatColor.RED + "Ce panneau est d'un type inconnu et " + ChatColor.WHITE +  signOwnerString + ChatColor.RED + " en est le propriétaire." );
 			return;
 		}
@@ -428,7 +422,7 @@ public class BoutiqueSignManager
 		String plugName = "";
 		
 		//Signe Serveur
-		if (bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if (bs.isSignServer())
 		{
 			if (econ != 1)
 			{
@@ -442,22 +436,14 @@ public class BoutiqueSignManager
 			//todo: serverplayername
 			signOwner = "[Serveur]";
 		}
-		
-		
 		//Signe coffre
-		else if (bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if (bs.isSignChest())
 		{
 			
 			Chest chest = bs.getChest();
 			
 			if(chest == null)
-			{
-				//TODO
-				
-				
-				p.sendMessage("DEBUG: " + bs.getChestString());
-				
-				
+			{			
 				p.sendMessage(plugName + "Pas trouvé de coffre associé au panneau");
 				return false;
 			}
@@ -489,7 +475,7 @@ public class BoutiqueSignManager
 		}
 		
 		//Signe webauction
-		else if (bs.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if (bs.isSignWebAuction())
 		{
 			if (econ != 1)
 			{
@@ -498,7 +484,7 @@ public class BoutiqueSignManager
 			}
 			else if (!WebItemsOperator.containEnough(signOwner, id, damage, qty))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				p.sendMessage(plugName + WebItemsOperator.notEnoughErr);
 				return false;
 			}
 			
@@ -564,7 +550,7 @@ public class BoutiqueSignManager
 		}
 		
 		// Panneau "Serveur"
-		if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if (bs.isSignServer())
 		{
 			//Enleve les objets dans l'inventaire du joueur
 			PlayerOperator.removeFromPlayer(qty, id ,damage, p);
@@ -578,7 +564,7 @@ public class BoutiqueSignManager
 		
 		// Panneau "webauctions"
 		// Achete des objet, et les met dans le stock "webauctions"
-		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if (bs.isSignWebAuction())
 		{
 			
 			// Vérifie que l'acheteur à assez d'argent
@@ -610,7 +596,7 @@ public class BoutiqueSignManager
 		
 		// Panneau "coffre"
 		// Achete des objet, et les met dans le coffre relié
-		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if (bs.isSignChest())
 		{
 			
 			// Cherche le coffre relié au panneau

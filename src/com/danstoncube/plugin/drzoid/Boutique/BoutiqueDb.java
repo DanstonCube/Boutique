@@ -112,36 +112,38 @@ public class BoutiqueDb
 	
 	public boolean wa_AddToStock(String p, int itemid, int itemdamage, int quantity)
 	{
+		String sql = "SELECT count(*) as compteur FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
 		
-		String sql = "SELECT count(*) as compteur FROM WA_items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
+		boolean ret = true;
 		
 		try
 		{
+			this.openConnection();
 			ResultSet myResults = this.sqlQuery(sql);
 			int compteur = myResults.getInt(1);
-			
 			if(compteur > 0)
 			{
-				String sqlupdate = "UPDATE WA_items SET quantity = quantity + " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+				String sqlupdate = "UPDATE WA_Items SET quantity = quantity + " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
 				this.updateQuery(sqlupdate);
 			}
 			else
 			{
 				/*id 	name 	damage 	player 	quantity*/
-				String sqlinsert = "INSERT INTO WA_items(name,damage,player,quantity) VALUES("+ itemid + ", " + itemdamage + ", '" + p + "', " + quantity+")"; 
+				String sqlinsert = "INSERT INTO WA_Items(name,damage,player,quantity) VALUES("+ itemid + ", " + itemdamage + ", '" + p + "', " + quantity+")"; 
 				this.insertQuery(sqlinsert);
 			}
-			return true;
+			
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			ret  = false;
 		}
 		
 		
+		this.close();
 		
-		
-		return false;
+		return ret;
 	}
 	
 	
@@ -149,59 +151,64 @@ public class BoutiqueDb
 	public Boolean wa_RemoveFromStock(String p, Integer itemid, Integer itemdamage, Integer quantity)
 	{
 		/*id 	name 	damage 	player 	quantity*/
-		String sql = "UPDATE WA_items SET quantity = quantity - " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+		String sql = "UPDATE WA_Items SET quantity = quantity - " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+		
+		boolean ret = true;
+		
 		try
 		{
+			this.openConnection();
 			this.updateQuery(sql);
-			return true;		
 		}
 		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			ret = false;
 		}
-
-		return false;
+		
+		close();
+		
+		return ret;
 	}
 	
 	
 	public Boolean wa_HasEnoughItem(String p, Integer itemid, Integer itemdamage, Integer quantity)
 	{
-		String sql = "SELECT quantity FROM WA_items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
-		
-		try
-		{
-			ResultSet myResults = this.sqlQuery(sql);
-			Integer count = myResults.getInt(1);
-			if(count>=quantity)
-			{
-				return true;
-			}			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		return false;
+		Integer count = wa_CountItem(p,itemid,itemdamage);
+		return (count>=quantity);
 	}
 	
 	public int wa_CountItem(String p, Integer itemid, Integer itemdamage)
 	{
-		String sql = "SELECT quantity FROM WA_items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
+		String sql = "SELECT quantity FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
+		Integer count = -1;
 		
 		try
 		{
+			this.openConnection();
 			ResultSet myResults = this.sqlQuery(sql);
-			Integer count = myResults.getInt(1);
-			return count;		
+			if(myResults.wasNull())
+			{
+				count = myResults.getInt(1);
+			}
+			else
+			{
+				count = 0;
+			}
+		}
+		catch (SQLException e1)
+		{
+			e1.printStackTrace();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 		
-		return -1;
+		close();
+		
+		return count;
 	}
 	
 	

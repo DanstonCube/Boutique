@@ -84,12 +84,12 @@ public class Boutique extends JavaPlugin
 	
 	
 	
-	public void onEnable() 
+	public void onEnable()  
 	{
 		log.info(logPrefix + "Chargement de Boutique !");
 			
 		Boutique._instance = this;
-		
+		 
 		makeFolder = this.getDataFolder();
 		
 		

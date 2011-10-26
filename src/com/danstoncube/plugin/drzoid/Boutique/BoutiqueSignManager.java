@@ -41,14 +41,6 @@ public class BoutiqueSignManager
 	}
 
 
-	public Boolean isBoutiqueSign(Sign s)
-	{
-		Location signLoc = s.getBlock().getLocation();		
-		//todo: mettre une fonction keygen ?
-		//String signKey = signLoc.getBlockX() +  ":" + signLoc.getBlockY() + ":" + signLoc.getBlockZ() + ":" + signLoc.getWorld();		
-		return _signs.containsKey(signLoc);			
-	}
-	
 	public Boolean haveLocation(String l)
 	{
 		return _signs.containsKey(l);			
@@ -254,36 +246,37 @@ public class BoutiqueSignManager
 		
 		
 		//Type BoutiqueSignServer
-		if(bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if(bs.isSignServer())
 		{
 			p.sendMessage("Ce panneau fait partie du magasin du serveur.");
 		}
-		
 		//Type BoutiqueSignChest
-		else if(bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if(bs.isSignChest())
 		{
 			p.sendMessage("Ce panneau fait partie du magasin de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");			
 			
 			String signchest = bs.getChestString();			
 			
+			//DEBUG
+			p.sendMessage("DEBUG: " + signchest);		
+			
+			
 			if(signchest.isEmpty()) 
 			{
 				p.sendMessage(ChatColor.AQUA + "Aucun coffre n'est relié au panneau pour le moment !");				
 			}
-				
 		}
-		
 		//Type BoutiqueSignWebAuction
-		else if(signTypeStr.compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if(bs.isSignWebAuction())
 		{
 			p.sendMessage("Ce panneau fait partie du magasin web de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");
 		}
-		
 		//Type Dummy ou autres
 		else
 		{
 			//TODO: message : panneau de type inconnu
 			//TODO: virer le panneau de la hashmap et de la bdd ?
+			p.sendMessage(ChatColor.RED + "Ce panneau est d'un type inconnu et " + ChatColor.WHITE +  signOwnerString + ChatColor.RED + " en est le propriétaire." );
 			return;
 		}
 			
@@ -435,7 +428,7 @@ public class BoutiqueSignManager
 		String plugName = "";
 		
 		//Signe Serveur
-		if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if (bs.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
 		{
 			if (econ != 1)
 			{
@@ -452,13 +445,21 @@ public class BoutiqueSignManager
 		
 		
 		//Signe coffre
-		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if (bs.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
 		{
 			
-			Chest chest = ((BoutiqueSignChest) bs).getChest();
+			Chest chest = bs.getChest();
+			
 			if(chest == null)
 			{
 				//TODO
+				
+				
+				p.sendMessage("DEBUG: " + bs.getChestString());
+				
+				
+				p.sendMessage(plugName + "Pas trouvé de coffre associé au panneau");
+				return false;
 			}
 			
 			if (econ != 1)
@@ -488,7 +489,7 @@ public class BoutiqueSignManager
 		}
 		
 		//Signe webauction
-		else if (bs.getSignTypeString().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if (bs.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
 		{
 			if (econ != 1)
 			{
@@ -707,32 +708,47 @@ public class BoutiqueSignManager
 	}
 
 
-	/* Enregistre le coffre pour un BoutiqueSignChest */
 	public void setChest(Sign sign, Chest chest, Player p)
 	{
-		BoutiqueSign bs = this.getBoutiqueSign(sign.getBlock());
+		setChest(sign.getBlock(), chest,  p);
+		return;
+	}
+	
+	/* Enregistre le coffre pour un BoutiqueSignChest */
+	public void setChest(Block sign, Chest chest, Player p)
+	{
+		BoutiqueSign bs = this.getBoutiqueSign(sign);
 		
 		
 		if(bs == null)
 		{
 			// TODO: message "Impossible de trouver le panneau en question"
+			p.sendMessage(plugName + "Choisi un panneau avant !");
 			return;
 		}
 		else
 		{
+			String newChestLoc = "";
+			String oldChestLoc = "";
+			
 			Chest bsc = bs.getChest();
 			
-			/*
-			avant: verifiait que le panneau n'etait pas deja relié au coffre			
-			if (Boutique.SignChest.get(bsc) == cLoc)
+			
+			oldChestLoc = bs.getChestString();
+			newChestLoc = BoutiqueSign.getLocationString(chest.getBlock().getLocation());
+			
+			
+			
+			//verifie que le panneau n'etait pas deja relié au coffre			
+			if (oldChestLoc == newChestLoc)
 			{
 				p.sendMessage(plugName + "Ce panneau est déjà relié à ce coffre :/");
 				return;
 			}
-			*/
-				
-			int distX = sign.getBlock().getX() - chest.getBlock().getX();
-			int distZ = sign.getBlock().getZ() - chest.getBlock().getZ();
+			
+			int distX = sign.getX() - chest.getBlock().getX();
+			int distZ = sign.getZ() - chest.getBlock().getZ();
+		
 			
 			int maxDist = 15;
 			if (distX > maxDist || distZ > maxDist ) 
@@ -741,14 +757,25 @@ public class BoutiqueSignManager
 				return;
 			}
 			
+			//DEBUG
+			//p.sendMessage(plugName + "Enregistrement coffre");
 						
 			bs.setChest(chest);			
 			
+			updateSignDb(bs);
+			
 			p.sendMessage(plugName + "Panneau et coffre reliés !");
+					
+			//DEBUG
+			//p.sendMessage(plugName + "panneau: " + bs.getChestString());
+			
 		}		
 	}
 
 
+
+	
+	
 	public void setOwner(Sign s, Player p, String newowner)
 	{
 		
@@ -770,9 +797,7 @@ public class BoutiqueSignManager
 		
 		bs.setOwnerString(newowner);
 		
-		//TODO: a changer
-		plugin.fileio.saveGlobalSigns();
-			
+		updateSignDb(bs);
 		
 	}
 
@@ -826,7 +851,42 @@ public class BoutiqueSignManager
 		return getBoutiqueSign(sign.getBlock()).getOwnerString().compareToIgnoreCase(p.getName()) == 0;
 	}
 
+	
+	public boolean isBoutiqueSign(Sign clickedSign)
+	{
+		return haveLocation(clickedSign.getBlock().getLocation());
+	}
 
+	public boolean isBoutiqueSign(Block clickedBlock)
+	{
+		return haveLocation(clickedBlock.getLocation());
+	}
+
+
+	
+	
+
+	private void insertSignDb(BoutiqueSign bs)
+	{
+		//TODO: if datafile
+		put(bs);
+		saveGlobalSigns();
+		
+		//TODO: else if datasql
+		
+	}
+
+	private void updateSignDb(BoutiqueSign bs)
+	{
+		//TODO: if datafile
+		put(bs);
+		saveGlobalSigns();
+		
+		//TODO: else if datasql
+		
+		
+	}
+	
 	public void loadGlobalSignData()
 	{
 		plugin.fileio.loadGlobalSignData();
@@ -837,11 +897,7 @@ public class BoutiqueSignManager
 		put(bs.getLocationString(), bs);		
 	}
 
-	public boolean isBoutiqueSign(Block clickedBlock)
-	{
-		// TODO Auto-generated method stub
-		return haveLocation(clickedBlock.getLocation());
-	}
+	
 
 
 	

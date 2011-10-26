@@ -3,8 +3,11 @@ package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -13,6 +16,7 @@ import com.danstoncube.plugin.drzoid.Boutique.Boutique;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItem;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItems;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSignManager;
+import com.danstoncube.plugin.drzoid.Boutique.ChestOperator;
 
 public class BoutiqueSign
 {
@@ -340,9 +344,199 @@ public class BoutiqueSign
 	
 	public void Render()
 	{
-		// TODO Auto-generated method stub
+		//FREEBIES
+		if(this.isFreebiesSign())
+		{
+			RenderFreeSign();
+		}
+		//DONATION
+		else if(this.isDonationSign())
+		{
+			RenderDonationSign();
+		}
+		//VENTE
+		else if(this.isSellSign())
+		{
+			RenderSellSign();
+		}
+		//ACHAT
+		else if(this.isBuySign())
+		{
+			RenderBuySign();
+		}
+		//ECHANGE
+		else if (this.isTradeSign())
+		{
+			RenderTradeSign();
+		}
+		else
+		{
+			//TODO: chatprefix + VroumvroumERR
+			//p.sendMessage(Boutique.getInstance().name + "VROUM VROUM, c'est quoi ce panneau de merde ???" );
+			RenderDummySign();
+			return;
+		}
 	}
 
+	private void RenderFreeSign()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void RenderDonationSign()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void RenderBuySign()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void RenderTradeSign()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void RenderDummySign()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	//public void RenderSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
+	public void RenderSellSign()
+	{			
+		if(this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		{
+			BoutiqueSign.RenderSellSignServer(this);
+		}
+		else if(this.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		{
+			BoutiqueSign.RenderSellSignChest(this);
+		}
+		else if(this.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		{
+			BoutiqueSign.RenderSellSignWebAuction(this);
+		}
+		else
+		{
+			BoutiqueSign.RenderSellSignDummy(this);
+		}
+	}
+	
+	
+	private static void RenderSellSignDummy(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		s.setLine(3, ChatColor.RED + "[Err. type]");
+	}
+
+
+	private static void RenderSellSignWebAuction(BoutiqueSign boutiqueSign)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private static void RenderSellSignServer(BoutiqueSign bs)
+	{	
+		Sign s = bs.getSign();
+		if(s==null)
+			return;
+		
+		Integer giveAmount = bs.getQtyTo();
+		String giveTypeText = bs.getItemTo().itemShortname;
+		Double getAmount = bs.getMoneyFrom();
+		
+		//TODO: chaine currency depuis iConomy ou config ?
+		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + "VENTE" + ChatColor.GOLD + "]");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount );	
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, ChatColor.YELLOW +  String.valueOf(getAmount) + getTypeText + ChatColor.WHITE + " le lot");
+		s.update();
+	}
+
+	public static void RenderSellSignChest(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		Chest c = bs.getChest();
+		
+		if(s==null)
+			return;
+		
+		
+		Integer giveType = bs.getItemTo().itemId;
+		Integer giveDamage = bs.getItemTo().itemDamage;
+		Integer giveAmount = bs.getQtyTo();
+
+		String giveTypeText = bs.getItemTo().itemShortname;
+		
+		Double getAmount = bs.getMoneyFrom();
+		
+		//TODO: chaine currency depuis iConomy ou config ?
+		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
+		
+		
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (c!=null) ? (int)(ChestOperator.contains(giveType, giveDamage, c) / giveAmount) : -1;		
+		
+		//couleur suivant la quantité
+		String strLot = "";	
+		
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
+		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
+		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
+		
+		String strNbLot = "";
+		if(lots > 1)	strNbLot = "Lots de ";
+		else			strNbLot = "Lot de ";
+		
+		String strAmount = ChatColor.YELLOW + String.valueOf(getAmount) + getTypeText;
+		
+		//mise a jour du panneau
+		
+		s.setLine(0, ChatColor.GREEN + "VEND " + strLot); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, strAmount + ChatColor.WHITE + " / lot");
+		s.update();
+	}
+	
+	public boolean isSignServer()
+	{
+		return this.getType() == BoutiqueSignServer.getTypeStr();
+		
+	}
+	
+	public boolean isSignChest()
+	{
+		return this.getType() == BoutiqueSignChest.getTypeStr();
+		
+	}
+	
+	public boolean isSignWebAuction()
+	{
+		return this.getType() == BoutiqueSignWebAuction.getTypeStr();		
+	}
+	
+	
+	
 	public boolean isFreebiesSign()
 	{
 		Logger l = Bukkit.getServer().getLogger();
@@ -535,13 +729,65 @@ public class BoutiqueSign
 	
 	public static String getChestString(Chest chest)
 	{
-		return (chest != null) ? chest.getWorld().getName() + ":" + chest.getBlock().getX() + ":" + chest.getBlock().getY() + ":" + chest.getBlock().getZ() : "";		
+		return (chest != null) ? chest.getBlock().getWorld().getName() + ":" + chest.getBlock().getX() + ":" + chest.getBlock().getY() + ":" + chest.getBlock().getZ() : "";		
 	} 
+	
+	
+
+	public  Location getLocationFromString()
+	{
+		return BoutiqueSign.getLocationFromString(this._location);
+	}
+	
+	
+	public  Location getChestLocationFromString()
+	{
+		return BoutiqueSign.getLocationFromString(this._chest);
+	}
+	
+	
+	
+	public static Location getLocationFromString(String stringloc)
+	{
+		Location l = null;
+	
+		try
+		{
+			String[] sLocs = stringloc.split(":");
+			
+			if(sLocs.length != 4) 
+				return null;
+			
+			World w = Bukkit.getWorld(sLocs[0]);
+			if(w == null) 
+				return null;
+			
+			Double x = Double.parseDouble(sLocs[1]);
+			Double y = Double.parseDouble(sLocs[2]);
+			Double z = Double.parseDouble(sLocs[3]);
+			
+			l = new Location(w,x,y,z);
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+		return l;
+	}
+	
 	
 	public void setChest(Chest chest)
 	{
 		//this._chest = chest;
 		this._chest = BoutiqueSign.getChestString(chest);
+	}
+
+	
+	public void setChest(Block block)
+	{
+		//this._chest = chest;
+		this._chest = BoutiqueSign.getLocationString(block.getLocation());
 	}
 
 	public void setChest(String chest)
@@ -634,23 +880,51 @@ public class BoutiqueSign
 	{
 	}
 
+	public Sign getSign()
+	{
+		
+		Location signloc = BoutiqueSign.getLocationFromString(this.getLocationString());
+		
+		if(signloc == null)
+			return null;
+		
+		
+		BlockState blockTest = Bukkit.getServer().getWorld(signloc.getWorld().getName()).getBlockAt(signloc.getBlockX(), signloc.getBlockY(), signloc.getBlockZ()).getState();
 
+		//DEBUG
+		Bukkit.getServer().getLogger().info("DEBUG: "  + "signloc: " + this.getLocationString());
+		Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
+		
+		
+		if(blockTest instanceof Sign)
+			return (Sign) blockTest;
+
+		
+		return null;
+	}
+	
+	
 	public Chest getChest()
 	{
 		
-		// TODO: parser les coordonnées
+		Location chestloc = BoutiqueSign.getLocationFromString(this.getChestString());
 		
-		Block blockTest = Bukkit.getWorld("e").getBlockAt(0, 0 ,0);
-		Chest chest = null;
+		if(chestloc == null)
+			return null;
+		
+		
+		BlockState blockTest = Bukkit.getServer().getWorld(chestloc.getWorld().getName()).getBlockAt(chestloc.getBlockX(), chestloc.getBlockY(), chestloc.getBlockZ()).getState();
+
+		//DEBUG
+		Bukkit.getServer().getLogger().info("DEBUG: "  + "chestLoc: " + this.getChestString());
+		Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
+		
 		
 		if(blockTest instanceof Chest)
-		{
-			chest = (Chest) blockTest;
-		}
+			return (Chest) blockTest;
+
 		
-		
-		
-		return chest;
+		return null;
 	}
 
 	public Location getChestLocation()

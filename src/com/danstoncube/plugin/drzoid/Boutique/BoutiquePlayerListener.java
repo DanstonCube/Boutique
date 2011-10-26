@@ -43,12 +43,14 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (e.getClickedBlock().getState() instanceof Sign)
 			{
-				e.getPlayer().sendMessage(plugName + "Click sign");
+				e.getPlayer().sendMessage(plugName + "Right click sign");
 				
 				if (plugin.signmanager.isBoutiqueSign(e.getClickedBlock()))
 				{
+					e.getPlayer().sendMessage(plugName + "Ok pour ce panneau");
+					
 					e.setCancelled(true);
-					this.rightClickSign(e.getPlayer(), (Sign)e.getClickedBlock().getState());
+					this.rightClickSign(e.getPlayer(), e.getClickedBlock());
 				}
 				else
 				{
@@ -107,9 +109,9 @@ public class BoutiquePlayerListener extends PlayerListener
 
 	
 	
-	private void rightClickSign(Player p, Sign s)
+	private void rightClickSign(Player p, Block b)
 	{	
-		plugin.signmanager.useSign(s.getBlock(), p);
+		plugin.signmanager.useSign(b, p);
 	}
 	
 	

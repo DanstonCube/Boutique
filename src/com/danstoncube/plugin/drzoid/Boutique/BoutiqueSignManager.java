@@ -38,6 +38,7 @@ public class BoutiqueSignManager
 	public BoutiqueSignManager(Boutique boutique)
 	{
 		this.plugin = boutique;
+		BoutiqueSignManager._instance = this;
 	}
 
 
@@ -394,21 +395,21 @@ public class BoutiqueSignManager
 
 
 	
-	public static boolean giveFree(BoutiqueSign bs, Player p)
+	public boolean giveFree(BoutiqueSign bs, Player p)
 	{
 		return false;
 		// TODO Auto-generated method stub
 		
 	}
 	
-	public static boolean getDonation(BoutiqueSign bs, Player p)
+	public boolean getDonation(BoutiqueSign bs, Player p)
 	{
 		return false;
 		// TODO Auto-generated method stub
 	}
 
 
-	public static boolean sellItem(BoutiqueSign bs, Player p)
+	public boolean sellItem(BoutiqueSign bs, Player p)
 	{
 		Double costAmount = bs.getMoneyFrom();
 		String signOwner = bs.getOwnerString();
@@ -477,12 +478,16 @@ public class BoutiqueSignManager
 		//Signe webauction
 		else if (bs.isSignWebAuction())
 		{
+			p.sendMessage("dbg1: isSignWebAuction");
+			
+			
 			if (econ != 1)
 			{
 				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
 				return false;
 			}
-			else if (!WebItemsOperator.containEnough(signOwner, id, damage, qty))
+			//TO CHANGE
+			if(!plugin.db.wa_HasEnoughItem(signOwner, id, damage, qty))
 			{
 				p.sendMessage(plugName + WebItemsOperator.notEnoughErr);
 				return false;
@@ -495,12 +500,25 @@ public class BoutiqueSignManager
 				return false;
 			}
 			
-			if(WebItemsOperator.removeFromWebStock(signOwner, qty, id, damage))
+			p.sendMessage("dbg2");
+			
+			if(!plugin.db.wa_RemoveFromStock(signOwner, id, damage, qty))
 			{
-				EconomyHandler.modifyMoney(p.getName(), -costAmount);
-				PlayerOperator.givePlayerItem(qty, id, damage, p);	
+				p.sendMessage("Impossible d'enlever dans les stocks web !");
+				
+				return false;
 			}
-			//ChestOperator.removeFromChestStock(lTwoData[0], lTwoData[1], lTwoData[2], chest);
+			
+				
+				
+			int retmoney = EconomyHandler.modifyMoney(p.getName(), -costAmount);
+			
+			p.sendMessage("dbg4: retmoney = " + retmoney);
+			
+			PlayerOperator.givePlayerItem(qty, id, damage, p);	
+			
+			p.sendMessage("dbg4: wa_RemoveFromStock");
+			
 		}
 		
 		
@@ -509,7 +527,7 @@ public class BoutiqueSignManager
 			
 		try 
 		{
-			Boutique.getInstance().db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, costAmount,"toto","titi");
+			plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, costAmount,"toto","titi");
 		}
 		catch (SQLException e) 
 		{
@@ -530,7 +548,7 @@ public class BoutiqueSignManager
 		
 	}
 
-	public static  boolean buyItem(BoutiqueSign bs, Player p)
+	public boolean buyItem(BoutiqueSign bs, Player p)
 	{
 		Double costAmount = bs.getMoneyTo();
 		String signOwner = bs.getOwnerString();
@@ -576,7 +594,7 @@ public class BoutiqueSignManager
 			}
 			
 			// Ajoute les objets au stock WebAuctions
-			if(!WebItemsOperator.addToWebStock(signOwner, id, damage, qty))
+			if(!plugin.db.wa_AddToStock(p.getName(), id, damage, qty))
 			{
 				p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
 				return false;

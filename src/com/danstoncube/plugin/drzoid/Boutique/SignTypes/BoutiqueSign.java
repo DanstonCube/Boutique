@@ -370,11 +370,7 @@ public class BoutiqueSign
 		}
 	}
 
-	private void RenderFreeSign()
-	{
-		// TODO Auto-generated method stub
-		
-	}
+
 
 
 	private void RenderDonationSign()
@@ -384,11 +380,7 @@ public class BoutiqueSign
 	}
 
 
-	private void RenderBuySign()
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 	private void RenderTradeSign()
@@ -403,20 +395,170 @@ public class BoutiqueSign
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	public void RenderBuySign()
+	{
+		
+		
+		if(this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		{
+			BoutiqueSign.RenderBuySignServer(this);
+		}
+		else if(this.isSignChest() ||  this.isSignWebAuction())
+		{
+			BoutiqueSign.RenderBuySignPersonal(this);
+		}
+		else
+		{
+			BoutiqueSign.RenderBuySignDummy(this);
+		}
+		
+	}
+
+	private static void RenderBuySignServer(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		Integer giveAmount = bs.getQtyFrom();
+		String giveTypeText = bs.getItemFrom().itemShortname;
+		Double getAmount = bs.getMoneyFrom();
+		
+		//TODO: chaine currency depuis iConomy ou config ?
+		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
+		
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "ACHAT" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + getTypeText + ChatColor.WHITE + " / lot");
+		s.update();
+		
+	}
+
+
+	
+
+	private static void RenderBuySignPersonal(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		
+		Integer giveAmount = bs.getQtyFrom();
+		String giveTypeText = bs.getItemFrom().itemShortname;
+		Double getAmount = bs.getMoneyTo();
+		
+		//TODO: chaine currency depuis iConomy ou config ?
+		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
+		s.setLine(0, ChatColor.LIGHT_PURPLE + "ACHAT"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + getTypeText + ChatColor.WHITE + " / lot");
+		
+		if(bs.isSignChest() && bs.getChest() == null)
+		{
+			s.setLine(3,ChatColor.RED + "[Non relié]");
+		}
+		
+		
+		
+		s.update();
+	}
+
+	private static void RenderBuySignDummy(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		s.setLine(3, ChatColor.RED + "[Err. type]");
+		s.update();
+	}
+
+	private static String formatMoney(Double money)
+	{
+		float y = (float) (money * 10.0);
+		int i =(int) y;
+		int mod = i % 10;
+		 
+		if(mod == 0)
+		   return String.valueOf(i/10);
+
+		return String.valueOf(i/10) + "." + mod;
+	}
+	
+
+	
+	
+	
+	
+	public void RenderFreeSign()
+	{			
+		if(this.isSignServer())
+		{
+			BoutiqueSign.RenderFreeSignServer(this);
+		}
+		else if(this.isSignChest())
+		{
+			BoutiqueSign.RenderFreeSignChest(this);
+		}
+		else if(this.isSignWebAuction())
+		{
+			BoutiqueSign.RenderFreeSignWebAuction(this);
+		}
+		else
+		{
+			BoutiqueSign.RenderFreeSignDummy(this);
+		}
+	}
+	
+	
+	
+	
+	
+	
+
+	private static void RenderFreeSignDummy(BoutiqueSign boutiqueSign)
+	{
+		// TODO Auto-generated method stub
+	}
+
+
+	private static void RenderFreeSignWebAuction(BoutiqueSign boutiqueSign)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private static void RenderFreeSignChest(BoutiqueSign boutiqueSign)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private static void RenderFreeSignServer(BoutiqueSign boutiqueSign)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 
 
 	//public void RenderSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
 	public void RenderSellSign()
 	{			
-		if(this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if(this.isSignServer())
 		{
 			BoutiqueSign.RenderSellSignServer(this);
 		}
-		else if(this.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr()) == 0)
+		else if(this.isSignChest())
 		{
 			BoutiqueSign.RenderSellSignChest(this);
 		}
-		else if(this.getType().compareToIgnoreCase(BoutiqueSignWebAuction.getTypeStr()) == 0)
+		else if(this.isSignWebAuction())
 		{
 			BoutiqueSign.RenderSellSignWebAuction(this);
 		}
@@ -469,7 +611,7 @@ public class BoutiqueSign
 		if(lots > 1)	strNbLot = "Lots de ";
 		else			strNbLot = "Lot de ";
 		
-		String strAmount = ChatColor.YELLOW + String.valueOf(getAmount) + getTypeText;
+		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + getTypeText;
 		
 		//mise a jour du panneau
 		
@@ -497,7 +639,7 @@ public class BoutiqueSign
 		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + "VENTE" + ChatColor.GOLD + "]");
 		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount );	
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.YELLOW +  String.valueOf(getAmount) + getTypeText + ChatColor.WHITE + " le lot");
+		s.setLine(3, ChatColor.YELLOW +  formatMoney(getAmount) + getTypeText + ChatColor.WHITE + " le lot");
 		s.update();
 	}
 
@@ -538,7 +680,7 @@ public class BoutiqueSign
 		if(lots > 1)	strNbLot = "Lots de ";
 		else			strNbLot = "Lot de ";
 		
-		String strAmount = ChatColor.YELLOW + String.valueOf(getAmount) + getTypeText;
+		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + getTypeText;
 		
 		//mise a jour du panneau
 		
@@ -546,18 +688,25 @@ public class BoutiqueSign
 		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
 		s.setLine(3, strAmount + ChatColor.WHITE + " / lot");
+		
+		
+		if(c==null)
+		{
+			s.setLine(3,ChatColor.RED + "[Non relié]");
+		}
+		
 		s.update();
 	}
 	
 	public boolean isSignServer()
 	{
-		return this.getType() == BoutiqueSignServer.getTypeStr();
+		return this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr())==0;		
 		
 	}
 	
 	public boolean isSignChest()
 	{
-		return this.getType() == BoutiqueSignChest.getTypeStr();
+		return this.getType().compareToIgnoreCase(BoutiqueSignChest.getTypeStr())==0;		
 		
 	}
 	
@@ -577,8 +726,10 @@ public class BoutiqueSign
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
 		
+		if(this._moneyFrom == null || this._itemFrom != null )
+			return false;
 		
-		return this._moneyFrom == 0 && this._itemFrom == null;
+		return this._moneyFrom == 0.0;
 	}
 
 	public boolean isDonationSign()
@@ -591,7 +742,13 @@ public class BoutiqueSign
 		l.info("dbg: _itemTo = " + _itemTo );
 		
 		
-		return (this._moneyFrom > 0 || this._itemFrom != null) &&	(this._itemTo == null && this._moneyTo == null);
+		//return (this._moneyFrom != null || this._itemFrom != null) && (this._itemTo == null && this._moneyTo == null);
+		
+		
+		if(this._moneyTo == null || this._itemTo != null )
+			return false;
+		
+		return this._moneyTo == 0.0;		
 	}
 
 	public boolean isSellSign()
@@ -603,7 +760,7 @@ public class BoutiqueSign
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
 		
-		return (this._moneyFrom > 0 &&  this._itemFrom == null && this._itemTo != null);
+		return (this._moneyFrom != null &&  this._itemFrom == null && this._itemTo != null);
 	}
 	
 	public boolean isBuySign()
@@ -615,7 +772,7 @@ public class BoutiqueSign
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
 		
-		return (this._moneyTo > 0 &&  this._itemTo == null && this._itemFrom != null);
+		return (this._moneyTo != null &&  this._itemTo == null && this._itemFrom != null);
 	}
 
 	public boolean isTradeSign()
@@ -637,22 +794,22 @@ public class BoutiqueSign
 		//FREEBIES
 		if(this.isFreebiesSign())
 		{
-			return BoutiqueSignManager.giveFree(this, p);
+			return BoutiqueSignManager.getInstance().giveFree(this, p);
 		}
 		//DONATION
 		else if(this.isDonationSign())
 		{
-			return BoutiqueSignManager.getDonation(this, p);			
+			return BoutiqueSignManager.getInstance().getDonation(this, p);			
 		}
 		//VENTE
 		else if(this.isSellSign())
 		{
-			return BoutiqueSignManager.sellItem(this, p);
+			return BoutiqueSignManager.getInstance().sellItem(this, p);
 		}
 		//ACHAT
 		else if(this.isBuySign())
 		{
-			return BoutiqueSignManager.buyItem(this, p);
+			return BoutiqueSignManager.getInstance().buyItem(this, p);
 		}
 		//ECHANGE
 		else if (this.isTradeSign())
@@ -702,8 +859,7 @@ public class BoutiqueSign
 					return false;
 				}
 			}
-			
-			if(moneyFrom == null)
+			else if(moneyFrom == null)
 			{
 				p.sendMessage("Somme d'argent incorrecte sur la deuxième ligne");
 				return false;

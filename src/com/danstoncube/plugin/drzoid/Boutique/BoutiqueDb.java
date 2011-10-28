@@ -115,12 +115,19 @@ public class BoutiqueDb
 		String sql = "SELECT count(*) as compteur FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage = " + itemdamage;
 		
 		boolean ret = true;
+		int compteur = 0;
 		
 		try
 		{
 			this.openConnection();
 			ResultSet myResults = this.sqlQuery(sql);
-			int compteur = myResults.getInt(1);
+			
+			if(myResults.next())
+			{
+				compteur = myResults.getInt(1);
+			}
+			
+			
 			if(compteur > 0)
 			{
 				String sqlupdate = "UPDATE WA_Items SET quantity = quantity + " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
@@ -132,7 +139,7 @@ public class BoutiqueDb
 				String sqlinsert = "INSERT INTO WA_Items(name,damage,player,quantity) VALUES("+ itemid + ", " + itemdamage + ", '" + p + "', " + quantity+")"; 
 				this.insertQuery(sqlinsert);
 			}
-			
+
 		}
 		catch (Exception e)
 		{
@@ -150,15 +157,42 @@ public class BoutiqueDb
 	
 	public Boolean wa_RemoveFromStock(String p, Integer itemid, Integer itemdamage, Integer quantity)
 	{
-		/*id 	name 	damage 	player 	quantity*/
-		String sql = "UPDATE WA_Items SET quantity = quantity - " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+		
+		plugin.log.info("DEBUG: wa_RemoveFromStock - " + p + " " + itemid + " " + itemdamage +  " " + quantity );
+		
+		if (itemdamage == null || itemdamage < 0)
+			itemdamage = 0;
+		
+		Integer qtyStock = this.wa_CountItem(p, itemid, itemdamage);
+		
+		String updateSql = "UPDATE WA_Items SET quantity = quantity - " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+		String deleteSql = "DELETE FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
 		
 		boolean ret = true;
 		
 		try
 		{
 			this.openConnection();
-			this.updateQuery(sql);
+			
+			//TODO: statement perso et compter les update, si = 0 return false !
+			
+			if(qtyStock>quantity)
+			{
+				this.updateQuery(updateSql);
+			}
+			else if(qtyStock == quantity)
+			{
+				this.deleteQuery(deleteSql);
+			}
+			else
+			{
+				return false;
+			}
+			
+				
+			
+			
+			plugin.log.info("DEBUG: wa_RemoveFromStock 2");
 		}
 		catch (Exception e)
 		{
@@ -169,13 +203,19 @@ public class BoutiqueDb
 		
 		close();
 		
+	
+		
 		return ret;
 	}
 	
 	
 	public Boolean wa_HasEnoughItem(String p, Integer itemid, Integer itemdamage, Integer quantity)
 	{
+		
 		Integer count = wa_CountItem(p,itemid,itemdamage);
+		
+		plugin.log.info(plugin.logPrefix + "DEBUG: count=" + count);
+		
 		return (count>=quantity);
 	}
 	
@@ -188,12 +228,14 @@ public class BoutiqueDb
 		{
 			this.openConnection();
 			ResultSet myResults = this.sqlQuery(sql);
-			if(myResults.wasNull())
+			if(myResults.next())
 			{
+				plugin.log.info(plugin.logPrefix + "DEBUG: wasnull=false");
 				count = myResults.getInt(1);
 			}
 			else
 			{
+				plugin.log.info(plugin.logPrefix + "DEBUG: wasnull=true");
 				count = 0;
 			}
 		}

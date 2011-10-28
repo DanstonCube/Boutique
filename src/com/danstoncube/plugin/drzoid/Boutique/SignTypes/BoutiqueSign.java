@@ -399,7 +399,7 @@ public class BoutiqueSign
 		Integer getAmount = bs.getQtyFrom();
 		String getTypeText = bs.getItemFrom().itemShortname;
 		
-		s.setLine(0, ChatColor.LIGHT_PURPLE + "DONATION"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(0, ChatColor.LIGHT_PURPLE + "DON"); // + ChatColor.WHITE + " de lots de");
 		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
 		s.setLine(2, ChatColor.AQUA + getTypeText);
 		s.setLine(3, ChatColor.WHITE + "");
@@ -415,7 +415,7 @@ public class BoutiqueSign
 		Integer getAmount = bs.getQtyFrom();
 		String getTypeText = bs.getItemFrom().itemShortname;
 	
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "DONATION" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "DON" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
 		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
 		s.setLine(2, ChatColor.AQUA + getTypeText);
 		s.setLine(3, ChatColor.WHITE + "");
@@ -433,16 +433,89 @@ public class BoutiqueSign
 
 	private void RenderTradeSign()
 	{
-		// TODO Auto-generated method stub
-		
+		if(this.isSignServer())
+		{
+			BoutiqueSign.RenderTradeSignServer(this);
+		}
+		else if(this.isSignChest())
+		{
+			BoutiqueSign.RenderTradeSignChest(this);
+		}
+		else if(this.isSignWebAuction())
+		{
+			BoutiqueSign.RenderTradeSignWebAuction(this);
+		}
 	}
-
-
-	private void RenderDummySign()
+	
+	@Deprecated
+	private static void RenderTradeSignWebAuction(BoutiqueSign boutiqueSign)
 	{
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	private static void RenderTradeSignServer(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+
+		String giveTypeText = bs.getItemFrom().itemShortname;
+		String getTypeText = bs.getItemTo().itemShortname;
+				
+		int giveAmount = bs.getQtyFrom();
+		int getAmount = bs.getQtyTo();
+		
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.YELLOW + "ECHANGE" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");		
+		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.WHITE + "Contre");
+		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.update();
+	}
+	
+	private static void RenderTradeSignChest(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		Chest c = bs.getChest();
+		
+		if(s==null) 
+			return;
+		
+		String giveTypeText = bs.getItemFrom().itemShortname;
+		String getTypeText = bs.getItemTo().itemShortname;
+				
+		int giveAmount = bs.getQtyFrom();
+		int getAmount = bs.getQtyTo();
+		int getType = bs.getItemTo().itemId;
+		int getDamage = bs.getItemTo().itemDamage;
+		
+
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (c!=null) ? (int)(ChestOperator.contains(getType, getDamage, c) / getAmount) : - 1;		
+		
+		//couleur suivant la quantité
+		String strLot = "";						
+		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE;
+		else if(lots == 0)	strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.WHITE;
+		else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.WHITE;
+		else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.WHITE;
+		
+		if(lots > 1) 		strLot += " lots";
+		else				strLot += " lot";
+			
+		s.setLine(0, ChatColor.YELLOW + "ECHANGE");
+		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount);
+		s.setLine(2, ChatColor.WHITE + "Contre " + strLot + " de");
+		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.update();
+	}
+	
+	private void RenderDummySign()
+	{
+		
+	}
+	
+	
 	
 	
 	public void RenderBuySign()
@@ -483,11 +556,7 @@ public class BoutiqueSign
 
 	
 
-	private static String formatCurrency(Double getAmount)
-	{
-		//TODO: demander le nom de la currency a iconomy
-		return "Eu" + (getAmount > 1 ? "s":"");
-	}
+	
 
 
 	private static void RenderBuySignPersonal(BoutiqueSign bs)
@@ -916,8 +985,16 @@ public class BoutiqueSign
 		
 		return (this._itemTo != null && this._itemFrom != null);
 	}
+	
 
-
+	private static String formatCurrency(Double getAmount)
+	{
+		//TODO: demander le nom de la currency a iconomy
+		return "Eu" + (getAmount > 1 ? "s":"");
+	}
+	
+	
+	
 	public boolean doAction(Player p)
 	{
 		//FREEBIES

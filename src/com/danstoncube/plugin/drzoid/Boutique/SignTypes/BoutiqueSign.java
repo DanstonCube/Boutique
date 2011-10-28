@@ -375,13 +375,61 @@ public class BoutiqueSign
 
 	private void RenderDonationSign()
 	{
-		// TODO Auto-generated method stub
-		
+		if(this.isSignServer())
+		{
+			BoutiqueSign.RenderDonationSignServer(this);
+		}
+		else if(this.isSignChest() ||  this.isSignWebAuction())
+		{
+			BoutiqueSign.RenderDonationSignPersonal(this);
+		}
+		else
+		{
+			BoutiqueSign.RenderDonationSignDummy(this);
+		}
 	}
 
 
-	
+	private static void RenderDonationSignPersonal(BoutiqueSign bs)
+	{
+		// TODO Auto-generated method stub
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		Integer getAmount = bs.getQtyFrom();
+		String getTypeText = bs.getItemFrom().itemShortname;
+		
+		s.setLine(0, ChatColor.LIGHT_PURPLE + "DONATION"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + getTypeText);
+		s.setLine(3, ChatColor.WHITE + "");
+		s.update();
+	}
 
+
+	private static void RenderDonationSignServer(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		Integer getAmount = bs.getQtyFrom();
+		String getTypeText = bs.getItemFrom().itemShortname;
+	
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "DONATION" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + getTypeText);
+		s.setLine(3, ChatColor.WHITE + "");
+		s.update();
+	}
+	
+	private static void RenderDonationSignDummy(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		if(s==null) return;
+		
+		s.setLine(3, ChatColor.RED + "[Err. type]");
+		s.update();
+	}
 
 	private void RenderTradeSign()
 	{
@@ -401,7 +449,7 @@ public class BoutiqueSign
 	{
 		
 		
-		if(this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr()) == 0)
+		if(this.isSignServer())
 		{
 			BoutiqueSign.RenderBuySignServer(this);
 		}
@@ -423,22 +471,24 @@ public class BoutiqueSign
 		
 		Integer giveAmount = bs.getQtyFrom();
 		String giveTypeText = bs.getItemFrom().itemShortname;
-		Double getAmount = bs.getMoneyFrom();
-		
-		//TODO: chaine currency depuis iConomy ou config ?
-		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
-		
-		
+		Double getAmount = bs.getMoneyTo();
+
 		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "ACHAT" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
 		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + getTypeText + ChatColor.WHITE + " / lot");
+		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + formatCurrency(getAmount) + ChatColor.WHITE + " / lot");
 		s.update();
-		
 	}
 
 
 	
+
+	private static String formatCurrency(Double getAmount)
+	{
+		//TODO: demander le nom de la currency a iconomy
+		return "Eu" + (getAmount > 1 ? "s":"");
+	}
+
 
 	private static void RenderBuySignPersonal(BoutiqueSign bs)
 	{
@@ -523,28 +573,108 @@ public class BoutiqueSign
 	private static void RenderFreeSignDummy(BoutiqueSign boutiqueSign)
 	{
 		// TODO Auto-generated method stub
-	}
-
-
-	private static void RenderFreeSignWebAuction(BoutiqueSign boutiqueSign)
-	{
-		// TODO Auto-generated method stub
+		
+		
+		
 		
 	}
 
 
-	private static void RenderFreeSignChest(BoutiqueSign boutiqueSign)
+	private static void RenderFreeSignWebAuction(BoutiqueSign bs)
 	{
-		// TODO Auto-generated method stub
+		Sign s = bs.getSign();
+		
+		if(s==null) 
+			return;
+		
+		Integer giveType = bs.getItemTo().itemId;
+		Integer giveDamage = bs.getItemTo().itemDamage;
+		Integer giveAmount = bs.getQtyTo();
+		String giveTypeText = bs.getItemTo().itemShortname;
+		
+		
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (int)(WebItemsOperator.contains(bs.getOwnerString(), giveType, giveDamage) / giveAmount);		
+		
+		//couleur suivant la quantité
+		String strLot = "";	
+		
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
+		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
+		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
+		
+		String strNbLot = "";
+		if(lots > 1)	strNbLot = "Lots de ";
+		else			strNbLot = "Lot de ";
+		
+		s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, "");
+		s.update();
+	}
+
+
+	private static void RenderFreeSignChest(BoutiqueSign bs)
+	{
+		Sign s = bs.getSign();
+		Chest c = bs.getChest();
+		
+		if(s==null) 
+			return;
+		
+		Integer giveType = bs.getItemTo().itemId;
+		Integer giveDamage = bs.getItemTo().itemDamage;
+		Integer giveAmount = bs.getQtyTo();
+		String giveTypeText = bs.getItemTo().itemShortname;
+		
+		
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (c!=null) ? (int)(ChestOperator.contains(giveType, giveDamage, c) / giveAmount) : -1;		
+		
+		//couleur suivant la quantité
+		String strLot = "";	
+		
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
+		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
+		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
+		
+		String strNbLot = "";
+		if(lots > 1)	strNbLot = "Lots de ";
+		else			strNbLot = "Lot de ";
+		
+		s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, "");
+		s.update();
 		
 	}
 
 
-	private static void RenderFreeSignServer(BoutiqueSign boutiqueSign)
+	private static void RenderFreeSignServer(BoutiqueSign bs)
 	{
-		// TODO Auto-generated method stub
+		Sign s = bs.getSign();
+		if(s==null) return;
 		
+		Integer giveAmount = bs.getQtyTo();
+		String giveTypeText = bs.getItemTo().itemShortname;
+		
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + "GRATUIT" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
+		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(2, ChatColor.AQUA + giveTypeText);
+		s.setLine(3, "");
+		s.update();
 	}
+	
+	
+	
+	
+	
+	
+	
 
 
 	//public void RenderSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
@@ -701,7 +831,6 @@ public class BoutiqueSign
 	public boolean isSignServer()
 	{
 		return this.getType().compareToIgnoreCase(BoutiqueSignServer.getTypeStr())==0;		
-		
 	}
 	
 	public boolean isSignChest()

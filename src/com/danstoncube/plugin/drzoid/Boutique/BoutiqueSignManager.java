@@ -137,10 +137,7 @@ public class BoutiqueSignManager
 		p.sendMessage("dbg1 : line4 = " + bs.getLine4());
 		
 		p.sendMessage("dbg2 : type = " + bs.getType());
-		
-		// Vérifie les items / lignes
-		
-		
+
 		if(bs.isSignServer())
 		{
 			
@@ -152,21 +149,10 @@ public class BoutiqueSignManager
 			
 			if(!bs.checkLines(p))
 			{
-				
 				return;
 			}
 			
 			p.sendMessage(plugName + "Panneau serveur ajouté à la liste :)");
-			
-			this.put(bs);
-			
-			//TODO : signmanager.addsign
-			//TODO : prerender
-			
-			bs.setLine4(ChatColor.GREEN + "[Actif]");
-			
-			
-			plugin.signmanager.saveGlobalSigns();
 		}
 		
 		else if(bs.isSignChest())
@@ -183,12 +169,6 @@ public class BoutiqueSignManager
 			}
 			
 			p.sendMessage(plugName + "Panneau joueur ajouté à la liste :)");
-			
-			this.put(bs);
-			
-			bs.setLine4(ChatColor.GREEN + "[Actif]");
-			
-			plugin.signmanager.saveGlobalSigns();
 		}	
 		else if(bs.isSignWebAuction())
 		{
@@ -199,21 +179,17 @@ public class BoutiqueSignManager
 			}
 			
 			if(!bs.checkLines(p))
+			{
 				return;
+			}
 			
 			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
-			
-			//TODO : signmanager.addsign
-			//TODO : prerender
-			this.put(bs);
-			
-			bs.setLine4(ChatColor.GREEN + "[Actif]");
-			
-			plugin.signmanager.saveGlobalSigns();
 		}
 		
-		
-		
+		bs.setLine4("");			
+		this.put(bs);
+		bs.Render();
+		plugin.signmanager.saveGlobalSigns();
 	}
 	
 	
@@ -804,13 +780,13 @@ public class BoutiqueSignManager
 		// Achete des objet, et les met dans le coffre relié
 		else if (bs.isSignChest())
 		{
-			p.sendMessage("dbg0: debut signchest");
+			//p.sendMessage("dbg0: debut signchest");
 			
 			// Cherche le coffre relié au panneau
 			Chest chest = bs.getChest();
 			if(chest==null)	
 			{
-				p.sendMessage("dbg1: coffre introuvable");
+				//p.sendMessage("dbg1: coffre introuvable");
 				return false;
 			}
 							
@@ -854,8 +830,107 @@ public class BoutiqueSignManager
 
 	public static boolean tradeItems(BoutiqueSign bs, Player p)
 	{
-		return false;
-		// TODO Auto-generated method stub
+		
+		//TODO changer plugname par chatprefix
+		String plugName = "";
+		
+		
+		int qtyFrom = bs.getQtyFrom();
+		int qtyTo = bs.getQtyTo();
+		int damageFrom = bs.getItemFrom().itemDamage;
+		int damageTo = bs.getItemTo().itemDamage;
+		int idFrom = bs.getItemFrom().itemId;
+		int idTo = bs.getItemTo().itemId;
+		
+		
+		
+		if (bs.isSignServer())
+		{
+			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
+			{
+				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				return false;
+			}
+			
+			PlayerOperator.removeFromPlayer(qtyFrom, idFrom, damageFrom, p);
+			PlayerOperator.givePlayerItem(qtyTo, idTo, damageTo, p);
+		
+		}
+		else if (bs.isSignChest())
+		{
+			
+			Chest chest = bs.getChest();
+			if(chest==null)
+				return false;
+			
+			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
+			{
+				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				return false;
+			}
+			else if (!ChestOperator.containsEnough(qtyTo, idTo, damageTo, chest))
+			{
+				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				return false;
+			}
+			else if (!ChestOperator.hasEnoughSpace(qtyFrom, idFrom, damageFrom, chest))
+			{
+				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+				return false;
+			}
+			
+			
+			ChestOperator.removeFromChestStock(qtyTo, idTo, damageTo, chest);
+			ChestOperator.addToChestStock(qtyFrom, idFrom, damageFrom, chest);
+			
+			PlayerOperator.removeFromPlayer(qtyFrom, idFrom, damageFrom, p);
+			PlayerOperator.givePlayerItem(qtyTo, idTo, damageTo, p);
+						
+		}
+		else if (bs.isSignWebAuction())
+		{
+
+			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
+			{
+				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				return false;
+			}
+			else if (!WebItemsOperator.containEnough(bs.getOwnerString(), idTo, damageTo, qtyTo))
+			{
+				//TODO: message "La personne avec qui tu échanges n'a plus assez d'items à échanger !"
+				p.sendMessage(plugName + "La personne avec qui tu échanges n'a plus assez d'items à échanger !");
+				return false;
+			}
+			
+			
+			//Prend l'objet source
+			PlayerOperator.removeFromPlayer(qtyFrom, idFrom, damageFrom, p);
+			WebItemsOperator.addToWebStock(bs.getOwnerString(), idFrom, damageFrom, qtyFrom);
+			
+			//Donne l'objet de destination
+			WebItemsOperator.removeFromWebStock(bs.getOwnerString(), idTo, damageTo, qtyTo);
+			PlayerOperator.givePlayerItem(qtyTo, idTo, damageTo, p);						
+		}
+		
+		
+		
+		
+		
+		//log transaction
+		
+		try 
+		{
+			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), bs.getOwnerString(), idFrom, damageFrom, qtyFrom, 0.0, "toto", "TRADE");
+			Boutique.getInstance().db.logTransaction(p.getLocation(), bs.getOwnerString(), p.getName(), idTo, damageTo, qtyTo, 0.0, "toto", "TRADE");		
+		}
+		catch (Exception e) 
+		{
+			// TODO
+			e.printStackTrace();
+		} 
+		
+		return true;
+
 	}
 
 	public void put(String locationstr, BoutiqueSign bs)
@@ -1004,6 +1079,7 @@ public class BoutiqueSignManager
 	public void setSign(Block b, Player p, String[] lines) 
 	{
 		this.signSetter(b,p,lines);
+		
 	}
 
 	

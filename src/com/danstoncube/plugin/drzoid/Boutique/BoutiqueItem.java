@@ -1,5 +1,7 @@
 package com.danstoncube.plugin.drzoid.Boutique;
 
+import org.bukkit.Bukkit;
+
 public class BoutiqueItem
 {
 	
@@ -11,7 +13,8 @@ public class BoutiqueItem
 	
 	public BoutiqueItem(Integer id, Integer damage)
 	{
-		// TODO Auto-generated constructor stub
+		Bukkit.getServer().getLogger().info("DBG ITEM: " + id + ":" + damage);
+
 		
 		if(damage == null)
 			damage = 0;
@@ -36,41 +39,77 @@ public class BoutiqueItem
 		this.itemId = 0;
 		this.itemDamage = 0;
 		this.itemStack = 64;
-		this.itemName = "";
-		this.itemShortname = "";
+		this.itemName = "Objet inconnu";
+		this.itemShortname = "INCONNU";
 		
-		String[] strings = object.split(";");
 		
-		if(strings.length < 3 ) 
+		
+		//ID:DAMAGE:SHORNAME:NAME:STACKTO
+		String[] item = object.split(":");  
+		
+		if(item.length < 5) 
 			return false;
-			
-		String[] item = strings[0].split(":");  
 		
-		if(item.length == 1)
+		
+		//StackTo renseigné ?
+		if(item.length >= 5)
 		{
-			this.itemId = Integer.parseInt(item[0]);
-		}
-		else if(item.length == 2)
-		{
-			this.itemId = Integer.parseInt(item[0]);
-			this.itemDamage = Integer.parseInt(item[1]);
-		}
-		else if(item.length == 3)
-		{
-			this.itemId = Integer.parseInt(item[0]);
-			this.itemDamage = Integer.parseInt(item[1]);
+			try
+			{
+				this.itemStack = Integer.parseInt(item[4]);
+			}
+			catch(NumberFormatException e)
+			{
+				
+			}
 		}
 		
-		if(strings.length == 3)
+		
+		//Name renseigné ?
+		if(item.length >= 4)
 		{
-			this.itemShortname = strings[1];
-			this.itemName = strings[2];
+			this.itemName = item[3];
 		}
-		else if(strings.length == 2)
+		
+		//Shortname renseigné ?
+		if(item.length >= 3)
 		{
-			this.itemShortname = strings[1];
-			this.itemName = strings[1];
+			if(!item[2].isEmpty())
+				this.itemShortname = item[2];			
 		}
+		
+		//Damage renseigné ?
+		if(item.length >= 2)
+		{
+			try
+			{
+				this.itemDamage = Integer.parseInt(item[1]);
+			}
+			catch(NumberFormatException e)
+			{
+			}
+		}
+		
+		//Id renseigné ?
+		if(item.length >= 1)
+		{
+			try
+			{
+				this.itemId = Integer.parseInt(item[0]);
+			}
+			catch(NumberFormatException e)
+			{
+				return false;
+			}
+		}
+				
+		
+		
+		if(this.itemId == 0)
+			return false;
+				
+		if(this.itemName.isEmpty())
+			this.itemName = this.itemShortname;
 		
 		
 		return true;

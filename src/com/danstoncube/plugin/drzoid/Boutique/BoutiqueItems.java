@@ -20,7 +20,7 @@ public class BoutiqueItems
 		String key = itemId + ":" + itemDamage;
 		
 		
-		Bukkit.getServer().getLogger().info("isValiditems, key= " + key);
+		Bukkit.getServer().getLogger().info("isValiditems, key= " + key + "valid=" + BoutiqueItems._items.containsKey(key));
 		
 		return BoutiqueItems._items.containsKey(key);
 	}
@@ -49,7 +49,8 @@ public class BoutiqueItems
 
 	public static void put(BoutiqueItem bi)
 	{
-		Bukkit.getServer().getLogger().info("AJOUT " + bi.itemId +":" + bi.itemDamage);
+		//TODO: remove debug
+		//Bukkit.getServer().getLogger().info("AJOUT " + bi.itemId +":" + bi.itemDamage);
 		
 		
 		String key = bi.itemId + ":" + bi.itemDamage;

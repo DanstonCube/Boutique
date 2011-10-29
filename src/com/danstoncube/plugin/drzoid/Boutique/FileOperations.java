@@ -109,14 +109,18 @@ public class FileOperations
 	        {
 	        	strLine = strLine.trim();
 	        	
+	        	//Boutique.getInstance().log.info("Line: " + strLine);
+	        	
 	        	if(strLine.isEmpty() || strLine.startsWith("#"))
 	        		continue;
+	        
 	        
 	        	BoutiqueItem bi = new BoutiqueItem();
 	        	
 	        	
 	        	if(bi.parseString(strLine))
 	        	{
+	        		Boutique.getInstance().log.info("Load item OK: " + strLine);
 	        		BoutiqueItems.put(bi);
 	        	}
         		

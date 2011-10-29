@@ -158,11 +158,6 @@ public class BoutiqueSign
 			this._qtyFrom = itemQty;
 			this._moneyFrom = null;			
 		}
-			
-		
-		
-		
-		
 		
 	}
 	
@@ -174,8 +169,11 @@ public class BoutiqueSign
 		String[] splited = line3.split(":");
 		
 		//Teste validitée découpage
-		if(splited.length < 2 || splited.length > 3) 
+		if(splited.length < 2 || splited.length > 3)
+		{
+			Bukkit.getServer().getLogger().info("DBG: taille incorrecte pour : " + line3);
 			return;
+		}
 		
 		Double moneyTo = null;
 		Integer itemId = null;
@@ -396,13 +394,30 @@ public class BoutiqueSign
 		Sign s = bs.getSign();
 		if(s==null) return;
 		
-		Integer getAmount = bs.getQtyFrom();
-		String getTypeText = bs.getItemFrom().itemShortname;
+		String getAmount = "";
+		String getTypeText = "";
 		
-		s.setLine(0, ChatColor.LIGHT_PURPLE + "DON"); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
-		s.setLine(2, ChatColor.AQUA + getTypeText);
-		s.setLine(3, ChatColor.WHITE + "");
+		s.setLine(0, ChatColor.LIGHT_PURPLE + "DON");
+		// Argent ou item ?	
+		if(bs.getItemFrom() != null)
+		{
+			getAmount = bs.getQtyFrom().toString();
+			getTypeText = bs.getItemFrom().itemShortname;
+			
+			s.setLine(1, ChatColor.WHITE + "lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);	
+			s.setLine(2, ChatColor.AQUA + getTypeText);
+		}
+		else if(bs.getMoneyFrom() != null)
+		{
+			getAmount = formatMoney(bs.getMoneyFrom());
+			getTypeText = formatCurrency(bs.getMoneyFrom());
+			
+			//s.setLine(1, ChatColor.WHITE + "Don de "); //ChatColor.BLACK + giveTypeText);	
+			s.setLine(1, ChatColor.YELLOW + getAmount + " " + getTypeText);
+			s.setLine(2, ChatColor.WHITE + "pour");
+			s.setLine(3, ChatColor.AQUA + bs.getOwnerString());
+		}
+				
 		s.update();
 	}
 
@@ -718,6 +733,13 @@ public class BoutiqueSign
 		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
 		s.setLine(3, "");
+		
+		if(c==null)
+		{
+			s.setLine(3,ChatColor.RED + "[Non relié]");
+		}
+		
+		
 		s.update();
 		
 	}

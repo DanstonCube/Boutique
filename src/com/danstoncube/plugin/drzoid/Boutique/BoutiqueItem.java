@@ -1,7 +1,5 @@
 package com.danstoncube.plugin.drzoid.Boutique;
 
-import org.bukkit.Bukkit;
-
 public class BoutiqueItem
 {
 	
@@ -13,7 +11,8 @@ public class BoutiqueItem
 	
 	public BoutiqueItem(Integer id, Integer damage)
 	{
-		Bukkit.getServer().getLogger().info("DBG ITEM: " + id + ":" + damage);
+		//TODO: virer debug
+		//Bukkit.getServer().getLogger().info("DBG ITEM: " + id + ":" + damage);
 
 		
 		if(damage == null)

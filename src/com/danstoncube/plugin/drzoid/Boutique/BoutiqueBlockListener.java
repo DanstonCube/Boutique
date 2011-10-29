@@ -23,7 +23,10 @@ public class BoutiqueBlockListener extends BlockListener
 		if ((!e.isCancelled()) && (plugin.signmanager.haveLocation(location)))
 			plugin.signmanager.remove(location);
 		
-		e.getPlayer().sendMessage("dbg0");
+		//e.getPlayer().sendMessage("dbg0");
+		
+		//String[] lines = e.getLines();
+		
 		
 		this.plugin.signmanager.setSign(e.getBlock(), e.getPlayer(), e.getLines());
 	}

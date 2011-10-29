@@ -27,17 +27,21 @@ public class PermissionsHandler
 			((Permissions)test).getHandler();
 			plugin.log.info("["+plugin.displayname+"] utilise Permissions");
 			permissionsEnabled = true;
+			permissions = test;
 			return;
 		}
 	}
 	
 	private static boolean checkNode(Player p, String node)
 	{
+		
 		if(permissions != null)
 		{
-			return Permissions.Security.permission(p, node);
+			//Boutique.getInstance().log.info("Permissions: hasPerm: " +  Permissions.Security.has(p, node));
+			return Permissions.Security.has(p, node);
 		}
 		
+		//Boutique.getInstance().log.info("Bukkit: hasPerm: " +  Permissions.Security.has(p, node));
 		return p.hasPermission(node);
 	}
 	

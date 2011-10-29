@@ -83,26 +83,33 @@ public class BoutiquePlayerListener extends PlayerListener
 			if (playerChest.get(p) == (Chest)b.getState())
 			{
 				p.sendMessage(plugName + "Tu as déjà choisi ce coffre.");
+				return;
 			}
-			else 
-			{				
-				playerChest.put(p, (Chest)b.getState());
-				
-				p.sendMessage(plugName + "Coffre mémorisé.");
-				
-				if (playerChest.containsKey(p) && playerSign.containsKey(p))
-				{
-					plugin.signmanager.setChest(playerSign.get(p), playerChest.get(p), p);
+			else if(!plugin.signmanager.isChestOwner((Chest)b.getState(), p))
+			{
+					p.sendMessage(plugName + "Ce n'est pas ton coffre (Pas les droits dans le cubo ?)");
+					return;
+			}
 			
-					if (playerSetChest.get(p) == false)
-						playerSetChest.remove(p);
-					
-					playerChest.remove(p);
-					playerSign.remove(p);
-					
-					plugin.signmanager.saveSignData();
-				}
+			
+							
+			playerChest.put(p, (Chest)b.getState());
+			
+			p.sendMessage(plugName + "Coffre mémorisé.");
+			
+			if (playerChest.containsKey(p) && playerSign.containsKey(p))
+			{
+				plugin.signmanager.setChest(playerSign.get(p), playerChest.get(p), p);
+		
+				if (playerSetChest.get(p) == false)
+					playerSetChest.remove(p);
+				
+				playerChest.remove(p);
+				playerSign.remove(p);
+				
+				plugin.signmanager.saveSignData();
 			}
+			
 		}
 		
 	}
@@ -167,7 +174,8 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			//Sign s = (Sign) b.getState();
 			
-			p.sendMessage(plugName + "Click panneau");
+			//TODO virer debug
+			//p.sendMessage(plugName + "Click panneau");
 			
 			if(plugin.signmanager.haveLocation(b.getLocation()))
 			{
@@ -175,7 +183,8 @@ public class BoutiquePlayerListener extends PlayerListener
 			}
 			else
 			{
-				p.sendMessage(plugName + "Connais pas ce panneau");
+				//TODO virer debug
+				//p.sendMessage(plugName + "Connais pas ce panneau");
 			}
 				
 			

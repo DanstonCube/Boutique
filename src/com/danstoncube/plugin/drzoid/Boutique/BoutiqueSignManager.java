@@ -119,7 +119,8 @@ public class BoutiqueSignManager
 	
 	private void signSetter(Block b, Player p, String[] lines) 
 	{		
-		p.sendMessage("dbg1");
+		//TODO: virer debug
+		//p.sendMessage("dbg1");
 		
 		
 		if(b==null) 
@@ -131,13 +132,15 @@ public class BoutiqueSignManager
 		bs.setLocation(b.getLocation());
 		bs.setLines(lines);
 
+		//TODO: virer debug
+		/*
 		p.sendMessage("dbg1 : line1 = " + bs.getLine1());
 		p.sendMessage("dbg1 : line2 = " + bs.getLine2());
 		p.sendMessage("dbg1 : line3 = " + bs.getLine3());
-		p.sendMessage("dbg1 : line4 = " + bs.getLine4());
-		
+		p.sendMessage("dbg1 : line4 = " + bs.getLine4());		
 		p.sendMessage("dbg2 : type = " + bs.getType());
-
+		*/
+		
 		if(bs.isSignServer())
 		{
 			
@@ -165,6 +168,8 @@ public class BoutiqueSignManager
 			
 			if(!bs.checkLines(p))
 			{
+				//TODO: virer debug
+				//p.sendMessage("erreur checkline");
 				return;
 			}
 			
@@ -180,23 +185,31 @@ public class BoutiqueSignManager
 			
 			if(!bs.checkLines(p))
 			{
+				//TODO: virer debug
+				//p.sendMessage("erreur checkline");
 				return;
 			}
 			
 			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
 		}
+		else
+		{
+			return;
+		}
 		
-		bs.setLine4("");			
-		this.put(bs);
+		
+		bs.setLine4("ok");			
 		bs.Render();
+		
+		this.put(bs);
 		plugin.signmanager.saveGlobalSigns();
 	}
 	
 	
 	public void displaySignInfo(Block b, Player p) 
 	{
-		
-		p.sendMessage(plugName + "displaySignInfo");
+		//TODO virer debug
+		//p.sendMessage(plugName + "displaySignInfo");
 		
 		BoutiqueSign bs = getBoutiqueSign(b);
 		
@@ -216,10 +229,12 @@ public class BoutiqueSignManager
 			return;
 		}		
 					
+		
+		
 		/* Affiche le type de panneau et le propriétaire */
 		
-
-		p.sendMessage("dbg1: Type=" + bs.getType());
+		//TODO virer debug
+		//p.sendMessage("dbg1: Type=" + bs.getType());
 		
 		if(bs.isSignServer())
 		{
@@ -270,8 +285,10 @@ public class BoutiqueSignManager
 		
 		
 		if(!bs.checkLines(p))
+		{
+			//TODO virer debug
 			return;
-		
+		}
 		
 		/* Détermine le message en fonction du type de panneau */
 		
@@ -445,7 +462,8 @@ public class BoutiqueSignManager
 		//Signe webauction
 		else if (bs.isSignWebAuction())
 		{
-			p.sendMessage("dbg1: isSignWebAuction");
+			//TODO virer debug
+			//p.sendMessage("dbg1: isSignWebAuction");
 			
 			
 			if (econ != 1)
@@ -467,7 +485,8 @@ public class BoutiqueSignManager
 				return false;
 			}
 			
-			p.sendMessage("dbg2");
+			//TODO virer debug
+			//p.sendMessage("dbg2");
 			
 			if(!plugin.db.wa_RemoveFromStock(signOwner, id, damage, qty))
 			{
@@ -480,17 +499,19 @@ public class BoutiqueSignManager
 				
 			int retmoney = EconomyHandler.modifyMoney(p.getName(), -costAmount);
 			
-			p.sendMessage("dbg4: retmoney = " + retmoney);
+			//TODO virer debug
+			//p.sendMessage("dbg4: retmoney = " + retmoney);
 			
 			PlayerOperator.givePlayerItem(qty, id, damage, p);	
 			
-			p.sendMessage("dbg4: wa_RemoveFromStock");
+			//TODO virer debug
+			//p.sendMessage("dbg4: wa_RemoveFromStock");
 			
 		}
 		
 		
 		p.sendMessage(plugName + "Tu as recu " + qty + " " + bs.getItemTo().itemName);
-		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
+		p.sendMessage(plugName + "Il as désormais " + EconomyHandler.playerHave(p.getName()));
 			
 		try 
 		{
@@ -504,12 +525,6 @@ public class BoutiqueSignManager
 		{
 			e.printStackTrace();
 		} 
-		
-		
-		
-		
-		
-		
 		
 		return true;
 		
@@ -557,7 +572,8 @@ public class BoutiqueSignManager
 		//Signe webauction
 		else if (bs.isSignWebAuction())
 		{
-			p.sendMessage("dbg1: isSignWebAuction");
+			//TODO virer debug
+			//p.sendMessage("dbg1: isSignWebAuction");
 			
 			//TO CHANGE
 			if(!plugin.db.wa_HasEnoughItem(signOwner, id, damage, qty))
@@ -667,13 +683,15 @@ public class BoutiqueSignManager
 		// Achete des objet, et les met dans le coffre relié
 		else if (bs.isSignChest())
 		{
-			p.sendMessage("dbg0: debut signchest");
+			//TODO virer debug
+			//p.sendMessage("dbg0: debut signchest");
 			
 			// Cherche le coffre relié au panneau
 			Chest chest = bs.getChest();
 			if(chest==null)	
 			{
-				p.sendMessage("dbg1: coffre introuvable");
+				//TODO virer debug
+				//p.sendMessage("dbg1: coffre introuvable");
 				return false;
 			}
 				
@@ -706,7 +724,8 @@ public class BoutiqueSignManager
 			// Credite le compte du vendeur
 			EconomyHandler.modifyMoney(p.getName(), costAmount);
 			
-			p.sendMessage("dbg2: fin signchest");
+			//TODO virer debug
+			//p.sendMessage("dbg2: fin signchest");
 		}
 		
 		
@@ -716,11 +735,6 @@ public class BoutiqueSignManager
 		{
 			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id, damage, qty, costAmount,"toto","titi");
 		}
-		catch (SQLException e) 
-		{
-			// TODO
-			e.printStackTrace();
-		} 
 		catch (Exception e) 
 		{
 			// TODO
@@ -734,96 +748,129 @@ public class BoutiqueSignManager
 
 	public boolean getDonation(BoutiqueSign bs, Player p)
 	{
-		Double costAmount = bs.getMoneyTo();
-		String signOwner = bs.getOwnerString();
-		Integer qty = bs.getQtyFrom();
-		Integer id = bs.getItemFrom().itemId;
-		Integer damage = bs.getItemFrom().itemDamage;
+		//Double costAmount = bs.getMoneyTo();
 		
-		//int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
+		String signOwner = bs.getOwnerString();
+
 		
 		//TODO changer plugname par chatprefix
 		String plugName = "";
 		
-		if (!PlayerOperator.playerHasEnough( qty, id, damage, p))
+		
+		//Teste donation item ou thunes ?
+		
+		//Don d'item
+		if(bs.getItemFrom() != null)
 		{
-			p.sendMessage(plugName + PlayerOperator.playerStockErr);
+			Integer qty = bs.getQtyFrom();
+			Integer id = bs.getItemFrom().itemId;
+			Integer damage = bs.getItemFrom().itemDamage;
+			
+			if (!PlayerOperator.playerHasEnough( qty, id, damage, p))
+			{
+				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				return false;
+			}
+
+			if (bs.isSignServer())
+			{
+				//Enleve le propriétaire du panneau pour les logs (car panneau serveur) !
+				signOwner = "";
+			}
+			else if (bs.isSignWebAuction())
+			{
+				// Panneau "webauctions"
+				// Ajoute les objets au stock WebAuctions
+				if(!plugin.db.wa_AddToStock(p.getName(), id, damage, qty))
+				{
+					p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
+					return false;
+				}
+			}			
+			else if (bs.isSignChest())
+			{
+				//p.sendMessage("dbg0: debut signchest");
+				
+				// Cherche le coffre relié au panneau
+				Chest chest = bs.getChest();
+				if(chest==null)	
+				{
+					//p.sendMessage("dbg1: coffre introuvable");
+					return false;
+				}
+								
+				// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
+				if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
+				{
+					p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+					return false;
+				}			
+
+				// Credite le coffre de l'acheteur
+				ChestOperator.addToChestStock(qty, id, damage, chest);
+			}
+			
+			// Retire les objets au donneur
+			PlayerOperator.removeFromPlayer(qty, id, damage, p);
+			
+			p.sendMessage(plugName + "Tu as donné " + qty + "x " + bs.getItemFrom().itemName + " " + (bs.isSignServer() ? "au serveur.": "à " + signOwner + "."));
+			
+			
+			try 
+			{
+				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id , damage, qty , 0.0 ,"toto","titi");
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		else if(bs.getMoneyFrom() != null)
+		{
+			
+			//Don d'argent
+			
+			
+			//Verif money doneur
+			if (EconomyHandler.hasEnough(p.getName(), bs.getMoneyFrom())!=1)
+			{
+				p.sendMessage(plugName + EconomyHandler.noFundsErr);
+				return false;
+			}
+			
+			//Crédite le receveur (sauf si serveur)
+			if(!bs.isSignServer())
+			{
+				EconomyHandler.modifyMoney(bs.getOwnerString(), bs.getMoneyFrom());
+			}
+			
+			//Débite le doneur
+			EconomyHandler.modifyMoney(p.getName(), -bs.getMoneyFrom());
+			
+
+			//TODO: messages configurables
+			p.sendMessage(plugName + "Tu as donné " + BoutiqueSign.formatMoney(bs.getMoneyFrom()) + " " + BoutiqueSign.formatCurrency(bs.getMoneyFrom()) + " " + (bs.isSignServer() ? "au serveur.": "à " + signOwner));			
+			p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
+			
+			
+			try 
+			{
+				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, 0, 0, 0, bs.getMoneyFrom() ,"toto","titi");
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		else
+		{
+			//TODO: message Hein ta fumé
+			p.sendMessage(plugName + "VROUM VROUM");
 			return false;
 		}
-		
-		// Panneau "Serveur"
-		if (bs.isSignServer())
-		{
-			//Enleve les objets dans l'inventaire du joueur
-			PlayerOperator.removeFromPlayer(qty, id ,damage, p);
-			
-			//Enleve le propriétaire du panneau pour les logs (car panneau serveur) !
-			signOwner = "";
-		}
-		
-		// Panneau "webauctions"
-		// Achete des objet, et les met dans le stock "webauctions"
-		else if (bs.isSignWebAuction())
-		{
-			// Ajoute les objets au stock WebAuctions
-			if(!plugin.db.wa_AddToStock(p.getName(), id, damage, qty))
-			{
-				p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
-				return false;
-			}
-			
-			// Enleve les objets de l'inventaire du vendeur
-			PlayerOperator.removeFromPlayer(qty, id, damage, p);
-		}
-		
-		// Panneau "coffre"
-		// Achete des objet, et les met dans le coffre relié
-		else if (bs.isSignChest())
-		{
-			//p.sendMessage("dbg0: debut signchest");
-			
-			// Cherche le coffre relié au panneau
-			Chest chest = bs.getChest();
-			if(chest==null)	
-			{
-				//p.sendMessage("dbg1: coffre introuvable");
-				return false;
-			}
-							
-			// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
-			if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
-			{
-				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
-				return false;
-			}			
 
-			// Credite le coffre de l'acheteur
-			ChestOperator.addToChestStock(qty, id, damage, chest);
-			
-			// Retire les objets au vendeur
-			PlayerOperator.removeFromPlayer(qty, id, damage, p);
-		}
-		
-		
-		//TODO: message "tu as donné X eus / X item à Player/Server"
-		
-		//p.sendMessage(plugName + "Tu as donné " + EconomyHandler.playerHave(p.getName()) + ".");
-		
-		try 
-		{
-			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id, damage, qty, 0.0,"toto","titi");
-		}
-		catch (SQLException e) 
-		{
-			// TODO
-			e.printStackTrace();
-		} 
-		catch (Exception e) 
-		{
-			// TODO
-			e.printStackTrace();
-		} 
-		
 		return true;
 	}
 	
@@ -1138,8 +1185,6 @@ public class BoutiqueSignManager
 		saveGlobalSigns();
 		
 		//TODO: else if datasql
-		
-		
 	}
 	
 	public void loadGlobalSignData()
@@ -1149,7 +1194,19 @@ public class BoutiqueSignManager
 
 	public void put(BoutiqueSign bs)
 	{
+		if(this._signs.containsKey(bs.getLocationString()))
+		{
+			this._signs.remove(bs.getLocationString());
+		}
+		
 		put(bs.getLocationString(), bs);		
+	}
+
+	public boolean isChestOwner(Chest chest, Player p)
+	{
+		//TODO: Check worldguard
+		//TODO: Cehck LWC
+		return WorldGuardOperator.canBuild(p, chest.getBlock());
 	}
 
 	

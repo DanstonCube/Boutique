@@ -1,6 +1,6 @@
 package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
 
-import java.util.logging.Logger;
+
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +18,7 @@ import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItems;
 import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSignManager;
 import com.danstoncube.plugin.drzoid.Boutique.ChestOperator;
 import com.danstoncube.plugin.drzoid.Boutique.WebItemsOperator;
+
 
 public class BoutiqueSign
 {
@@ -171,7 +172,8 @@ public class BoutiqueSign
 		//Teste validitée découpage
 		if(splited.length < 2 || splited.length > 3)
 		{
-			Bukkit.getServer().getLogger().info("DBG: taille incorrecte pour : " + line3);
+			//TODO virer debug
+			//Bukkit.getServer().getLogger().info("DBG: taille incorrecte pour : " + line3);
 			return;
 		}
 		
@@ -210,7 +212,7 @@ public class BoutiqueSign
 	
 	public void setLine4(String line4) 
 	{
-		this._lines[3] = line4;		
+		this._lines[3] = line4;
 	}
 	
 	
@@ -643,7 +645,7 @@ public class BoutiqueSign
 		s.update();
 	}
 
-	private static String formatMoney(Double money)
+	public static String formatMoney(Double money)
 	{
 		float y = (float) (money * 10.0);
 		int i =(int) y;
@@ -971,12 +973,14 @@ public class BoutiqueSign
 	
 	public boolean isFreebiesSign()
 	{
-		Logger l = Bukkit.getServer().getLogger();
-		
+		//TODO virer debug
+		/*
+		Logger l = Bukkit.getServer().getLogger();		
 		l.info("dbg: _moneyFrom = " + _moneyFrom );
 		l.info("dbg: _moneyTo = " + _moneyTo );
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
+		*/
 		
 		if(this._moneyFrom == null || this._itemFrom != null )
 			return false;
@@ -986,13 +990,14 @@ public class BoutiqueSign
 
 	public boolean isDonationSign()
 	{
-		Logger l = Bukkit.getServer().getLogger();
-		
+		//TODO virer debug
+		/*
+		Logger l = Bukkit.getServer().getLogger();		
 		l.info("dbg: _moneyFrom = " + _moneyFrom );
 		l.info("dbg: _moneyTo = " + _moneyTo );
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
-		
+		*/
 		
 		//return (this._moneyFrom != null || this._itemFrom != null) && (this._itemTo == null && this._moneyTo == null);
 		
@@ -1005,43 +1010,46 @@ public class BoutiqueSign
 
 	public boolean isSellSign()
 	{
-		Logger l = Bukkit.getServer().getLogger();
-		
+		//TODO virer debug
+		/*
+		Logger l = Bukkit.getServer().getLogger();		
 		l.info("dbg: _moneyFrom = " + _moneyFrom );
 		l.info("dbg: _moneyTo = " + _moneyTo );
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
+		*/
 		
 		return (this._moneyFrom != null &&  this._itemFrom == null && this._itemTo != null);
 	}
 	
 	public boolean isBuySign()
 	{
-		Logger l = Bukkit.getServer().getLogger();
-		
+		//TODO virer debug
+		/*
+		Logger l = Bukkit.getServer().getLogger();		
 		l.info("dbg: _moneyFrom = " + _moneyFrom );
 		l.info("dbg: _moneyTo = " + _moneyTo );
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
-		
+		*/
 		return (this._moneyTo != null &&  this._itemTo == null && this._itemFrom != null);
 	}
 
 	public boolean isTradeSign()
 	{
-		
-		Logger l = Bukkit.getServer().getLogger();
-		
+		//TODO virer debug
+		/*
+		Logger l = Bukkit.getServer().getLogger();		
 		l.info("dbg: _moneyFrom = " + _moneyFrom );
 		l.info("dbg: _moneyTo = " + _moneyTo );
 		l.info("dbg: _itemFrom = " + _itemFrom );
 		l.info("dbg: _itemTo = " + _itemTo );
-		
+		*/
 		return (this._itemTo != null && this._itemFrom != null);
 	}
 	
 
-	private static String formatCurrency(Double getAmount)
+	public static String formatCurrency(Double getAmount)
 	{
 		//TODO: demander le nom de la currency a iconomy
 		return "Eu" + (getAmount > 1 ? "s":"");
@@ -1239,7 +1247,7 @@ public class BoutiqueSign
 
 	public void setChest(String chest)
 	{
-		this._chest = getChestString();
+		this._chest = chest;
 	}
 
 
@@ -1257,8 +1265,7 @@ public class BoutiqueSign
 		String[] brokeText = objet.split(";");
     	
     	if(brokeText.length < 6) 
-    	{
-    		Bukkit.getServer().getLogger().severe("Incorrect: brokeText.length=" + brokeText.length);
+    	{    		
     		return false;
     	}
     	
@@ -1271,15 +1278,17 @@ public class BoutiqueSign
     	String strLigne3Panneau = brokeText[4];
     	String strLigne4Panneau = brokeText[5];
     	
-    	String strLocCoffre = (brokeText.length > 6) ? brokeText[6] : ""; 
+    	String strLocCoffre = (brokeText.length == 7) ? brokeText[6] : ""; 
   
     	setLocation(strLocPanneau);
     	setOwnerString(strProprio);
+    	
     	setLine1(strLigne1Panneau);
     	setLine2(strLigne2Panneau);
     	setLine3(strLigne3Panneau);
     	setLine4(strLigne4Panneau);
-    	setChestLocation(strLocCoffre);
+    	
+    	setChest(strLocCoffre);
 		
     	return true;
 	}
@@ -1323,9 +1332,7 @@ public class BoutiqueSign
 		this.setLine4(split[3]);
 	}
 
-	public void setChestLocation(String strLocCoffre)
-	{
-	}
+	
 
 	public Sign getSign()
 	{

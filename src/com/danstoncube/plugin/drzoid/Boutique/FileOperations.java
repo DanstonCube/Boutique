@@ -105,6 +105,8 @@ public class FileOperations
 	        
 	        String strLine;
 	       
+	        
+	        int compteur = 0;
 	        while ((strLine = br.readLine()) != null)
 	        {
 	        	strLine = strLine.trim();
@@ -120,12 +122,20 @@ public class FileOperations
 	        	
 	        	if(bi.parseString(strLine))
 	        	{
-	        		Boutique.getInstance().log.info("Load item OK: " + strLine);
+	        		//TODO: virer debug
+	        		//Boutique.getInstance().log.info("Load item OK: " + strLine);
 	        		BoutiqueItems.put(bi);
+	        		compteur++;
+	        	}
+	        	else
+	        	{
+	        		plugin.log.warning(plugin.logPrefix + " boutiqueitems.txt: ligne incorrecte: " + strLine);
 	        	}
         		
-	        		
+	        	
 	        }
+	        
+	        plugin.log.info(plugin.logPrefix + compteur + " items chargés depuis boutiqueitems.txt");
 		}
 		catch(Exception e)
 		{
@@ -156,6 +166,8 @@ public class FileOperations
 	        //String pName = "";
 	        //String coords = "";
 	        
+	        int compteur = 0;
+	        
 	        while ((strLine = br.readLine()) != null)
 	        {
 	        	strLine = strLine.trim();
@@ -168,12 +180,21 @@ public class FileOperations
 	        	
 	        	if(bs.parseString(strLine))
 	        	{
-	        		plugin.log.info("Ajout sign : " + strLine);
+	        		//TODO: virer debug
+	        		//plugin.log.info("Ajout sign : " + strLine);
 	        		plugin.signmanager.put(bs);
+	        		compteur++;
 	        	}
-	        	
+	        	else
+	        	{
+	        		//TODO: virer debug
+	        		plugin.log.warning(plugin.logPrefix + " boutiquedb.txt: ligne incorrecte: " + strLine);
+	        	}
 
 	        }
+	        
+	        plugin.log.info(plugin.logPrefix + compteur + " panneaux chargés depuis boutiquedb.txt");
+	        
 		}
 		catch(Exception e)
 		{
@@ -217,7 +238,7 @@ public class FileOperations
 	private void writeGlobalSignFile(String[] sLines) 
 	{
 		String[] s = new String[1];
-		s[0] = "# Save Format(x:y:z:WorldName:PlayerThatActivatedTheSign)";
+		s[0] = "#locsign;owner;line1;line2;line3;line4;[chest]";
 		try 
 		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiquedb.txt")));

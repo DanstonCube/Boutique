@@ -462,10 +462,42 @@ public class BoutiqueSign
 		}
 	}
 	
-	@Deprecated
-	private static void RenderTradeSignWebAuction(BoutiqueSign boutiqueSign)
+
+	private static void RenderTradeSignWebAuction(BoutiqueSign bs)
 	{
-		// TODO Auto-generated method stub
+		Sign s = bs.getSign();
+	
+		
+		if(s==null) 
+			return;
+		
+		String giveTypeText = bs.getItemFrom().itemShortname;
+		String getTypeText = bs.getItemTo().itemShortname;
+				
+		int giveAmount = bs.getQtyFrom();
+		int getAmount = bs.getQtyTo();
+		int getType = bs.getItemTo().itemId;
+		int getDamage = bs.getItemTo().itemDamage;
+		
+
+		//compte le nombre de stacks dispos au total dans le chest						
+		int lots = (int)(WebItemsOperator.contains(bs.getOwnerString(), getType, getDamage) / getAmount);		
+		
+		//couleur suivant la quantité
+		String strLot = "";						
+		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE;
+		else if(lots == 0)	strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.WHITE;
+		else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.WHITE;
+		else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.WHITE;
+		
+		if(lots > 1) 		strLot += " lots";
+		else				strLot += " lot";
+			
+		s.setLine(0, ChatColor.YELLOW + "ECHANGE");
+		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount);
+		s.setLine(2, ChatColor.WHITE + "Contre " + strLot + " de");
+		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.update();
 		
 	}
 

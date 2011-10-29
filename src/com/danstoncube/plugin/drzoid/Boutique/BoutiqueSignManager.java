@@ -898,7 +898,7 @@ public class BoutiqueSignManager
 			else if (!WebItemsOperator.containEnough(bs.getOwnerString(), idTo, damageTo, qtyTo))
 			{
 				//TODO: message "La personne avec qui tu échanges n'a plus assez d'items à échanger !"
-				p.sendMessage(plugName + "La personne avec qui tu échanges n'a plus assez d'items à échanger !");
+				p.sendMessage(plugName + "La personne avec qui tu échanges n'a plus assez d'items en stock !");
 				return false;
 			}
 			

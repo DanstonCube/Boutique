@@ -992,7 +992,7 @@ public class BoutiqueSignManager
 	
 	public void remove(Location location)
 	{
-		this._signs.remove(location);
+		this._signs.remove(BoutiqueSign.getLocationString(location));
 	}
 
 

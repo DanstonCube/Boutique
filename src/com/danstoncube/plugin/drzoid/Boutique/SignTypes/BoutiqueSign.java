@@ -1346,8 +1346,8 @@ public class BoutiqueSign
 		BlockState blockTest = Bukkit.getServer().getWorld(signloc.getWorld().getName()).getBlockAt(signloc.getBlockX(), signloc.getBlockY(), signloc.getBlockZ()).getState();
 
 		//DEBUG
-		Bukkit.getServer().getLogger().info("DEBUG: "  + "signloc: " + this.getLocationString());
-		Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
+		//Bukkit.getServer().getLogger().info("DEBUG: "  + "signloc: " + this.getLocationString());
+		//Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
 		
 		
 		if(blockTest instanceof Sign)
@@ -1370,8 +1370,8 @@ public class BoutiqueSign
 		BlockState blockTest = Bukkit.getServer().getWorld(chestloc.getWorld().getName()).getBlockAt(chestloc.getBlockX(), chestloc.getBlockY(), chestloc.getBlockZ()).getState();
 
 		//DEBUG
-		Bukkit.getServer().getLogger().info("DEBUG: "  + "chestLoc: " + this.getChestString());
-		Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
+		//Bukkit.getServer().getLogger().info("DEBUG: "  + "chestLoc: " + this.getChestString());
+		//Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
 		
 		
 		if(blockTest instanceof Chest)

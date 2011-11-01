@@ -34,11 +34,12 @@ public class CommandOperator
 			if (args.length < 1)
 			{
 				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Pour utiliser cette commande utilisez la syntaxe suivante:");
-				p.sendMessage("'/boutique argument p' le 'p' est facultatif.");
+				p.sendMessage("'/boutique argument");
 				p.sendMessage("Les arguments disponibles sont: ");
 				//p.sendMessage(ChatColor.AQUA + "-s" + ChatColor.WHITE + " pour modifier les panneaux.");
-				p.sendMessage(ChatColor.AQUA + "-sc" + ChatColor.WHITE + " pour relier les coffres aux panneaux.");
-				p.sendMessage(ChatColor.AQUA + "-so" + ChatColor.WHITE + " pour redéfinir le proprio d'un panneau. Attention aux majuscules");
+				p.sendMessage(ChatColor.AQUA + "-coffre" + ChatColor.WHITE + " pour relier les coffres aux panneaux.");
+				p.sendMessage(ChatColor.AQUA + "-vitrine" + ChatColor.WHITE + " pour relier les coffres aux vitrines.");
+				p.sendMessage(ChatColor.AQUA + "-proprio" + ChatColor.WHITE + " pour redéfinir le proprio d'un panneau. Attention aux majuscules (admin uniquement)");
 				return true;
 			}
 			else 
@@ -64,6 +65,19 @@ public class CommandOperator
 						return bool;
 				}
 				
+				if(plugin.playerListener.playerSetShowcase.containsKey(p))
+				{
+					plugin.playerListener.playerSetShowcase.remove(p);
+					plugin.playerListener.playerSign.remove(p);
+					plugin.playerListener.playerShowcase.remove(p);
+					p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Tu ne relies plus de panneau à des vitrines.");
+					if (args[0].compareToIgnoreCase("-ssc") == 0)
+						return bool;
+				}
+				
+				
+				
+				
 				if (plugin.playerListener.setOwner.containsKey(p))
 				{
 					plugin.playerListener.playerSetSign.remove(p);
@@ -79,13 +93,17 @@ public class CommandOperator
 				}
 				*/
 				
-				if (args[0].compareToIgnoreCase("-sc") == 0) 
+				if (args[0].compareToIgnoreCase("-so") == 0 || args[0].compareToIgnoreCase("-proprio") == 0 || args[0].compareToIgnoreCase("-owner") == 0) 
+				{
+					bool = soCommand(p,args);
+				}
+				else if (args[0].compareToIgnoreCase("-sc") == 0 || args[0].compareToIgnoreCase("-coffre") == 0 || args[0].compareToIgnoreCase("-chest") == 0) 
 				{
 					bool = scCommand(p,args);
 				}
-				else if (args[0].compareToIgnoreCase("-so") == 0)
+				else if (args[0].compareToIgnoreCase("-ssc") == 0 || args[0].compareToIgnoreCase("-vitrine") == 0 || args[0].compareToIgnoreCase("-showcase") == 0) 
 				{
-					bool = soCommand(p,args);
+					bool = sscCommand(p,args);
 				}
 				else
 				{
@@ -96,7 +114,7 @@ public class CommandOperator
 				return bool;
 			}
 		}
-		else if (commandLabel.compareToIgnoreCase("getdata") == 0 || commandLabel.compareToIgnoreCase("infoitem") == 0) 
+		else if (commandLabel.compareToIgnoreCase("getdata") == 0 || commandLabel.compareToIgnoreCase("infoitem") == 0  || commandLabel.compareToIgnoreCase("iteminfo") == 0) 
 		{
 			return getData(p);
 		}
@@ -104,6 +122,66 @@ public class CommandOperator
 		return false;
 	}
 
+	/*
+	private boolean sscCommandold(Player p, String[] args)
+	{
+		if (!PermissionsHandler.canSetPersonalSign(p)) 
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + PermissionsHandler.permissionErr);
+			return true;
+		}
+		else if (args.length == 1)
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Clic-gauche sur un panneau puis sur la vitrine à relier.");
+			plugin.playerListener.playerSetShowcase.put(p, false);
+		}
+		else
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Arguments incorrects.");
+		}
+		
+		return true;
+
+		
+		
+		
+		
+	}
+	*/
+	
+	
+	
+	private boolean sscCommand(Player p, String[] args) 
+	{
+		if (!PermissionsHandler.canSetPersonalSign(p)) 
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + PermissionsHandler.permissionErr);
+			return true;
+		}
+		else if (args.length == 2) 
+		{
+			if (args[1].compareToIgnoreCase("-p") == 0)
+			{
+				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Clic-gauche sur un panneau puis sur la vitrine à relier. Tu peux faire çà tant que tu ne retappes pas cette commande.");
+				plugin.playerListener.playerSetShowcase.put(p, true);
+			}
+			else
+			{
+				p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Argument incorrect.");
+			}
+		}
+		else if (args.length == 1)
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Clic-gauche sur un panneau puis sur la vitrine à relier.");
+			plugin.playerListener.playerSetShowcase.put(p, false);
+		}
+		else
+		{
+			p.sendMessage(ChatColor.DARK_BLUE + "[" + plugin.displayname + "]" + ChatColor.WHITE + " Arguments incorrects.");
+		}
+		
+		return true;
+	}
 	private boolean soCommand(Player p, String[] args) 
 	{
 		if (!PermissionsHandler.canSetOwner(p)) 

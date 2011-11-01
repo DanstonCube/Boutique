@@ -2,6 +2,7 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 import org.bukkit.plugin.Plugin;
 
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 import com.danstoncube.tools.Banque.iConomy5Balance;
 import com.danstoncube.tools.Banque.iConomy6Balance;
 import com.danstoncube.tools.Banque.DummyBalance;
@@ -25,7 +26,7 @@ public class EconomyHandler
 	
 	
 	
-	public static void setupEconomy(Boutique pluginold) 
+	public static void setupEconomy() 
 	{
 		//plugin.log.info(plugin.logPrefix + "Recherche d'iConomy.");
 		
@@ -153,7 +154,15 @@ public class EconomyHandler
 		return modifyMoney(pName, Double.parseDouble(Integer.toString(costAmount)));
 	}
 	
-	
+	public static String playerBalance(String pName) 
+	{	
+		if(balance != null)
+		{
+			return BoutiqueSign.formatMoney(balance.balance(pName)) +  BoutiqueSign.formatCurrency(balance.balance(pName));
+		}		
+		return noConomyErr;
+	}
+
 	public static String playerHave(String pName) 
 	{		
 		if(balance != null)

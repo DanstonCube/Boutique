@@ -11,6 +11,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
+
 public class BoutiquePlayerListener extends PlayerListener 
 {
 
@@ -25,9 +27,14 @@ public class BoutiquePlayerListener extends PlayerListener
 	public HashMap<Player, Boolean> playerSetChest = new HashMap<Player, Boolean>();
 	public HashMap<Player, Chest> playerChest = new HashMap<Player, Chest>();
 	
+	//Showcase
+	public HashMap<Player, Boolean> playerSetShowcase = new HashMap<Player, Boolean>();
+	public HashMap<Player, String> playerShowcase = new HashMap<Player, String>();
+	
 	
 	//SignOwner Setting
 	public HashMap<Player, String> setOwner = new HashMap<Player,String>();
+
 	
 
 	public BoutiquePlayerListener(Boutique boutique) 
@@ -43,18 +50,18 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (e.getClickedBlock().getState() instanceof Sign)
 			{
-				e.getPlayer().sendMessage(plugName + "Right click sign");
+				//e.getPlayer().sendMessage(plugName + "Right click sign");
 				
 				if (plugin.signmanager.isBoutiqueSign(e.getClickedBlock()))
 				{
-					e.getPlayer().sendMessage(plugName + "Ok pour ce panneau");
+					//e.getPlayer().sendMessage(plugName + "Ok pour ce panneau");
 					
 					e.setCancelled(true);
 					this.rightClickSign(e.getPlayer(), e.getClickedBlock());
 				}
 				else
 				{
-					e.getPlayer().sendMessage(plugName + "je connais pas ce panneau !");
+					//e.getPlayer().sendMessage(plugName + "je connais pas ce panneau !");
 				}
 			}
 			
@@ -72,9 +79,55 @@ public class BoutiquePlayerListener extends PlayerListener
 			{
 				leftClickChest(e.getPlayer(), e.getClickedBlock());
 			}
+			
+			if (e.getClickedBlock().getTypeId() == 44)
+			{
+				leftClickShowcase(e.getPlayer(), e.getClickedBlock());
+			}
 				
 		}
 	}
+
+	private void leftClickShowcase(Player player, Block clickedBlock)
+	{
+		String strLocShowcase = BoutiqueSign.getLocationString(clickedBlock.getLocation());
+		
+		if (playerSetShowcase.containsKey(player))
+		{
+			if (playerShowcase.get(player) == strLocShowcase)
+			{
+				player.sendMessage(plugName + "Tu as déjà choisi cette vitrine.");
+				return;
+			}
+			else if(!ShowCaseHandler.isShowCaseOwner(clickedBlock, player))
+			{
+				player.sendMessage(plugName + "Ce n'est pas ta vitrine");
+				return;
+			}
+						
+			playerShowcase.put(player, strLocShowcase);
+			
+			player.sendMessage(plugName + "Vitrine mémorisée.");
+			
+			if (playerShowcase.containsKey(player) && playerSign.containsKey(player))
+			{
+				ShowCaseHandler.setShowcase(playerSign.get(player), playerShowcase.get(player), player);
+		
+				if (playerSetShowcase.get(player) == false)
+					playerSetShowcase.remove(player);
+				
+				playerShowcase.remove(player);
+				playerSign.remove(player);
+				
+				//plugin.signmanager.saveSignData();
+			}
+			
+		}
+		
+		
+	}
+	
+
 
 	private void leftClickChest(Player p, Block b) 
 	{
@@ -168,6 +221,34 @@ public class BoutiquePlayerListener extends PlayerListener
 					
 					plugin.signmanager.saveGlobalSigns();
 				}
+			}
+		}
+		else if(playerSetShowcase.containsKey(p))
+		{
+			
+			
+			if (!plugin.signmanager.isSignOwner((Sign)b.getState(), p))
+			{
+				p.sendMessage(plugName + "Ce n'est pas ton panneau.");
+				return;
+			}
+			
+			playerSign.put(p, (Sign)b.getState());
+			
+			p.sendMessage(plugName + "Panneau mémorisé.");
+			
+
+			if (playerShowcase.containsKey(p) && playerSign.containsKey(p)) 
+			{
+				//setShowCase();
+				
+				if (playerSetShowcase.get(p) == false)
+				{
+					playerSetShowcase.remove(p);
+				}
+				
+				playerShowcase.remove(p);
+				playerSign.remove(p);
 			}
 		}
 		else

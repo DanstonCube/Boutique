@@ -41,33 +41,38 @@ public class BoutiqueServerListener extends ServerListener {
                    plugin.log.info("["+plugin.displayname+"] Permissions désactivé.");
                }
         }    
+       	
+       	
+       	
 
     }
 
     @Override
     public void onPluginEnable(PluginEnableEvent event) 
     {
-    	
-    	/*
-    	//On teste si permissions est up
-    	if(PermissionsHandler.permissions == null)
-    	{
-    		Plugin Permissions = plugin.getServer().getPluginManager().getPlugin("Permissions");
-    		if(Permissions!=null)
-    		{
-    			PermissionsHandler.permissions = Permissions;
-    			PermissionsHandler.setupPermissions(this.plugin);
-    		}
-    	}
-    	*/
-    	//EconomyHandler.setupEconomy(this);
-    	
-    	
-    	
-        
-    	
-    	
-    	
+		//On teste si iConomy est up
+		if (EconomyHandler.balance == null) 
+		{
+			EconomyHandler.setupEconomy();
+		}
+	
+		//On teste la présence de permissions
+		if(PermissionsHandler.permissions == null)
+		{
+			PermissionsHandler.setupPermissions();
+		}        
+	
+		//On teste la présence de worldguard
+	    if(WorldGuardOperator.worldguard == null)
+	    {
+	    	WorldGuardOperator.setupWorldGuard();
+	    }       	  
+	    
+	    //On teste la présence de showcasestandalone
+		if(ShowCaseHandler.showcase == null)
+		{
+			ShowCaseHandler.setupShowcase();
+		}
     	
     }
 }

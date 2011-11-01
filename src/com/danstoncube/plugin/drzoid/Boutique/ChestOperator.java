@@ -84,7 +84,7 @@ public class ChestOperator
 	private static int addRunner(int amount, int type, int damage, Chest chest) 
 	{
 		int count = amount;
-		int maxStack = getItemMaxStack(type);
+		int maxStack = getItemMaxStack(type,damage);
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
 		ItemStack stacker = new ItemStack(type);
@@ -129,14 +129,22 @@ public class ChestOperator
 		return count;
 		
 	}
-
-	static int getItemMaxStack(int type) 
+	
+	
+	static int getItemMaxStack(int type, int damage) 
 	{
-		if (Boutique.itemMaxIdStack.containsKey(type))
-			return Boutique.itemMaxIdStack.get(type);
+		
+		if(BoutiqueItems.isValidItem(type,damage))
+		{
+			return new BoutiqueItem(type, damage).itemStack;
+		}		
+		
 		return 64;
 	}
 	
+	
+	
+
 	public static boolean containsEnough(int amount, int type, int damage, Chest chest) 
 	{
 		int count = amount;
@@ -208,7 +216,7 @@ public class ChestOperator
 	private static int emptyRunner(int amount, int type, int damage, Chest chest) 
 	{
 		int count = amount;
-		int maxStack = getItemMaxStack(type);
+		int maxStack = getItemMaxStack(type,damage);
 		Inventory inv = chest.getInventory();
 		ItemStack item = null;
 		for (int i = 0; i < chestSize; i++)

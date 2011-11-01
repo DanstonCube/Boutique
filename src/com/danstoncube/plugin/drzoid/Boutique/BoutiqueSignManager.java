@@ -511,7 +511,7 @@ public class BoutiqueSignManager
 		
 		
 		p.sendMessage(plugName + "Tu as recu " + qty + " " + bs.getItemTo().itemName);
-		p.sendMessage(plugName + "Il as désormais " + EconomyHandler.playerHave(p.getName()));
+		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerBalance(p.getName()));
 			
 		try 
 		{
@@ -694,8 +694,6 @@ public class BoutiqueSignManager
 				//p.sendMessage("dbg1: coffre introuvable");
 				return false;
 			}
-				
-			
 			
 			// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
 			if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
@@ -728,8 +726,8 @@ public class BoutiqueSignManager
 			//p.sendMessage("dbg2: fin signchest");
 		}
 		
-		
-		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerHave(p.getName()) + ".");
+		p.sendMessage(plugName + "Tu as vendu " + qty + " " + bs.getItemFrom().itemName);
+		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerBalance(p.getName()) + ".");
 		
 		try 
 		{
@@ -961,7 +959,10 @@ public class BoutiqueSignManager
 		
 		
 		
-		
+		//TODO: messages configurables
+		p.sendMessage(plugName + "Tu as donné " + bs.getQtyFrom() + " " + bs.getItemFrom().itemName);			
+		p.sendMessage(plugName + "contre " + bs.getQtyTo() + " " + bs.getItemTo().itemName);
+	
 		
 		//log transaction
 		

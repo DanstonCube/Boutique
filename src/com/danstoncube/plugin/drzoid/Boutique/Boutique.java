@@ -1,7 +1,6 @@
 package com.danstoncube.plugin.drzoid.Boutique;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 
@@ -29,41 +28,15 @@ public class Boutique extends JavaPlugin
 	FileOperations fileio = new FileOperations(this);
 	CommandOperator co = new CommandOperator(this);
 	
-	//Mapping
-	public static HashMap<Integer,Integer> itemMaxIdStack = new HashMap<Integer,Integer>(); // Contains itemId and max size of stack
-	public static HashMap<String,Integer> itemNameId = new HashMap<String,Integer>(); // Contains the name and id of the item associated with it
-	public static HashMap<Integer,String> itemIdName = new HashMap<Integer,String>(); // Contains the name and id of the item associated with it
-	
-	
-	//public static HashMap<String,String> signLocs = new HashMap<String,String>(); //Contains Sign location, and playerName
-	
-	//public static HashMap<String,String> SignChest = new HashMap<String,String>(); // Contains Sign location and chest Location.
-	//public static HashMap<String,String> SignSlab = new HashMap<String,String>(); // Contains Sign location and stone slab (showcase).
-	
-	//public static HashMap<String,String> signLine1 = new HashMap<String,String>(); //Contains Sign location, and playerName
-	//public static HashMap<String,String> signLine2 = new HashMap<String,String>(); //Contains Sign location, and playerName
-	//public static HashMap<String,String> signLine3 = new HashMap<String,String>(); //Contains Sign location, and playerName
-	
-	
-	
 	// Listeners
-	public final BoutiqueBlockListener blockListener = new BoutiqueBlockListener(this);
-	public final BoutiquePlayerListener playerListener = new BoutiquePlayerListener(this);
-	public final BoutiqueServerListener serverListener = new BoutiqueServerListener(this);
+	public final BoutiqueBlockListener 	blockListener = 	new BoutiqueBlockListener(this);
+	public final BoutiquePlayerListener playerListener = 	new BoutiquePlayerListener(this);
+	public final BoutiqueServerListener serverListener = 	new BoutiqueServerListener(this);
 
 	
 	public BoutiqueDb db = new BoutiqueDb(this);
-	
-	
-	//public SignManager sm = new SignManager(this);
-	
 	public BoutiqueSignManager signmanager = new BoutiqueSignManager(this);
-	
-	
-	public SignOperatorOLD signoperator = new SignOperatorOLD(this);
-	
-	
-	//public WebItemsOperator webitems = new WebItemsOperator();
+
 	
 	
 	
@@ -123,29 +96,24 @@ public class Boutique extends JavaPlugin
         pm.registerEvent(Event.Type.PLAYER_INTERACT, this.playerListener, Event.Priority.Normal, this);
         
         //pour être au courant de l'activation/désactivation d'autres plugins (iConomy surtout)
-        //pm.registerEvent(Event.Type.PLUGIN_ENABLE, this.serverListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLUGIN_ENABLE, this.serverListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLUGIN_DISABLE, this.serverListener, Priority.Monitor, this);
         
         
-        //On teste si iConomy est up
-        if (EconomyHandler.balance == null) 
-        {
-        	EconomyHandler.setupEconomy(this);
-        }
+       
         
-        //On teste la présence de permissions
-        if(PermissionsHandler.permissions == null)
-        {
-        	PermissionsHandler.setupPermissions(this);
-        }        
-    	
         
-	
-		
+       
+        
 		
         
 		log.info(logPrefix + "version " + version + " activé.");
 	}
+	
+	
+	
+	
+
 	
 	public void onDisable() 
 	{		

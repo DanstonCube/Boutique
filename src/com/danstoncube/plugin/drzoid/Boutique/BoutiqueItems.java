@@ -2,8 +2,7 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
- 
+
 
 
 public class BoutiqueItems
@@ -20,7 +19,7 @@ public class BoutiqueItems
 		String key = itemId + ":" + itemDamage;
 		
 		
-		Bukkit.getServer().getLogger().info("isValiditems, key= " + key + "valid=" + BoutiqueItems._items.containsKey(key));
+		//Bukkit.getServer().getLogger().info("isValiditems, key= " + key + "valid=" + BoutiqueItems._items.containsKey(key));
 		
 		return BoutiqueItems._items.containsKey(key);
 	}

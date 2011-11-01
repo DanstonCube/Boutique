@@ -19,13 +19,14 @@ public class PermissionsHandler
 	public static Plugin permissions = null;
 	
 	
-	public static void setupPermissions(Boutique plugin) 
+	public static void setupPermissions() 
 	{
-		Plugin test = plugin.getServer().getPluginManager().getPlugin("Permissions");
+		Boutique boutique = Boutique.getInstance();
+		Plugin test = boutique.getServer().getPluginManager().getPlugin("Permissions");
 		if (test != null) 
 		{
 			((Permissions)test).getHandler();
-			plugin.log.info("["+plugin.displayname+"] utilise Permissions");
+			boutique.log.info(boutique.logPrefix + "utilise Permissions");
 			permissionsEnabled = true;
 			permissions = test;
 			return;

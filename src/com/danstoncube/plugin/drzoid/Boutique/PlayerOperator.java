@@ -21,7 +21,7 @@ public class PlayerOperator
 		    return; 
 		
 	    int amt = 0;
-		int maxItemStack = ChestOperator.getItemMaxStack(type);
+		int maxItemStack = ChestOperator.getItemMaxStack(type,damage);
 		
 		ItemStack item = null;
 		

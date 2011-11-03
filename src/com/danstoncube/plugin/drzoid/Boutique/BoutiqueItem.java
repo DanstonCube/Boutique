@@ -38,13 +38,13 @@ public class BoutiqueItem
 		this.itemId = 0;
 		this.itemDamage = 0;
 		this.itemStack = 64;
-		this.itemName = "Objet inconnu";
-		this.itemShortname = "INCONNU";
+		this.itemName = Messages.getString("BoutiqueItem.UNKNOWNITEM"); //$NON-NLS-1$
+		this.itemShortname = Messages.getString("BoutiqueItem.UNKNOWN"); //$NON-NLS-1$
 		
 		
 		
 		//ID:DAMAGE:SHORNAME:NAME:STACKTO
-		String[] item = object.split(":");  
+		String[] item = object.split(":");   //$NON-NLS-1$
 		
 		if(item.length < 5) 
 			return false;

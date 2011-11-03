@@ -26,9 +26,8 @@ public class BoutiqueDb
 	
 	public Boolean enabled = false;
 	
-	//overidé par la config
+	//overridé par la config
 	private String Boutique_TablePrefix = "Boutique_";
-	
 	
 	BoutiqueDb(Boutique plugin)
 	{
@@ -41,11 +40,11 @@ public class BoutiqueDb
 	{
 		Boutique_TablePrefix = plugin.configuration.sqlTablePrefix;
 		
-		if (plugin.configuration.sqlTablePrefix.equals(null)) 	{plugin.log.severe(plugin.logPrefix + "MySQL table prefix is not defined"); }		
-		if (plugin.configuration.sqlHost.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL host is not defined"); }
-		if (plugin.configuration.sqlUser.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL username is not defined"); }
-		if (plugin.configuration.sqlPass.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL password is not defined"); }
-		if (plugin.configuration.sqlDb.equals(null)) 			{plugin.log.severe(plugin.logPrefix + "MySQL database is not defined"); }
+		if (plugin.configuration.sqlTablePrefix.equals(null)) 	{plugin.log.severe(plugin.logPrefix + Messages.getString("Db.TABLEREFIXNOTDEFINED")); }		
+		if (plugin.configuration.sqlHost.equals(null)) 			{plugin.log.severe(plugin.logPrefix + Messages.getString("Db.HOSTNOTDEFINED")); } 			
+		if (plugin.configuration.sqlUser.equals(null)) 			{plugin.log.severe(plugin.logPrefix + Messages.getString("Db.USERNAMENOTDEFINED")); } 		
+		if (plugin.configuration.sqlPass.equals(null)) 			{plugin.log.severe(plugin.logPrefix + Messages.getString("Db.PASSWORDNOTDEFINED")); } 
+		if (plugin.configuration.sqlDb.equals(null)) 			{plugin.log.severe(plugin.logPrefix + Messages.getString("Db.DATABASENOTDEFINED")); } 
 		
 		if(!plugin.configuration.useMysql) 
 		{
@@ -58,7 +57,7 @@ public class BoutiqueDb
 		{
 			if(!checkConnection())
 			{
-				plugin.log.severe(plugin.logPrefix + "Connexion impossible à Mysql ! (" + plugin.configuration.sqlUser + "/" + plugin.configuration.sqlHost+ ")");
+				plugin.log.severe(plugin.logPrefix + Messages.getString("Db.CANTCONNECT") + plugin.configuration.sqlUser + "/" + plugin.configuration.sqlHost+ ")");
 				close();
 				return false;
 			}
@@ -70,7 +69,6 @@ public class BoutiqueDb
 		} 
 		catch (Exception e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 			
@@ -85,24 +83,24 @@ public class BoutiqueDb
 	public Boolean checkTables() throws MalformedURLException, InstantiationException, IllegalAccessException 
 	{
 		//Table transaction
-		if (!checkTable(Boutique_TablePrefix + "transactions")) 
+		if (!checkTable(Boutique_TablePrefix + "transactions"))  
 		{
-			writeInfo("Création de la table " + Boutique_TablePrefix + "transactions");
-			String query = "" + 
-			"CREATE TABLE " + Boutique_TablePrefix + "transactions (" +
-				"id INT NOT NULL AUTO_INCREMENT, " +
-				"PRIMARY KEY(id), " +
-				"ts TIMESTAMP, "+
-				"location VARCHAR(255), " +
-				"trade_from VARCHAR(255), " +
-				"trade_to VARCHAR(255), " +
-				"item_id INT, " +
-				"item_damage INT, " +
-				"item_quantity INT, " +
-				"item_price DOUBLE, " +
-				"item_name VARCHAR(255), " +
-				"item_shortname VARCHAR(12)" + 
-			");";
+			writeInfo(Messages.getString("Db.CREATETABLE") + Boutique_TablePrefix + "transactions");
+			String query = "" +  
+			"CREATE TABLE " + Boutique_TablePrefix + "transactions (" + 
+				"id INT NOT NULL AUTO_INCREMENT, " + 
+				"PRIMARY KEY(id), " + 
+				"ts TIMESTAMP, "+ 
+				"location VARCHAR(255), " + 
+				"trade_from VARCHAR(255), " + 
+				"trade_to VARCHAR(255), " + 
+				"item_id INT, " + 
+				"item_damage INT, " + 
+				"item_quantity INT, " + 
+				"item_price DOUBLE, " + 
+				"item_name VARCHAR(255), " + 
+				"item_shortname VARCHAR(12)" +  
+			");"; 
 			createTable(query.toString());
 		}
 
@@ -136,7 +134,7 @@ public class BoutiqueDb
 			else
 			{
 				/*id 	name 	damage 	player 	quantity*/
-				String sqlinsert = "INSERT INTO WA_Items(name,damage,player,quantity) VALUES("+ itemid + ", " + itemdamage + ", '" + p + "', " + quantity+")"; 
+				String sqlinsert = "INSERT INTO WA_Items(name,damage,player,quantity) VALUES("+ itemid + ", " + itemdamage + ", '" + p + "', " + quantity+")";   
 				this.insertQuery(sqlinsert);
 			}
 
@@ -156,17 +154,14 @@ public class BoutiqueDb
 	
 	
 	public Boolean wa_RemoveFromStock(String p, Integer itemid, Integer itemdamage, Integer quantity)
-	{
-		
-		plugin.log.info("DEBUG: wa_RemoveFromStock - " + p + " " + itemid + " " + itemdamage +  " " + quantity );
-		
+	{		
 		if (itemdamage == null || itemdamage < 0)
 			itemdamage = 0;
 		
 		Integer qtyStock = this.wa_CountItem(p, itemid, itemdamage);
 		
 		String updateSql = "UPDATE WA_Items SET quantity = quantity - " + quantity + " WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
-		String deleteSql = "DELETE FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage;
+		String deleteSql = "DELETE FROM WA_Items WHERE player='" + p + "' and name=" + itemid + " and damage=" + itemdamage; 
 		
 		boolean ret = true;
 		
@@ -189,14 +184,9 @@ public class BoutiqueDb
 				return false;
 			}
 			
-				
-			
-			
-			plugin.log.info("DEBUG: wa_RemoveFromStock 2");
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			ret = false;
 		}
@@ -211,13 +201,10 @@ public class BoutiqueDb
 	
 	public Boolean wa_HasEnoughItem(String p, Integer itemid, Integer itemdamage, Integer quantity)
 	{
-		
 		Integer count = wa_CountItem(p,itemid,itemdamage);
-		
-		plugin.log.info(plugin.logPrefix + "DEBUG: count=" + count);
-		
 		return (count>=quantity);
 	}
+	
 	
 	public int wa_CountItem(String p, Integer itemid, Integer itemdamage)
 	{
@@ -230,12 +217,10 @@ public class BoutiqueDb
 			ResultSet myResults = this.sqlQuery(sql);
 			if(myResults.next())
 			{
-				plugin.log.info(plugin.logPrefix + "DEBUG: wasnull=false");
 				count = myResults.getInt(1);
 			}
 			else
 			{
-				plugin.log.info(plugin.logPrefix + "DEBUG: wasnull=true");
 				count = 0;
 			}
 		}
@@ -264,19 +249,19 @@ public class BoutiqueDb
 	{
 		if(!enabled) return false;
 		
-		String query=""+
+		String query=Messages.getString("Db.53")+ 
 		"INSERT INTO " + Boutique_TablePrefix + "transactions" +
-		"(location, trade_from, trade_to, item_id, item_damage, item_quantity, item_price, item_name, item_shortname,ts)" +
-		"VALUES (?,?,?,?,?,?,?,?,?,?);";
+		"(location, trade_from, trade_to, item_id, item_damage, item_quantity, item_price, item_name, item_shortname,ts)" + 
+		"VALUES (?,?,?,?,?,?,?,?,?,?);"; 
 		
-		if(trade_from.isEmpty())		trade_from = "[Serveur]";
-		if(trade_to.isEmpty())			trade_to = "[Serveur]";
+		if(trade_from.isEmpty())		trade_from = "[Serveur]"; 
+		if(trade_to.isEmpty())			trade_to = "[Serveur]"; 
 		
 
 		Connection conn = openConnection();
 		if(conn==null)
 		{
-			plugin.log.severe(plugin.logPrefix + " Mysql: impossible d'insèrer, connexion incorrecte.");
+			plugin.log.severe(plugin.logPrefix + Messages.getString("Db.INSERTCONNECTIONERR")); 
 			return false;
 		}
 		
@@ -302,12 +287,12 @@ public class BoutiqueDb
 
 		if(insertOk)
 		{
-			plugin.log.info(plugin.logPrefix + "[Mysql] Transaction entre " + trade_from + " et " + trade_to + " @" + location +  " enregistrée.");
+			plugin.log.info(plugin.logPrefix + Messages.getString("Db.TRANSACTIONBETWEEN") + trade_from + Messages.getString("Db.AND3") + trade_to + " @" + location +  Messages.getString("Db.SAVED"));  //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return true;
 		}
 		else
 		{
-			plugin.log.severe(plugin.logPrefix + "[Mysql] Echec de l'enregistrement de la transaction entre " + trade_from + " et " + trade_to + " @" + location +  " ! :(");
+			plugin.log.severe(plugin.logPrefix + Messages.getString("Db.INSERTFAILED") + trade_from + Messages.getString("Db.AND3") + trade_to + " @" + location +  " ! :(");  //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		
 		return false;

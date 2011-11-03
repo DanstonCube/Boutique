@@ -2,7 +2,7 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 public class WebItemsOperator
 {
-	public static String notEnoughErr = "La boutique web n'a plus assez d'objets en stock !";
+	public static String notEnoughErr = Messages.getString("WebItems.noStocksErr");
 
 	Boutique plugin  = null;
 	WebItemsOperator(Boutique plugin)

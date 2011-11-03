@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 public class PlayerOperator 
 {
 	
-	public static String playerStockErr = "Il te faut plus de cet objet dans la main quand tu fais un clic-droit sur le panneau.";
+	public static String playerStockErr = Messages.getString("Player.NEEDMOREITEMSINHAND");
 
 	@SuppressWarnings("deprecation")
 	public static void givePlayerItem(int amount, int type, int damage, Player p) 
@@ -25,7 +25,8 @@ public class PlayerOperator
 		
 		ItemStack item = null;
 		
-		for(int amtToDrop = 0; amtToDrop < amount;){
+		for(int amtToDrop = 0; amtToDrop < amount;)
+		{
 			if ((amtToDrop + maxItemStack) <= amount)
 				amt = maxItemStack;
 			else
@@ -51,8 +52,8 @@ public class PlayerOperator
 			else
 			{
 				//test inventaire plein
-				String plugName = "" + ChatColor.BLUE + "[Boutique] " + ChatColor.WHITE;
-				p.sendMessage(plugName + ChatColor.RED + "Attention, inventaire PLEIN -> items deposés au sol !!!" );
+				
+				p.sendMessage(Boutique.getInstance().chatPrefix + ChatColor.RED + Messages.getString("Player.WARNINGITEMSONFLOOR"));
 				p.getWorld().dropItemNaturally(p.getLocation(), item);
 			}
 			
@@ -61,6 +62,7 @@ public class PlayerOperator
 				
 			amtToDrop += amt;
 		}
+		
 	}
 	
 	public static boolean playerHasEnough(int amount, int type, int damage, Player p) 

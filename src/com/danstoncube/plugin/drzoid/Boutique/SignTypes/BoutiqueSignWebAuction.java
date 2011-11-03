@@ -1,15 +1,10 @@
 package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
 
-import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
+import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSign;
 
 public class BoutiqueSignWebAuction extends BoutiqueSign
 {
-	public BoutiqueSignWebAuction(Sign sign, Player owner)
-	{
-		super(sign, owner, BoutiqueSignWebAuction.getTypeStr());
-		// TODO Auto-generated constructor stub
-	}
+	
 
 	public static String getTypeStr()
 	{

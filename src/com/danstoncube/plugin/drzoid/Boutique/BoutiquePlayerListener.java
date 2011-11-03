@@ -2,7 +2,6 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 import java.util.HashMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
@@ -11,13 +10,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 
 public class BoutiquePlayerListener extends PlayerListener 
 {
 
 	private Boutique plugin;
-	private String plugName;
+
 	
 	//Sign Setting
 	public HashMap<Player, Boolean> playerSetSign = new HashMap<Player,Boolean>();
@@ -40,7 +38,6 @@ public class BoutiquePlayerListener extends PlayerListener
 	public BoutiquePlayerListener(Boutique boutique) 
 	{
 		this.plugin = boutique;
-		plugName = "" + ChatColor.BLUE + "[" + boutique.displayname + "] " + ChatColor.WHITE;
 	}
 	
 
@@ -96,18 +93,18 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (playerShowcase.get(player) == strLocShowcase)
 			{
-				player.sendMessage(plugName + "Tu as déjà choisi cette vitrine.");
+				player.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SHOWCASEALREADYCHOOSEN")); //$NON-NLS-1$
 				return;
 			}
 			else if(!ShowCaseHandler.isShowCaseOwner(clickedBlock, player))
 			{
-				player.sendMessage(plugName + "Ce n'est pas ta vitrine");
+				player.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.NOTYOURSHOWCASE")); //$NON-NLS-1$
 				return;
 			}
 						
 			playerShowcase.put(player, strLocShowcase);
 			
-			player.sendMessage(plugName + "Vitrine mémorisée.");
+			player.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SHOWCASESAVED")); //$NON-NLS-1$
 			
 			if (playerShowcase.containsKey(player) && playerSign.containsKey(player))
 			{
@@ -135,12 +132,12 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (playerChest.get(p) == (Chest)b.getState())
 			{
-				p.sendMessage(plugName + "Tu as déjà choisi ce coffre.");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.CHESTALREADYCHOOSEN")); //$NON-NLS-1$
 				return;
 			}
 			else if(!plugin.signmanager.isChestOwner((Chest)b.getState(), p))
 			{
-					p.sendMessage(plugName + "Ce n'est pas ton coffre (Pas les droits dans le cubo ?)");
+					p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.NOTYOURCHEST")); //$NON-NLS-1$
 					return;
 			}
 			
@@ -148,7 +145,7 @@ public class BoutiquePlayerListener extends PlayerListener
 							
 			playerChest.put(p, (Chest)b.getState());
 			
-			p.sendMessage(plugName + "Coffre mémorisé.");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.CHESTSAVED")); //$NON-NLS-1$
 			
 			if (playerChest.containsKey(p) && playerSign.containsKey(p))
 			{
@@ -193,19 +190,19 @@ public class BoutiquePlayerListener extends PlayerListener
 		{
 			if (playerSign.get(p) == (Sign)b.getState())
 			{
-				p.sendMessage(plugName + "Tu as déjà choisi ce panneau.");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SIGNALREADYCHOOSEN")); //$NON-NLS-1$
 			}
 			else 
 			{
 				if (!plugin.signmanager.isSignOwner((Sign)b.getState(), p))
 				{
-					p.sendMessage(plugName + "Ce n'est pas ton panneau.");
+					p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.NOTYOURSIGN")); //$NON-NLS-1$
 					return;
 				}
 				
 				playerSign.put(p, (Sign)b.getState());
 				
-				p.sendMessage(plugName + "Panneau mémorisé.");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SIGNSAVED")); //$NON-NLS-1$
 				
 				if (playerChest.containsKey(p) && playerSign.containsKey(p)) 
 				{
@@ -229,13 +226,13 @@ public class BoutiquePlayerListener extends PlayerListener
 			
 			if (!plugin.signmanager.isSignOwner((Sign)b.getState(), p))
 			{
-				p.sendMessage(plugName + "Ce n'est pas ton panneau.");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.NOTYOUSIGN")); //$NON-NLS-1$
 				return;
 			}
 			
 			playerSign.put(p, (Sign)b.getState());
 			
-			p.sendMessage(plugName + "Panneau mémorisé.");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SIGNSAVED")); //$NON-NLS-1$
 			
 
 			if (playerShowcase.containsKey(p) && playerSign.containsKey(p)) 

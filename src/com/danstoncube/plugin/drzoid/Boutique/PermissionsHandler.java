@@ -11,8 +11,8 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class PermissionsHandler 
 {
-	public static final String permissionErr = "Tu n'as pas le droit de faire çà.";
-	public static final String permissionBreakErr = "Tu ne peux pas détruire çà.";
+	public static final String permissionErr = Messages.getString("Perm.NOPERM"); //$NON-NLS-1$
+	public static final String permissionBreakErr = Messages.getString("Perm.NOBREAK"); //$NON-NLS-1$
 	
 	public static boolean permissionsEnabled = true;
 	
@@ -22,11 +22,11 @@ public class PermissionsHandler
 	public static void setupPermissions() 
 	{
 		Boutique boutique = Boutique.getInstance();
-		Plugin test = boutique.getServer().getPluginManager().getPlugin("Permissions");
+		Plugin test = boutique.getServer().getPluginManager().getPlugin("Permissions"); //$NON-NLS-1$
 		if (test != null) 
 		{
 			((Permissions)test).getHandler();
-			boutique.log.info(boutique.logPrefix + "utilise Permissions");
+			boutique.log.info(boutique.logPrefix + Messages.getString("Perm.HOOKED")); //$NON-NLS-1$
 			permissionsEnabled = true;
 			permissions = test;
 			return;
@@ -52,7 +52,7 @@ public class PermissionsHandler
 		if (!permissionsEnabled)
 			return p.isOp();
 		else
-			return checkNode(p, "signtrader.MakeGlobalSign") || checkNode(p, "boutique.MakeGlobalSign");
+			return checkNode(p, "signtrader.MakeGlobalSign") || checkNode(p, "boutique.MakeGlobalSign"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public static  boolean canSetPersonalSign(Player p)
@@ -60,7 +60,7 @@ public class PermissionsHandler
 		//Checks to see if the player has permission to make trading signs
 		if (permissionsEnabled) 
 		{
-			return checkNode(p, "signtrader.MakePersonalSign") || checkNode(p, "boutique.MakePersonalSign");
+			return checkNode(p, "signtrader.MakePersonalSign") || checkNode(p, "boutique.MakePersonalSign"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return true;
 	}
@@ -82,14 +82,14 @@ public class PermissionsHandler
 	{
 		//Checks to see if the player can use signs.
 		if (permissionsEnabled)
-			return checkNode(p, "signtrader.Use")|| checkNode(p, "boutique.Use");
+			return checkNode(p, "signtrader.Use")|| checkNode(p, "boutique.Use"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return true;
 	}
 
 	public static boolean canSetOwner(Player p) {
 		if (permissionsEnabled)
-			return checkNode(p, "signtrader.admin.SetOwner")|| checkNode(p, "boutique.admin.SetOwner");
+			return checkNode(p, "signtrader.admin.SetOwner")|| checkNode(p, "boutique.admin.SetOwner"); //$NON-NLS-1$ //$NON-NLS-2$
 		return p.isOp();
 	}
 
@@ -98,7 +98,7 @@ public class PermissionsHandler
 		if (!permissionsEnabled)
 			return p.isOp();
 		else
-			return checkNode(p, "signtrader.MakeWebAuctionSign") || checkNode(p, "boutique.MakeWebAuctionSign");
+			return checkNode(p, "signtrader.MakeWebAuctionSign") || checkNode(p, "boutique.MakeWebAuctionSign"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 }

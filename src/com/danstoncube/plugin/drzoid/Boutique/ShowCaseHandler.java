@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 import com.miykeal.showCaseStandalone.Messaging;
 import com.miykeal.showCaseStandalone.Properties;
 import com.miykeal.showCaseStandalone.Shop;
@@ -28,13 +27,13 @@ public class ShowCaseHandler
 	{
 		Boutique plugin = Boutique.getInstance();
 		
-		Plugin test = Bukkit.getServer().getPluginManager().getPlugin("ShowCaseStandalone");
+		Plugin test = Bukkit.getServer().getPluginManager().getPlugin("ShowCaseStandalone"); //$NON-NLS-1$
 		if (test != null) 
 		{
 			((ShowCaseStandalone)test).getClass();
 			
 			showcase = (ShowCaseStandalone)test;
-			plugin.log.info("["+plugin.displayname+"] utilise ShowcaseStandalone");
+			plugin.log.info("["+plugin.displayname+Messages.getString("ShowCase.HOOKED")); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		
@@ -88,20 +87,19 @@ public class ShowCaseHandler
         {
         	removeshop(p,b);
         }
-        else
-        {
+        
         	
-        	String matData = "0:0";
+        	String matData = "0:0"; //$NON-NLS-1$
         	Activities signActivity = Activities.SELL;
         	
         	
         	if(bs.getItemTo()!=null)
         	{
-        		matData = bs.getItemTo().itemId + ":" + bs.getItemTo().itemDamage;
+        		matData = bs.getItemTo().itemId + ":" + bs.getItemTo().itemDamage; //$NON-NLS-1$
         	}
         	else if(bs.getItemFrom()!=null)
         	{
-        		matData = bs.getItemFrom().itemId + ":" + bs.getItemFrom().itemDamage;
+        		matData = bs.getItemFrom().itemId + ":" + bs.getItemFrom().itemDamage; //$NON-NLS-1$
         	}
         	
         	if(bs.isBuySign())
@@ -121,7 +119,10 @@ public class ShowCaseHandler
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        }
+        
+        Shop.save();
+        
+        
 	}
 	
 	/*
@@ -137,12 +138,12 @@ public class ShowCaseHandler
 		ItemStack stack			= new ItemStack(material.getItemType(), p.getAmount(), material.getItemType().getMaxDurability(), material.getData());
 		
 		if (Shop.isShopBlock(b)) {
-			Messaging.send(player, "`rError: Selected block is already a shop.");
+			Messaging.send(player, Messages.getString("ShowCase.ALREADYSHOP")); //$NON-NLS-1$
 			return;
 		}
                 
                 if(Properties.forbiddenBlocks.contains(b.getType())){
-                    Messaging.send(player, "`rYou cannot use that block as a shop.");
+                    Messaging.send(player, Messages.getString("ShowCase.CANNOTUSETHATBLOCK")); //$NON-NLS-1$
                     return;
                 }
 		
@@ -155,13 +156,13 @@ public class ShowCaseHandler
                     inv.removeItem(stack);
                 else 
                 {
-                    Messaging.send(player, "`rError: You do not have enough saleable items to create the");
-                    Messaging.send(player, "`rshop.");
+                    Messaging.send(player, Messages.getString("ShowCase.NOENOUGHITEMS")); //$NON-NLS-1$
+                    Messaging.send(player, Messages.getString("ShowCase.SHOP")); //$NON-NLS-1$
                     return;
                 }
             else
             {
-                Messaging.send(player, "`rError: You do not have enough items to create the shop.");
+                Messaging.send(player, Messages.getString("ShowCase.NOENOUGHITEMS2")); //$NON-NLS-1$
                 return;
             }
 		}
@@ -170,7 +171,7 @@ public class ShowCaseHandler
 		p.show		 	();
 		p.register		();
         
-		Messaging.send(player,"`gVitrine mise à jour.");
+		Messaging.send(player,Messages.getString("ShowCase.UPDATED")); //$NON-NLS-1$
 
 	}
 	
@@ -182,13 +183,13 @@ public class ShowCaseHandler
 		Shop shop = Shop.getShopForBlock(b);
 		
 		if (shop == null) {
-			Messaging.send(player, "`rThe block you have selected is not a shop.");
+			Messaging.send(player, Messages.getString("ShowCase.NOTASHOP")); //$NON-NLS-1$
 			return;
 		}
 		
 		MaterialData material = shop.getMaterialData();
 		
-		if (player.getName().equals(shop.getOwner()) || showcase.hasPermission(player, "scs.admin")) 
+		if (player.getName().equals(shop.getOwner()) || showcase.hasPermission(player, "scs.admin"))  //$NON-NLS-1$
 		{
 			HashMap<Integer, ItemStack> rest = new HashMap<Integer, ItemStack>();
 			
@@ -198,18 +199,18 @@ public class ShowCaseHandler
 			if (rest.size() > 0) 
 			{
 				shop.setAmount(shop.getAmount() - rest.get(0).getAmount());
-				player.sendMessage("`rYou do not have enough space in your inventory for ALL of your shop's items. Drop some items and try again.");
-				player.sendMessage("Left: "+shop.getAmount());
+				player.sendMessage(Messages.getString("ShowCase.NOINVENTORYSPACE")); //$NON-NLS-1$
+				player.sendMessage(Messages.getString("ShowCase.LEFT")+shop.getAmount()); //$NON-NLS-1$
 			} else 
 			{
 				shop.hidd();
 				shop.delete();
 				
-				Messaging.send(player, "`gSuccessfully removed shop.");
+				Messaging.send(player, Messages.getString("ShowCase.SHOPREMOVED")); //$NON-NLS-1$
 			}
 		} 
 		else
-			Messaging.send(player, "`rOnly the owner, or an admin, can remove a shop.");
+			Messaging.send(player, Messages.getString("ShowCase.ONLYADMINCANREMOVE")); //$NON-NLS-1$
 			
 	}
 

@@ -17,17 +17,18 @@ public class WorldGuardOperator
 	{
 		Boutique boutique = Boutique.getInstance();
 		
-		Plugin worldguard = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+		Plugin testworldguard = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 		 
 	    // WorldGuard may not be loaded
-	    if (worldguard == null || !(worldguard instanceof WorldGuardPlugin)) 
+	    if (testworldguard == null || !(testworldguard instanceof WorldGuardPlugin)) 
 	    {
 	    	worldguard = null; 
 	    	
 	    }
 	    else
 	    {
-	    	boutique.log.info(boutique.logPrefix + "Utilisation de Worldguard !");
+	    	worldguard = (WorldGuardPlugin) testworldguard;
+	    	boutique.log.info(boutique.logPrefix + Messages.getString("WorldGuard.HOOKED"));
 	    }
 	}
 	

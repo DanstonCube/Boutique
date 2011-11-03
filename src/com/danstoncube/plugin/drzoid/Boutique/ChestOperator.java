@@ -11,8 +11,8 @@ public class ChestOperator
 {
 
 	private final static int chestSize = 27;
-	public final static String notEnoughErr = "Le coffre n'a plus assez de stocks !";
-	public static String notEnoughSpaceErr = "Le coffre n'a plus assez de place !";
+	public final static String notEnoughErr = Messages.getString("Chest.NOMORESTOCKS"); //$NON-NLS-1$
+	public static String notEnoughSpaceErr = Messages.getString("Chest.NOMOREPLACE"); //$NON-NLS-1$
 	
 	//Thanks @YOGODA!
 	private static Chest getDoubleChest(Chest chest)	

@@ -23,26 +23,26 @@ public class BoutiqueServerListener extends ServerListener {
     	
     	if (EconomyHandler.balance != null) 
     	{
-            if (event.getPlugin().getDescription().getName().equals("iConomy")) 
+            if (event.getPlugin().getDescription().getName().equals("iConomy"))  //$NON-NLS-1$
             {
             	EconomyHandler.balance = new DummyBalance(this.plugin);
             	EconomyHandler.currencyEnabled = false;
-                plugin.log.info("["+plugin.displayname+"] iConomy désactivé.");
+                plugin.log.info(plugin.logPrefix + Messages.getString("Econ.UNHOOKED")); //$NON-NLS-1$
             }
         }    
     	
         
        	if (PermissionsHandler.permissions != null) 
        	{      		
-               if (event.getPlugin().getDescription().getName().equals("Permissions")) 
+               if (event.getPlugin().getDescription().getName().equals("Permissions"))  //$NON-NLS-1$
                {
             	   PermissionsHandler.permissions = null;
             	   PermissionsHandler.permissionsEnabled = false;
-                   plugin.log.info("["+plugin.displayname+"] Permissions désactivé.");
+                   plugin.log.info(plugin.logPrefix + Messages.getString("BoutiqueServerListener.3")); //$NON-NLS-1$
                }
         }    
        	
-       	
+       	//TODO: desactiver showcase et webauction ???
        	
 
     }

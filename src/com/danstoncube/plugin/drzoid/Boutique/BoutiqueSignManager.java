@@ -12,7 +12,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignChest;
 import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignDummy;
 import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignServer;
@@ -24,8 +23,8 @@ public class BoutiqueSignManager
 	
 	private HashMap<String,BoutiqueSign> _signs = new HashMap<String,BoutiqueSign>();
 	
-	//TODO: changer ca
-	private String plugName = "Boutique";
+	
+	
 	
 	private Boutique plugin = null;
 	
@@ -54,7 +53,7 @@ public class BoutiqueSignManager
 	
 	private String getLocationString(Location l)
 	{
-		return l.getWorld().getName() + ":" + l.getBlockX() + ":" +  l.getBlockY() + ":" + l.getBlockZ(); 
+		return l.getWorld().getName() + ":" + l.getBlockX() + ":" +  l.getBlockY() + ":" + l.getBlockZ();  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
 	public Boolean isEnabled(Sign s)
@@ -86,15 +85,15 @@ public class BoutiqueSignManager
 		if (!bs.isEnabled())
 		{
 			//TODO: formatter le chat ailleurs ? 
-			p.sendMessage(ChatColor.YELLOW + "Le panneau n'est pas actif.");
-			p.sendMessage(ChatColor.YELLOW + "Activez le en reposant le panneau.");
+			p.sendMessage(ChatColor.YELLOW + Messages.getString("Sign.INACTIVESIGN")); //$NON-NLS-1$
+			p.sendMessage(ChatColor.YELLOW + Messages.getString("Sign.MAKEANOTHERONE")); //$NON-NLS-1$
 			return;
 		}		
 		
 		// See if player has permission to use signs.
 		if(!PermissionsHandler.canUseSign(p))
 		{
-			p.sendMessage(plugName + PermissionsHandler.permissionErr);
+			p.sendMessage(plugin.chatPrefix + PermissionsHandler.permissionErr);
 			return;
 		}
 		
@@ -155,14 +154,14 @@ public class BoutiqueSignManager
 				return;
 			}
 			
-			p.sendMessage(plugName + "Panneau serveur ajouté à la liste :)");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.SERVERSIGNADDED")); //$NON-NLS-1$
 		}
 		
 		else if(bs.isSignChest())
 		{
 			if (!PermissionsHandler.canSetPersonalSign(p))
 			{
-				p.sendMessage(PermissionsHandler.permissionErr);
+				p.sendMessage(plugin.chatPrefix + PermissionsHandler.permissionErr);
 				return;
 			}
 			
@@ -173,7 +172,7 @@ public class BoutiqueSignManager
 				return;
 			}
 			
-			p.sendMessage(plugName + "Panneau joueur ajouté à la liste :)");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.CHESTSIGNADDED")); //$NON-NLS-1$
 		}	
 		else if(bs.isSignWebAuction())
 		{
@@ -190,7 +189,7 @@ public class BoutiqueSignManager
 				return;
 			}
 			
-			p.sendMessage(plugName + "Panneau web joueur ajouté à la liste :)");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.WEBAUCTIONSIGNADDED")); //$NON-NLS-1$
 		}
 		else
 		{
@@ -198,7 +197,7 @@ public class BoutiqueSignManager
 		}
 		
 		
-		bs.setLine4("ok");			
+		bs.setLine4("ok");			 //$NON-NLS-1$
 		bs.Render();
 		
 		this.put(bs);
@@ -209,13 +208,13 @@ public class BoutiqueSignManager
 	public void displaySignInfo(Block b, Player p) 
 	{
 		//TODO virer debug
-		//p.sendMessage(plugName + "displaySignInfo");
+		//p.sendMessage(plugin.chatPrefix + "displaySignInfo");
 		
 		BoutiqueSign bs = getBoutiqueSign(b);
 		
 		String signOwnerString = bs.getOwnerString();
 		String signTypeStr = bs.getType();
-		String separator = "-----------------------------------";
+		String separator = Messages.getString("Sign.SIGNINFOSEPARATOR"); //$NON-NLS-1$
 		
 
 		//debut texte
@@ -224,8 +223,8 @@ public class BoutiqueSignManager
 		if (!bs.isEnabled())
 		{
 			//TODO: formatter le chat ailleurs ? 
-			p.sendMessage(ChatColor.YELLOW + "Le panneau n'est pas actif.");
-			p.sendMessage(ChatColor.YELLOW + "Activez le en reposant le panneau.");
+			p.sendMessage(ChatColor.YELLOW + Messages.getString("Sign.INACTIVESIGN")); //$NON-NLS-1$
+			p.sendMessage(ChatColor.YELLOW + Messages.getString("Sign.MAKEANOTHERONE")); //$NON-NLS-1$
 			return;
 		}		
 					
@@ -239,30 +238,30 @@ public class BoutiqueSignManager
 		if(bs.isSignServer())
 		{
 			//Type BoutiqueSignServer
-			p.sendMessage("Ce panneau fait partie du magasin du serveur.");
+			p.sendMessage(Messages.getString("Sign.SIGNISSERVER")); //$NON-NLS-1$
 		}
 		else if(bs.isSignChest())
 		{	
 			//Type BoutiqueSignChest
 			
-			p.sendMessage("Ce panneau fait partie du magasin de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");			
+			p.sendMessage(Messages.getString("Sign.SIGNISPLAYER") + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");			 //$NON-NLS-1$ //$NON-NLS-2$
 			
 			String signchest = bs.getChestString();			
 			if(signchest.isEmpty()) 
 			{
-				p.sendMessage(ChatColor.RED + "Aucun coffre n'est relié au panneau pour le moment !");
+				p.sendMessage(ChatColor.RED + Messages.getString("Sign.SIGNCHESTNOTBIND")); //$NON-NLS-1$
 			}
 			
 		}
 		else if(bs.isSignWebAuction())
 		{
 			//Type BoutiqueSignWebAuction
-			p.sendMessage("Ce panneau fait partie du magasin web de " + ChatColor.RED + signOwnerString + ChatColor.WHITE +  ".");
+			p.sendMessage(Messages.getString("Sign.SIGNISWEB") + ChatColor.RED + signOwnerString + ChatColor.WHITE +  "."); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		else
 		{
 			//Type inconnu
-			p.sendMessage(ChatColor.RED + "Ce panneau est d'un type inconnu et " + ChatColor.WHITE +  signOwnerString + ChatColor.RED + " en est le propriétaire." );
+			p.sendMessage(ChatColor.RED + Messages.getString("Sign.SIGNISUNKNOWTYPE") + ChatColor.WHITE +  signOwnerString + ChatColor.RED + Messages.getString("Sign.ISTHEOWNER") ); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 			
@@ -278,7 +277,7 @@ public class BoutiqueSignManager
 		/* Test iconomy */
 		if(!EconomyHandler.currencyEnabled)
 		{
-			p.sendMessage("Il n'y a pas iConomy sur le serveur !");
+			p.sendMessage(Messages.getString("Sign.NOECONERR")); //$NON-NLS-1$
 			p.sendMessage(separator);
 			return;
 		}
@@ -300,8 +299,8 @@ public class BoutiqueSignManager
 				//TODO: message && currencystring
 				p.sendMessage
 				(
-					"Un clic-droit sur ce panneau te donnera " + 
-					ChatColor.RED + moneyTo + "Eus" + ChatColor.WHITE
+					Messages.getString("Sign.RIGHTCLICKWILLGETYOU") +  //$NON-NLS-1$
+					ChatColor.RED + moneyTo + Messages.getString("Sign.22") + ChatColor.WHITE //$NON-NLS-1$
 				);			
 			}
 			else
@@ -309,10 +308,10 @@ public class BoutiqueSignManager
 				//TODO: message
 				p.sendMessage
 				(
-					"Un clic-droit sur ce panneau te donnera  " + 
-					ChatColor.RED + qtyTo + ChatColor.WHITE + 	" "	+ 
+					Messages.getString("Sign.RIGHTCLICKWILLGETYOU") +  //$NON-NLS-1$
+					ChatColor.RED + qtyTo + ChatColor.WHITE + 	" "	+  //$NON-NLS-1$
 					ChatColor.RED + itemTo.itemName + ChatColor.WHITE + 
-					" gratuitement."
+					Messages.getString("Sign.FORFREE") //$NON-NLS-1$
 				);				
 			}
 		}
@@ -324,8 +323,8 @@ public class BoutiqueSignManager
 				//TODO: message && currencystring
 				p.sendMessage
 				(
-					"Ce panneau recoit des dons de " + 
-					ChatColor.RED + moneyFrom + "Eus" + ChatColor.WHITE
+					Messages.getString("Sign.SIGNGETDONATIONS") +  //$NON-NLS-1$
+					ChatColor.RED + moneyFrom + Messages.getString("Sign.27") + ChatColor.WHITE //$NON-NLS-1$
 				);			
 			}
 			else
@@ -333,8 +332,8 @@ public class BoutiqueSignManager
 				//TODO: message
 				p.sendMessage
 				(
-					"Ce panneau recoit des dons de " +
-					ChatColor.RED + qtyFrom + ChatColor.WHITE + " "	+ 
+					Messages.getString("Sign.SIGNGETDONATIONS") + //$NON-NLS-1$
+					ChatColor.RED + qtyFrom + ChatColor.WHITE + " "	+  //$NON-NLS-1$
 					ChatColor.RED + itemFrom.itemName + ChatColor.WHITE
 				);				
 			}
@@ -342,40 +341,40 @@ public class BoutiqueSignManager
 		else if(bs.isSellSign())
 		{
 			p.sendMessage(
-				"Un clic-droit sur ce panneau te donnera " + 
-				ChatColor.RED + qtyTo + ChatColor.WHITE + " " + 
+				Messages.getString("Sign.RIGHTCLICKWILLGETYOU") +  //$NON-NLS-1$
+				ChatColor.RED + qtyTo + ChatColor.WHITE + " " +  //$NON-NLS-1$
 				ChatColor.RED + itemTo.itemName + ChatColor.WHITE + 
-				" pour la somme de " + 
-				ChatColor.RED + moneyFrom + " Eus" + ChatColor.WHITE + 
-				"."
+				Messages.getString("Sign.FORMONEY") +  //$NON-NLS-1$
+				ChatColor.RED + moneyFrom + " Eus" + ChatColor.WHITE +  //$NON-NLS-1$
+				"." //$NON-NLS-1$
 			);
 		}
 		else if(bs.isBuySign())
 		{
 			p.sendMessage
 			(
-				"Ce panneau te donne " + ChatColor.RED + moneyTo + "Eus " + 
-				ChatColor.WHITE + " pour chaque lot de " + 
-				ChatColor.RED + qtyFrom + "x " + itemFrom.itemName + 
-				ChatColor.WHITE + " que tu lui donneras."
+				Messages.getString("Sign.SIGNGIVEYOUFORMONEY") + ChatColor.RED + moneyTo + "Eus " +  //$NON-NLS-1$ //$NON-NLS-2$
+				ChatColor.WHITE + Messages.getString("Sign.FOREACHSTACKOF") +  //$NON-NLS-1$
+				ChatColor.RED + qtyFrom + Messages.getString("Sign.QTY1") + itemFrom.itemName +  //$NON-NLS-1$
+				ChatColor.WHITE + Messages.getString("Sign.YOUWILLGIVEHIM") //$NON-NLS-1$
 			);
 		}
 		else if(bs.isTradeSign())
 		{
 			p.sendMessage
 			(
-				"Ce panneau échange " + 
-				ChatColor.RED + qtyFrom + "x" + ChatColor.WHITE + " " + 
-				ChatColor.RED + itemFrom.itemName + ChatColor.WHITE + ", contre " +
-				ChatColor.RED + qtyTo + "x"  + ChatColor.WHITE + " " +
-				ChatColor.RED + itemTo.itemName + ChatColor.WHITE + "."
+				Messages.getString("Sign.SIGNISTRADING") +  //$NON-NLS-1$
+				ChatColor.RED + qtyFrom + Messages.getString("Sign.QTY") + ChatColor.WHITE + " " +  //$NON-NLS-1$ //$NON-NLS-2$
+				ChatColor.RED + itemFrom.itemName + ChatColor.WHITE + Messages.getString("Sign.VERSUS1") + //$NON-NLS-1$
+				ChatColor.RED + qtyTo + Messages.getString("Sign.QTY")  + ChatColor.WHITE + " " + //$NON-NLS-1$ //$NON-NLS-2$
+				ChatColor.RED + itemTo.itemName + ChatColor.WHITE + "." //$NON-NLS-1$
 			);
 		}
 		else
 		{
 			p.sendMessage
 			(
-				"VROUM VROUM, c'est quoi ce panneau omg, il a fumé ou quoi ???"
+				Messages.getString("Sign.VROUMVROUMERR") //$NON-NLS-1$
 			);
 			
 			return;
@@ -403,15 +402,13 @@ public class BoutiqueSignManager
 		
 		int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
 		
-		//TODO changer plugname par chatprefix
-		String plugName = "";
-		
-		//Signe Serveur
+
+		//Panneau Serveur
 		if (bs.isSignServer())
 		{
 			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 
@@ -419,9 +416,9 @@ public class BoutiqueSignManager
 			PlayerOperator.givePlayerItem(qty, id, damage, p);
 			
 			//todo: serverplayername
-			signOwner = "[Serveur]";
+			signOwner = "[Serveur]"; //$NON-NLS-1$
 		}
-		//Signe coffre
+		//Panneau coffre
 		else if (bs.isSignChest())
 		{
 			
@@ -429,18 +426,18 @@ public class BoutiqueSignManager
 			
 			if(chest == null)
 			{			
-				p.sendMessage(plugName + "Pas trouvé de coffre associé au panneau");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.NOBINDEDCHESTFOUND")); //$NON-NLS-1$
 				return false;
 			}
 			
 			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 			else if (!ChestOperator.containsEnough(qty, id, damage, chest))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughErr);
 				return false;
 			}
 			
@@ -448,7 +445,7 @@ public class BoutiqueSignManager
 			int econOwner = EconomyHandler.modifyMoney(signOwner, costAmount);
 			if (econOwner != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 			
@@ -459,38 +456,34 @@ public class BoutiqueSignManager
 			PlayerOperator.givePlayerItem(qty, id, damage , p);
 		}
 		
-		//Signe webauction
+		//Panneau webauction
 		else if (bs.isSignWebAuction())
 		{
-			//TODO virer debug
-			//p.sendMessage("dbg1: isSignWebAuction");
-			
-			
+
 			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
+			
 			//TO CHANGE
 			if(!plugin.db.wa_HasEnoughItem(signOwner, id, damage, qty))
 			{
-				p.sendMessage(plugName + WebItemsOperator.notEnoughErr);
+				p.sendMessage(plugin.chatPrefix + WebItemsOperator.notEnoughErr);
 				return false;
 			}
 			
 			int econOwner = EconomyHandler.modifyMoney(signOwner, costAmount);
 			if (econOwner != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 			
-			//TODO virer debug
-			//p.sendMessage("dbg2");
 			
 			if(!plugin.db.wa_RemoveFromStock(signOwner, id, damage, qty))
 			{
-				p.sendMessage("Impossible d'enlever dans les stocks web !");
+				p.sendMessage(Messages.getString("Sign.UNABLETOREMOVEFROMWEBSTOCKS")); //$NON-NLS-1$
 				
 				return false;
 			}
@@ -510,12 +503,12 @@ public class BoutiqueSignManager
 		}
 		
 		
-		p.sendMessage(plugName + "Tu as recu " + qty + " " + bs.getItemTo().itemName);
-		p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerBalance(p.getName()));
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGET") + qty + " " + bs.getItemTo().itemName); //$NON-NLS-1$ //$NON-NLS-2$
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.MONEYREMAINING") + EconomyHandler.playerBalance(p.getName())); //$NON-NLS-1$
 			
 		try 
 		{
-			plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, costAmount,"toto","titi");
+			plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, costAmount,"toto","titi"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (SQLException e) 
 		{
@@ -545,7 +538,7 @@ public class BoutiqueSignManager
 		if (bs.isSignServer())
 		{
 			PlayerOperator.givePlayerItem(qty, id, damage, p);
-			signOwner = "[Serveur]";
+			signOwner = "[Serveur]"; //$NON-NLS-1$
 		}
 		//Signe coffre
 		else if (bs.isSignChest())
@@ -555,13 +548,13 @@ public class BoutiqueSignManager
 			
 			if(chest == null)
 			{			
-				p.sendMessage(plugName + "Pas trouvé de coffre associé au panneau");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.NOBINDEDCHESTFOUND")); //$NON-NLS-1$
 				return false;
 			}
 			
 			if (!ChestOperator.containsEnough(qty, id, damage, chest))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughErr);
 				return false;
 			}
 			
@@ -578,26 +571,26 @@ public class BoutiqueSignManager
 			//TO CHANGE
 			if(!plugin.db.wa_HasEnoughItem(signOwner, id, damage, qty))
 			{
-				p.sendMessage(plugName + WebItemsOperator.notEnoughErr);
+				p.sendMessage(plugin.chatPrefix + ChatColor.RED + WebItemsOperator.notEnoughErr);
 				return false;
 			}
 			
 			if(!plugin.db.wa_RemoveFromStock(signOwner, id, damage, qty))
 			{
-				p.sendMessage("Impossible d'enlever dans les stocks web !");
+				p.sendMessage(plugin.chatPrefix + ChatColor.RED + Messages.getString("Sign.UNABLETOREMOVEFROMWEBSTOCKS")); //$NON-NLS-1$
 				return false;
 			}
 			
 			PlayerOperator.givePlayerItem(qty, id, damage, p);	
 		}
 
-		p.sendMessage(plugName + "Tu as recu " + qty + " " + bs.getItemTo().itemName);
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGET") + qty + " " + bs.getItemTo().itemName); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		//p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
+		//p.sendMessage(plugin.chatPrefix + "Il te reste " + EconomyHandler.playerHave(p.getName()));
 			
 		try 
 		{
-			plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, 0.0,"toto","titi");
+			plugin.db.logTransaction(p.getLocation(), signOwner, p.getName(),  id , damage , qty, 0.0,"toto","titi"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (SQLException e) 
 		{
@@ -623,14 +616,11 @@ public class BoutiqueSignManager
 		Integer id = bs.getItemFrom().itemId;
 		Integer damage = bs.getItemFrom().itemDamage;
 		
-		//int econ = EconomyHandler.hasEnough(p.getName(), costAmount);
-		
-		//TODO changer plugname par chatprefix
-		String plugName = "";
+
 		
 		if (!PlayerOperator.playerHasEnough( qty, id, damage, p))
 		{
-			p.sendMessage(plugName + PlayerOperator.playerStockErr);
+			p.sendMessage(plugin.chatPrefix + PlayerOperator.playerStockErr);
 			return false;
 		}
 		
@@ -644,7 +634,7 @@ public class BoutiqueSignManager
 			EconomyHandler.modifyMoney(p.getName(), costAmount);
 			
 			//Enleve le propriétaire du panneau pour les logs (car panneau serveur) !
-			signOwner = "";
+			signOwner = ""; //$NON-NLS-1$
 		}
 		
 		// Panneau "webauctions"
@@ -656,14 +646,14 @@ public class BoutiqueSignManager
 			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
 			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 			
 			// Ajoute les objets au stock WebAuctions
 			if(!plugin.db.wa_AddToStock(p.getName(), id, damage, qty))
 			{
-				p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.UNABLETOADDINWEBSTOCKS")  + signOwner + Messages.getString("Sign.SMILEYSAD")); //$NON-NLS-1$ //$NON-NLS-2$
 				return false;
 			}
 			
@@ -698,7 +688,7 @@ public class BoutiqueSignManager
 			// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
 			if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+				p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughSpaceErr);
 				return false;
 			}			
 			
@@ -706,7 +696,7 @@ public class BoutiqueSignManager
 			int econ = EconomyHandler.hasEnough(signOwner, costAmount);
 			if (econ != 1)
 			{
-				p.sendMessage(plugName + EconomyHandler.getEconError(econ));
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.getEconError(econ));
 				return false;
 			}
 			
@@ -726,12 +716,12 @@ public class BoutiqueSignManager
 			//p.sendMessage("dbg2: fin signchest");
 		}
 		
-		p.sendMessage(plugName + "Tu as vendu " + qty + " " + bs.getItemFrom().itemName);
-		p.sendMessage(plugName + "Tu as maintenant " + EconomyHandler.playerBalance(p.getName()) + ".");
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUSELL") + qty + " " + bs.getItemFrom().itemName); //$NON-NLS-1$ //$NON-NLS-2$
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUHAVENOW") + EconomyHandler.playerBalance(p.getName()) + "."); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		try 
 		{
-			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id, damage, qty, costAmount,"toto","titi");
+			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id, damage, qty, costAmount,"toto","titi"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (Exception e) 
 		{
@@ -749,11 +739,6 @@ public class BoutiqueSignManager
 		//Double costAmount = bs.getMoneyTo();
 		
 		String signOwner = bs.getOwnerString();
-
-		
-		//TODO changer plugname par chatprefix
-		String plugName = "";
-		
 		
 		//Teste donation item ou thunes ?
 		
@@ -766,14 +751,14 @@ public class BoutiqueSignManager
 			
 			if (!PlayerOperator.playerHasEnough( qty, id, damage, p))
 			{
-				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				p.sendMessage(plugin.chatPrefix + PlayerOperator.playerStockErr);
 				return false;
 			}
 
 			if (bs.isSignServer())
 			{
 				//Enleve le propriétaire du panneau pour les logs (car panneau serveur) !
-				signOwner = "";
+				signOwner = ""; //$NON-NLS-1$
 			}
 			else if (bs.isSignWebAuction())
 			{
@@ -781,7 +766,7 @@ public class BoutiqueSignManager
 				// Ajoute les objets au stock WebAuctions
 				if(!plugin.db.wa_AddToStock(p.getName(), id, damage, qty))
 				{
-					p.sendMessage(plugName + "Erreur lors de l'ajout dans les stocks web de "  + signOwner + " :(");
+					p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.UNABLETOADDINWEBSTOCKS")  + signOwner + Messages.getString("Sign.SMILEYSAD")); //$NON-NLS-1$ //$NON-NLS-2$
 					return false;
 				}
 			}			
@@ -800,7 +785,7 @@ public class BoutiqueSignManager
 				// Vérifie qu'il reste de la place dans le coffre pour stocker les objets à acheter
 				if (!ChestOperator.hasEnoughSpace(qty,id,damage, chest))
 				{
-					p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+					p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughSpaceErr);
 					return false;
 				}			
 
@@ -811,12 +796,12 @@ public class BoutiqueSignManager
 			// Retire les objets au donneur
 			PlayerOperator.removeFromPlayer(qty, id, damage, p);
 			
-			p.sendMessage(plugName + "Tu as donné " + qty + "x " + bs.getItemFrom().itemName + " " + (bs.isSignServer() ? "au serveur.": "à " + signOwner + "."));
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGIVE") + qty + Messages.getString("Sign.QTY1") + bs.getItemFrom().itemName + " " + (bs.isSignServer() ? Messages.getString("Sign.TOSERVER"): Messages.getString("Sign.TO") + signOwner + ".")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			
 			
 			try 
 			{
-				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id , damage, qty , 0.0 ,"toto","titi");
+				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, id , damage, qty , 0.0 ,"toto","titi"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			catch (Exception e) 
 			{
@@ -833,7 +818,7 @@ public class BoutiqueSignManager
 			//Verif money doneur
 			if (EconomyHandler.hasEnough(p.getName(), bs.getMoneyFrom())!=1)
 			{
-				p.sendMessage(plugName + EconomyHandler.noFundsErr);
+				p.sendMessage(plugin.chatPrefix + EconomyHandler.noFundsErr);
 				return false;
 			}
 			
@@ -847,14 +832,13 @@ public class BoutiqueSignManager
 			EconomyHandler.modifyMoney(p.getName(), -bs.getMoneyFrom());
 			
 
-			//TODO: messages configurables
-			p.sendMessage(plugName + "Tu as donné " + BoutiqueSign.formatMoney(bs.getMoneyFrom()) + " " + BoutiqueSign.formatCurrency(bs.getMoneyFrom()) + " " + (bs.isSignServer() ? "au serveur.": "à " + signOwner));			
-			p.sendMessage(plugName + "Il te reste " + EconomyHandler.playerHave(p.getName()));
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGIVE") + BoutiqueSign.formatMoney(bs.getMoneyFrom()) + " " + BoutiqueSign.formatCurrency(bs.getMoneyFrom()) + " " + (bs.isSignServer() ? Messages.getString("Sign.TOSERVER"): Messages.getString("Sign.TO") + signOwner));
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.MONEYREMAINING") + EconomyHandler.playerHave(p.getName())); //$NON-NLS-1$
 			
 			
 			try 
 			{
-				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, 0, 0, 0, bs.getMoneyFrom() ,"toto","titi");
+				Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), signOwner, 0, 0, 0, bs.getMoneyFrom() ,"toto","titi"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			catch (Exception e) 
 			{
@@ -864,8 +848,7 @@ public class BoutiqueSignManager
 		}
 		else
 		{
-			//TODO: message Hein ta fumé
-			p.sendMessage(plugName + "VROUM VROUM");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.VROUMVROUMERR"));
 			return false;
 		}
 
@@ -873,13 +856,9 @@ public class BoutiqueSignManager
 	}
 	
 
-	public static boolean tradeItems(BoutiqueSign bs, Player p)
+	public boolean tradeItems(BoutiqueSign bs, Player p)
 	{
-		
-		//TODO changer plugname par chatprefix
-		String plugName = "";
-		
-		
+				
 		int qtyFrom = bs.getQtyFrom();
 		int qtyTo = bs.getQtyTo();
 		int damageFrom = bs.getItemFrom().itemDamage;
@@ -887,13 +866,11 @@ public class BoutiqueSignManager
 		int idFrom = bs.getItemFrom().itemId;
 		int idTo = bs.getItemTo().itemId;
 		
-		
-		
 		if (bs.isSignServer())
 		{
 			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
 			{
-				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				p.sendMessage(plugin.chatPrefix + PlayerOperator.playerStockErr);
 				return false;
 			}
 			
@@ -910,17 +887,17 @@ public class BoutiqueSignManager
 			
 			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
 			{
-				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				p.sendMessage(plugin.chatPrefix + PlayerOperator.playerStockErr);
 				return false;
 			}
 			else if (!ChestOperator.containsEnough(qtyTo, idTo, damageTo, chest))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughErr);
+				p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughErr);
 				return false;
 			}
 			else if (!ChestOperator.hasEnoughSpace(qtyFrom, idFrom, damageFrom, chest))
 			{
-				p.sendMessage(plugName + ChestOperator.notEnoughSpaceErr);
+				p.sendMessage(plugin.chatPrefix + ChestOperator.notEnoughSpaceErr);
 				return false;
 			}
 			
@@ -937,13 +914,13 @@ public class BoutiqueSignManager
 
 			if (!PlayerOperator.playerHasEnough(qtyFrom, idFrom, damageFrom, p))
 			{
-				p.sendMessage(plugName + PlayerOperator.playerStockErr);
+				p.sendMessage(plugin.chatPrefix + PlayerOperator.playerStockErr);
 				return false;
 			}
 			else if (!WebItemsOperator.containEnough(bs.getOwnerString(), idTo, damageTo, qtyTo))
 			{
 				//TODO: message "La personne avec qui tu échanges n'a plus assez d'items à échanger !"
-				p.sendMessage(plugName + "La personne avec qui tu échanges n'a plus assez d'items en stock !");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.OTHERHAVENOSTOCKS")); //$NON-NLS-1$
 				return false;
 			}
 			
@@ -960,16 +937,16 @@ public class BoutiqueSignManager
 		
 		
 		//TODO: messages configurables
-		p.sendMessage(plugName + "Tu as donné " + bs.getQtyFrom() + " " + bs.getItemFrom().itemName);			
-		p.sendMessage(plugName + "contre " + bs.getQtyTo() + " " + bs.getItemTo().itemName);
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGIVE") + bs.getQtyFrom() + " " + bs.getItemFrom().itemName);			 //$NON-NLS-1$ //$NON-NLS-2$
+		p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.VERSUS2") + bs.getQtyTo() + " " + bs.getItemTo().itemName); //$NON-NLS-1$ //$NON-NLS-2$
 	
 		
 		//log transaction
 		
 		try 
 		{
-			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), bs.getOwnerString(), idFrom, damageFrom, qtyFrom, 0.0, "toto", "TRADE");
-			Boutique.getInstance().db.logTransaction(p.getLocation(), bs.getOwnerString(), p.getName(), idTo, damageTo, qtyTo, 0.0, "toto", "TRADE");		
+			Boutique.getInstance().db.logTransaction(p.getLocation(), p.getName(), bs.getOwnerString(), idFrom, damageFrom, qtyFrom, 0.0, "toto", "TRADE"); //$NON-NLS-1$ //$NON-NLS-2$
+			Boutique.getInstance().db.logTransaction(p.getLocation(), bs.getOwnerString(), p.getName(), idTo, damageTo, qtyTo, 0.0, "toto", "TRADE");		 //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (Exception e) 
 		{
@@ -1025,13 +1002,13 @@ public class BoutiqueSignManager
 		if(bs == null)
 		{
 			// TODO: message "Impossible de trouver le panneau en question"
-			p.sendMessage(plugName + "Choisi un panneau avant !");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.CHOOSESIGNBEFORE")); //$NON-NLS-1$
 			return;
 		}
 		else
 		{
-			String newChestLoc = "";
-			String oldChestLoc = "";
+			String newChestLoc = ""; //$NON-NLS-1$
+			String oldChestLoc = ""; //$NON-NLS-1$
 			
 			Chest bsc = bs.getChest();
 			
@@ -1044,7 +1021,7 @@ public class BoutiqueSignManager
 			//verifie que le panneau n'etait pas deja relié au coffre			
 			if (oldChestLoc == newChestLoc)
 			{
-				p.sendMessage(plugName + "Ce panneau est déjà relié à ce coffre :/");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.SIGNALREADYBINDED")); //$NON-NLS-1$
 				return;
 			}
 			
@@ -1055,21 +1032,21 @@ public class BoutiqueSignManager
 			int maxDist = 15;
 			if (distX > maxDist || distZ > maxDist ) 
 			{
-				p.sendMessage(plugName + "Le coffre est trop loin du panneau ! (" + maxDist + " blocs max.)");
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.CHESTTOOFARAWAY") + maxDist + Messages.getString("Sign.MAXBLOCKS")); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 			
 			//DEBUG
-			//p.sendMessage(plugName + "Enregistrement coffre");
+			//p.sendMessage(plugin.chatPrefix + "Enregistrement coffre");
 						
 			bs.setChest(chest);			
 			
 			updateSignDb(bs);
 			
-			p.sendMessage(plugName + "Panneau et coffre reliés !");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.CHESTBINDED")); //$NON-NLS-1$
 					
 			//DEBUG
-			//p.sendMessage(plugName + "panneau: " + bs.getChestString());
+			//p.sendMessage(plugin.chatPrefix + "panneau: " + bs.getChestString());
 			
 		}		
 	}
@@ -1084,7 +1061,7 @@ public class BoutiqueSignManager
 		
 		if (!isSign(s))
 		{
-			p.sendMessage(plugName + "Ce panneau est mal configuré. Reposes le correctement avant.");
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.SIGNERRORPLEASEREDO")); //$NON-NLS-1$
 			return;
 		}
 		

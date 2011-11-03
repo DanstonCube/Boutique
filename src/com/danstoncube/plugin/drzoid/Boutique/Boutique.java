@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
@@ -15,12 +16,16 @@ import org.bukkit.util.config.Configuration;
 
 public class Boutique extends JavaPlugin
 {
-	public final Logger log = Logger.getLogger("Minecraft");
-	public final String logPrefix = "[Boutique] ";
 	
-	public final String name = "Boutique";
+	
+	public final String name = "Boutique"; 
 	public final String displayname = "Boutique";
 	public final String version = "2.0.0";
+	
+	public final Logger log = Logger.getLogger("Minecraft");
+	public final String logPrefix = "[" + displayname + "] ";
+	public final String chatPrefix = "" + ChatColor.BLUE + "[" + displayname + "] " + ChatColor.WHITE;
+	
 	
 	//File Handler
 	public File makeFolder;
@@ -59,7 +64,7 @@ public class Boutique extends JavaPlugin
 	
 	public void onEnable()  
 	{
-		log.info(logPrefix + "Chargement de Boutique !");
+		log.info(logPrefix + Messages.getString("BoutiqueLang.LOADING") + " " + displayname);
 			
 		Boutique._instance = this;
 		 
@@ -78,15 +83,16 @@ public class Boutique extends JavaPlugin
 		
 		if(db.setup())
 		{
-			log.info(logPrefix + "Logs Mysql activées");
+			log.info(logPrefix + Messages.getString("BoutiqueLang.MYSQL_ENABLED"));
 			
 			// TODO:
 			db.loadGlobalSignData();
 		}
 		else
 		{
-			log.info(logPrefix + "Logs Mysql désactivées");
+			log.info(logPrefix + Messages.getString("BoutiqueLang.MYSQL_DISABLED"));
 		}
+		
 		
 		PluginManager pm = this.getServer().getPluginManager();
 
@@ -99,15 +105,7 @@ public class Boutique extends JavaPlugin
         pm.registerEvent(Event.Type.PLUGIN_ENABLE, this.serverListener, Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLUGIN_DISABLE, this.serverListener, Priority.Monitor, this);
         
-        
-       
-        
-        
-       
-        
-		
-        
-		log.info(logPrefix + "version " + version + " activé.");
+    	log.info(logPrefix + Messages.getString("BoutiqueLang.VERSION") + " " +  version + " " +  Messages.getString("BoutiqueLang.ENABLED"));
 	}
 	
 	
@@ -118,7 +116,7 @@ public class Boutique extends JavaPlugin
 	public void onDisable() 
 	{		
 		db.close();
-		log.info(logPrefix + "version " + version + " désactivé.");
+		log.info(logPrefix + Messages.getString("BoutiqueLang.VERSION") + " " + version + " " + Messages.getString("BoutiqueLang.DISABLED"));
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) 

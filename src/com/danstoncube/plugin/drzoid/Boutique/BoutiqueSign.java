@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique.SignTypes;
+package com.danstoncube.plugin.drzoid.Boutique;
 
 
 
@@ -12,12 +12,9 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import com.danstoncube.plugin.drzoid.Boutique.Boutique;
-import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItem;
-import com.danstoncube.plugin.drzoid.Boutique.BoutiqueItems;
-import com.danstoncube.plugin.drzoid.Boutique.BoutiqueSignManager;
-import com.danstoncube.plugin.drzoid.Boutique.ChestOperator;
-import com.danstoncube.plugin.drzoid.Boutique.WebItemsOperator;
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignChest;
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignServer;
+import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignWebAuction;
 
 
 public class BoutiqueSign
@@ -27,17 +24,8 @@ public class BoutiqueSign
 	private String _type = "err";
 	private String _location = "";
 	private String _owner = "";
-	
-	//eventuellement un coffre
 	private String _chest = "";
-	
 	private Boolean _enabled = true;
-	
-	
-	
-	
-	
-	
 	
 	
 	// calculé
@@ -123,7 +111,7 @@ public class BoutiqueSign
 	{
 		this._lines[1] = line2;		
 		
-		String[] splited = line2.split(":");
+		String[] splited = line2.split(":"); //$NON-NLS-1$
 		
 		//Teste validitée découpage
 		if(splited.length < 2 || splited.length > 3) 
@@ -138,7 +126,7 @@ public class BoutiqueSign
 		
 		//FROM = MONEY
 		//TODO: extern key $
-		if(splited[1].compareTo("$")==0)
+		if(splited[1].compareTo("$")==0) //$NON-NLS-1$
 		{
 			moneyFrom = Double.parseDouble(splited[0]);
 			this._moneyFrom = moneyFrom;
@@ -167,7 +155,7 @@ public class BoutiqueSign
 	{
 		this._lines[2] = line3;	
 		
-		String[] splited = line3.split(":");
+		String[] splited = line3.split(":"); //$NON-NLS-1$
 		
 		//Teste validitée découpage
 		if(splited.length < 2 || splited.length > 3)
@@ -184,7 +172,7 @@ public class BoutiqueSign
 		
 		//TO = MONEY
 		//TODO: extern key $
-		if(splited[1].compareTo("$")==0)
+		if(splited[1].compareTo("$")==0) //$NON-NLS-1$
 		{
 			moneyTo = Double.parseDouble(splited[0]);
 			this._moneyTo = moneyTo;
@@ -238,7 +226,7 @@ public class BoutiqueSign
 	
 	public static String getLocationString(Location loc)
 	{
-		return loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" +  loc.getBlockZ(); 
+		return loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" +  loc.getBlockZ();  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
 	
@@ -279,7 +267,7 @@ public class BoutiqueSign
 	
 	public Boolean checkLine2()
 	{
-		String[] splited = this.getLine2().split(":");
+		String[] splited = this.getLine2().split(":"); //$NON-NLS-1$
 		
 		if(splited.length < 2 || splited.length > 3)
 			return false;
@@ -289,7 +277,7 @@ public class BoutiqueSign
 		
 	public Boolean checkLine3()
 	{
-		String[] splited = this.getLine2().split(":");
+		String[] splited = this.getLine2().split(":"); //$NON-NLS-1$
 		
 		if(splited.length < 2 || splited.length > 3)
 			return false;
@@ -396,17 +384,17 @@ public class BoutiqueSign
 		Sign s = bs.getSign();
 		if(s==null) return;
 		
-		String getAmount = "";
-		String getTypeText = "";
+		String getAmount = ""; //$NON-NLS-1$
+		String getTypeText = ""; //$NON-NLS-1$
 		
-		s.setLine(0, ChatColor.LIGHT_PURPLE + "DON");
+		s.setLine(0, ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.DONATION")); //$NON-NLS-1$
 		// Argent ou item ?	
 		if(bs.getItemFrom() != null)
 		{
 			getAmount = bs.getQtyFrom().toString();
 			getTypeText = bs.getItemFrom().itemShortname;
 			
-			s.setLine(1, ChatColor.WHITE + "lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);	
+			s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFF") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + getAmount ); //ChatColor.BLACK + giveTypeText);	 //$NON-NLS-1$ //$NON-NLS-2$
 			s.setLine(2, ChatColor.AQUA + getTypeText);
 		}
 		else if(bs.getMoneyFrom() != null)
@@ -415,8 +403,8 @@ public class BoutiqueSign
 			getTypeText = formatCurrency(bs.getMoneyFrom());
 			
 			//s.setLine(1, ChatColor.WHITE + "Don de "); //ChatColor.BLACK + giveTypeText);	
-			s.setLine(1, ChatColor.YELLOW + getAmount + " " + getTypeText);
-			s.setLine(2, ChatColor.WHITE + "pour");
+			s.setLine(1, ChatColor.YELLOW + getAmount + " " + getTypeText); //$NON-NLS-1$
+			s.setLine(2, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR")); //$NON-NLS-1$
 			s.setLine(3, ChatColor.AQUA + bs.getOwnerString());
 		}
 				
@@ -432,10 +420,10 @@ public class BoutiqueSign
 		Integer getAmount = bs.getQtyFrom();
 		String getTypeText = bs.getItemFrom().itemShortname;
 	
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "DON" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + getAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.DONATION") + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + getAmount ); //ChatColor.BLACK + giveTypeText);			 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + getTypeText);
-		s.setLine(3, ChatColor.WHITE + "");
+		s.setLine(3, ChatColor.WHITE + ""); //$NON-NLS-1$
 		s.update();
 	}
 	
@@ -444,7 +432,7 @@ public class BoutiqueSign
 		Sign s = bs.getSign();
 		if(s==null) return;
 		
-		s.setLine(3, ChatColor.RED + "[Err. type]");
+		s.setLine(3, ChatColor.RED + "[Err. type]"); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -486,19 +474,19 @@ public class BoutiqueSign
 		int lots = (int)(WebItemsOperator.contains(bs.getOwnerString(), getType, getDamage) / getAmount);		
 		
 		//couleur suivant la quantité
-		String strLot = "";						
-		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE;
+		String strLot = "";						 //$NON-NLS-1$
+		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE; //$NON-NLS-1$
 		else if(lots == 0)	strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.WHITE;
 		else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.WHITE;
 		else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.WHITE;
 		
-		if(lots > 1) 		strLot += " lots";
-		else				strLot += " lot";
+		if(lots > 1) 		strLot += Messages.getString("BoutiqueSign.BATCHS"); //$NON-NLS-1$
+		else				strLot += Messages.getString("BoutiqueSign.BATCH"); //$NON-NLS-1$
 			
-		s.setLine(0, ChatColor.YELLOW + "ECHANGE");
-		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount);
-		s.setLine(2, ChatColor.WHITE + "Contre " + strLot + " de");
-		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.setLine(0, ChatColor.YELLOW + Messages.getString("BoutiqueSign.TRADE")); //$NON-NLS-1$
+		s.setLine(1, ChatColor.AQUA + giveTypeText + Messages.getString("BoutiqueSign.QTY") +" "+ giveAmount); //$NON-NLS-1$
+		s.setLine(2, ChatColor.WHITE + Messages.getString("BoutiqueSign.VERSUS") +" "+ strLot + Messages.getString("BoutiqueSign.OF")); //$NON-NLS-1$ //$NON-NLS-2$
+		s.setLine(3, ChatColor.AQUA + getTypeText + Messages.getString("BoutiqueSign.QTY") + " " + getAmount); //$NON-NLS-1$
 		s.update();
 		
 	}
@@ -515,10 +503,10 @@ public class BoutiqueSign
 		int giveAmount = bs.getQtyFrom();
 		int getAmount = bs.getQtyTo();
 		
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.YELLOW + "ECHANGE" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");		
-		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount); //ChatColor.BLACK + giveTypeText);			
-		s.setLine(2, ChatColor.WHITE + "Contre");
-		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.YELLOW + Messages.getString("BoutiqueSign.TRADE") + ChatColor.GOLD + "]");
+		s.setLine(1, ChatColor.AQUA + giveTypeText + Messages.getString("BoutiqueSign.QTY") + " " + giveAmount);
+		s.setLine(2, ChatColor.WHITE + Messages.getString("BoutiqueSign.VERSUS")); 
+		s.setLine(3, ChatColor.AQUA + getTypeText + Messages.getString("BoutiqueSign.QTY") + " " + getAmount);
 		s.update();
 	}
 	
@@ -543,25 +531,24 @@ public class BoutiqueSign
 		int lots = (c!=null) ? (int)(ChestOperator.contains(getType, getDamage, c) / getAmount) : - 1;		
 		
 		//couleur suivant la quantité
-		String strLot = "";						
-		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE;
+		String strLot = "";						 //$NON-NLS-1$
+		if(lots < 0)		strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.WHITE; //$NON-NLS-1$
 		else if(lots == 0)	strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.WHITE;
 		else if(lots < 5)	strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.WHITE;
 		else 				strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.WHITE;
 		
-		if(lots > 1) 		strLot += " lots";
-		else				strLot += " lot";
+		if(lots > 1) 		strLot += Messages.getString("BoutiqueSign.BATCHS"); //$NON-NLS-1$
+		else				strLot += Messages.getString("BoutiqueSign.BATCH"); //$NON-NLS-1$
 			
-		s.setLine(0, ChatColor.YELLOW + "ECHANGE");
-		s.setLine(1, ChatColor.AQUA + giveTypeText + " x" + giveAmount);
-		s.setLine(2, ChatColor.WHITE + "Contre " + strLot + " de");
-		s.setLine(3, ChatColor.AQUA + getTypeText + " x" + getAmount);
+		s.setLine(0, ChatColor.YELLOW + Messages.getString("BoutiqueSign.TRADE")); //$NON-NLS-1$
+		s.setLine(1, ChatColor.AQUA + giveTypeText + Messages.getString("BoutiqueSign.QTY") + " " + giveAmount); //$NON-NLS-1$
+		s.setLine(2, ChatColor.WHITE + Messages.getString("BoutiqueSign.VERSUS") + " " + strLot + Messages.getString("BoutiqueSign.OF")); //$NON-NLS-1$ //$NON-NLS-2$
+		s.setLine(3, ChatColor.AQUA + getTypeText + Messages.getString("BoutiqueSign.QTY") + " " + getAmount); //$NON-NLS-1$
 		s.update();
 	}
 	
 	private void RenderDummySign()
 	{
-		
 	}
 	
 	
@@ -595,10 +582,10 @@ public class BoutiqueSign
 		String giveTypeText = bs.getItemFrom().itemShortname;
 		Double getAmount = bs.getMoneyTo();
 
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "ACHAT" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.BUY") + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText);			 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + formatCurrency(getAmount) + ChatColor.WHITE + " / lot");
+		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		s.update();
 	}
 
@@ -618,17 +605,14 @@ public class BoutiqueSign
 		String giveTypeText = bs.getItemFrom().itemShortname;
 		Double getAmount = bs.getMoneyTo();
 		
-		//TODO: chaine currency depuis iConomy ou config ?
-		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
-		
-		s.setLine(0, ChatColor.LIGHT_PURPLE + "ACHAT"); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.BUY")); 
+		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount );
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.WHITE + "pour " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + getTypeText + ChatColor.WHITE + " / lot");
+		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount) + " " + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH"));
 		
 		if(bs.isSignChest() && bs.getChest() == null)
 		{
-			s.setLine(3,ChatColor.RED + "[Non relié]");
+			s.setLine(3,ChatColor.RED + Messages.getString("BoutiqueSign.NOCHEST"));
 		}
 		
 		
@@ -690,11 +674,6 @@ public class BoutiqueSign
 
 	private static void RenderFreeSignDummy(BoutiqueSign boutiqueSign)
 	{
-		// TODO Auto-generated method stub
-		
-		
-		
-		
 	}
 
 
@@ -715,21 +694,21 @@ public class BoutiqueSign
 		int lots = (int)(WebItemsOperator.contains(bs.getOwnerString(), giveType, giveDamage) / giveAmount);		
 		
 		//couleur suivant la quantité
-		String strLot = "";	
+		String strLot = "";	 //$NON-NLS-1$
 		
-		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK; //$NON-NLS-1$
 		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
 		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
 		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
 		
-		String strNbLot = "";
-		if(lots > 1)	strNbLot = "Lots de ";
-		else			strNbLot = "Lot de ";
+		String strNbLot = ""; //$NON-NLS-1$
+		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP"); //$NON-NLS-1$
+		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP"); //$NON-NLS-1$
 		
-		s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
+		s.setLine(0, ChatColor.GREEN + Messages.getString("BoutiqueSign.FREE") + " " + strLot); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText); //$NON-NLS-1$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, "");
+		s.setLine(3, ""); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -752,25 +731,25 @@ public class BoutiqueSign
 		int lots = (c!=null) ? (int)(ChestOperator.contains(giveType, giveDamage, c) / giveAmount) : -1;		
 		
 		//couleur suivant la quantité
-		String strLot = "";	
+		String strLot = "";	 //$NON-NLS-1$
 		
-		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK; //$NON-NLS-1$
 		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
 		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
 		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
 		
-		String strNbLot = "";
-		if(lots > 1)	strNbLot = "Lots de ";
-		else			strNbLot = "Lot de ";
+		String strNbLot = ""; //$NON-NLS-1$
+		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP"); //$NON-NLS-1$
+		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP"); //$NON-NLS-1$
 		
-		s.setLine(0, ChatColor.GREEN + "GRATUIT " + strLot); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);
+		s.setLine(0, ChatColor.GREEN + Messages.getString("BoutiqueSign.FREE") + " " + strLot); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText); //$NON-NLS-1$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, "");
+		s.setLine(3, ""); //$NON-NLS-1$
 		
 		if(c==null)
 		{
-			s.setLine(3,ChatColor.RED + "[Non relié]");
+			s.setLine(3,ChatColor.RED + Messages.getString("BoutiqueSign.NOCHEST")); //$NON-NLS-1$
 		}
 		
 		
@@ -787,22 +766,16 @@ public class BoutiqueSign
 		Integer giveAmount = bs.getQtyTo();
 		String giveTypeText = bs.getItemTo().itemShortname;
 		
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + "GRATUIT" + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + Messages.getString("BoutiqueSign.FREE") + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText);			 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
 		s.setLine(3, "");
 		s.update();
 	}
 	
 	
-	
-	
-	
-	
-	
 
-
-	//public void RenderSellSign(Sign s,Chest c, String signType, int giveAmount, int giveType, int giveDamage, String giveTypeText, int getAmount, String getTypeText)
+	
 	public void RenderSellSign()
 	{			
 		if(this.isSignServer())
@@ -829,7 +802,7 @@ public class BoutiqueSign
 		Sign s = bs.getSign();
 		if(s==null) return;
 		
-		s.setLine(3, ChatColor.RED + "[Err. type]");
+		s.setLine(3, ChatColor.RED + "[Err. type]"); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -848,32 +821,31 @@ public class BoutiqueSign
 		
 		Double getAmount = bs.getMoneyFrom();
 		
-		//TODO: chaine currency depuis iConomy ou config ?
-		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
+		
 		
 		//compte le nombre de stacks dispos au total dans le chest						
 		int lots = (int)(WebItemsOperator.contains(player, giveType, giveDamage) / giveAmount);		
 		
 		//couleur suivant la quantité
-		String strLot = "";	
+		String strLot = "";	 //$NON-NLS-1$
 		
-		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
+		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK; //$NON-NLS-1$
 		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
 		else if(lots < 5)		strLot = ChatColor.YELLOW + String.valueOf(lots) + ChatColor.BLACK;
 		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
 		
-		String strNbLot = "";
-		if(lots > 1)	strNbLot = "Lots de ";
-		else			strNbLot = "Lot de ";
+		String strNbLot = ""; //$NON-NLS-1$
+		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP"); //$NON-NLS-1$
+		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP"); //$NON-NLS-1$
 		
-		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + getTypeText;
+		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount);
 		
 		//mise a jour du panneau
 		
-		s.setLine(0, ChatColor.GREEN + "VEND " + strLot); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.GREEN + Messages.getString("BoutiqueSign.SELL") + " "+ strLot); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText);			 //$NON-NLS-1$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, strAmount + ChatColor.WHITE + " / lot");
+		s.setLine(3, strAmount + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH")); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -888,13 +860,10 @@ public class BoutiqueSign
 		String giveTypeText = bs.getItemTo().itemShortname;
 		Double getAmount = bs.getMoneyFrom();
 		
-		//TODO: chaine currency depuis iConomy ou config ?
-		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
-		
-		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + "VENTE" + ChatColor.GOLD + "]");
-		s.setLine(1, ChatColor.WHITE + "Lots de " + ChatColor.AQUA + "x" + giveAmount );	
+		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + Messages.getString("BoutiqueSign.SELL") + ChatColor.GOLD + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount );	 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.YELLOW +  formatMoney(getAmount) + getTypeText + ChatColor.WHITE + " le lot");
+		s.setLine(3, ChatColor.YELLOW +  formatMoney(getAmount) + formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.110")); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -915,16 +884,11 @@ public class BoutiqueSign
 		
 		Double getAmount = bs.getMoneyFrom();
 		
-		//TODO: chaine currency depuis iConomy ou config ?
-		String getTypeText = "Eu" + (getAmount > 1 ? "s":"");
-		
-		
-		
 		//compte le nombre de stacks dispos au total dans le chest						
 		int lots = (c!=null) ? (int)(ChestOperator.contains(giveType, giveDamage, c) / giveAmount) : -1;		
 		
 		//couleur suivant la quantité
-		String strLot = "";	
+		String strLot = "";
 		
 		if(lots < 0)			strLot = ChatColor.DARK_PURPLE + "?" + ChatColor.BLACK;
 		else if(lots == 0)		strLot = ChatColor.RED + String.valueOf(lots) + ChatColor.BLACK;
@@ -932,22 +896,21 @@ public class BoutiqueSign
 		else 					strLot = ChatColor.DARK_GREEN + String.valueOf(lots) + ChatColor.BLACK;
 		
 		String strNbLot = "";
-		if(lots > 1)	strNbLot = "Lots de ";
-		else			strNbLot = "Lot de ";
+		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP");
+		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP");
 		
-		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + getTypeText;
+		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount);
 		
 		//mise a jour du panneau
 		
-		s.setLine(0, ChatColor.GREEN + "VEND " + strLot); // + ChatColor.WHITE + " de lots de");
-		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + "x" + giveAmount ); //ChatColor.BLACK + giveTypeText);			
+		s.setLine(0, ChatColor.GREEN + Messages.getString("BoutiqueSign.SELL") + " " + strLot);
+		s.setLine(1, ChatColor.WHITE + strNbLot + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount );
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, strAmount + ChatColor.WHITE + " / lot");
-		
+		s.setLine(3, strAmount + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH"));
 		
 		if(c==null)
 		{
-			s.setLine(3,ChatColor.RED + "[Non relié]");
+			s.setLine(3,ChatColor.RED + Messages.getString("BoutiqueSign.NOCHESTFOUND"));
 		}
 		
 		s.update();
@@ -973,15 +936,6 @@ public class BoutiqueSign
 	
 	public boolean isFreebiesSign()
 	{
-		//TODO virer debug
-		/*
-		Logger l = Bukkit.getServer().getLogger();		
-		l.info("dbg: _moneyFrom = " + _moneyFrom );
-		l.info("dbg: _moneyTo = " + _moneyTo );
-		l.info("dbg: _itemFrom = " + _itemFrom );
-		l.info("dbg: _itemTo = " + _itemTo );
-		*/
-		
 		if(this._moneyFrom == null || this._itemFrom != null )
 			return false;
 		
@@ -990,61 +944,24 @@ public class BoutiqueSign
 
 	public boolean isDonationSign()
 	{
-		//TODO virer debug
-		/*
-		Logger l = Bukkit.getServer().getLogger();		
-		l.info("dbg: _moneyFrom = " + _moneyFrom );
-		l.info("dbg: _moneyTo = " + _moneyTo );
-		l.info("dbg: _itemFrom = " + _itemFrom );
-		l.info("dbg: _itemTo = " + _itemTo );
-		*/
-		
-		//return (this._moneyFrom != null || this._itemFrom != null) && (this._itemTo == null && this._moneyTo == null);
-		
-		
 		if(this._moneyTo == null || this._itemTo != null )
 			return false;
 		
-		return this._moneyTo == 0.0;		
+		return this._moneyTo == 0.0;
 	}
 
 	public boolean isSellSign()
 	{
-		//TODO virer debug
-		/*
-		Logger l = Bukkit.getServer().getLogger();		
-		l.info("dbg: _moneyFrom = " + _moneyFrom );
-		l.info("dbg: _moneyTo = " + _moneyTo );
-		l.info("dbg: _itemFrom = " + _itemFrom );
-		l.info("dbg: _itemTo = " + _itemTo );
-		*/
-		
 		return (this._moneyFrom != null &&  this._itemFrom == null && this._itemTo != null);
 	}
 	
 	public boolean isBuySign()
 	{
-		//TODO virer debug
-		/*
-		Logger l = Bukkit.getServer().getLogger();		
-		l.info("dbg: _moneyFrom = " + _moneyFrom );
-		l.info("dbg: _moneyTo = " + _moneyTo );
-		l.info("dbg: _itemFrom = " + _itemFrom );
-		l.info("dbg: _itemTo = " + _itemTo );
-		*/
 		return (this._moneyTo != null &&  this._itemTo == null && this._itemFrom != null);
 	}
 
 	public boolean isTradeSign()
 	{
-		//TODO virer debug
-		/*
-		Logger l = Bukkit.getServer().getLogger();		
-		l.info("dbg: _moneyFrom = " + _moneyFrom );
-		l.info("dbg: _moneyTo = " + _moneyTo );
-		l.info("dbg: _itemFrom = " + _itemFrom );
-		l.info("dbg: _itemTo = " + _itemTo );
-		*/
 		return (this._itemTo != null && this._itemFrom != null);
 	}
 	
@@ -1082,11 +999,11 @@ public class BoutiqueSign
 		//ECHANGE
 		else if (this.isTradeSign())
 		{
-			return BoutiqueSignManager.tradeItems(this, p);
+			return BoutiqueSignManager.getInstance().tradeItems(this, p);
 		}
 		
-		//TODO: chatprefix + VroumvroumERR
-		p.sendMessage(Boutique.getInstance().name + "VROUM VROUM, c'est quoi ce panneau de merde ???" );
+		
+		p.sendMessage(Boutique.getInstance().chatPrefix + ChatColor.RED + Messages.getString("BoutiqueSign.VROUMVROUMERR") );
 		
 		return false;
 	}
@@ -1104,7 +1021,7 @@ public class BoutiqueSign
 		//teste ligne 2
 		if (!this.checkLine2()) 
 		{	
-			p.sendMessage("Erreur sur la deuxième ligne du panneau");
+			p.sendMessage(Messages.getString("BoutiqueSign.SECONDLINEERR"));
 			return false;
 		}
 		else
@@ -1116,20 +1033,20 @@ public class BoutiqueSign
 			{
 				if(!BoutiqueItems.isValidItem(itemFrom.itemId,itemFrom.itemDamage))
 				{
-					p.sendMessage("Item incorrect ou interdit sur la deuxième ligne");
+					p.sendMessage(Messages.getString("BoutiqueSign.SECONDLINEINCORECTITEM"));
 					return false;
 				}
 				
 				qtyFrom = this.getQtyFrom(); 
 				if(qtyFrom == null || qtyFrom < 0 || qtyFrom > 64)
 				{
-					p.sendMessage("Quantité incorrecte sur la deuxième ligne");
+					p.sendMessage(Messages.getString("BoutiqueSign.SECONDLINEINCORRECTQTY"));
 					return false;
 				}
 			}
 			else if(moneyFrom == null)
 			{
-				p.sendMessage("Somme d'argent incorrecte sur la deuxième ligne");
+				p.sendMessage(Messages.getString("BoutiqueSign.SECONDLINEINCORRECTMONEY"));
 				return false;
 			}
 			
@@ -1139,7 +1056,7 @@ public class BoutiqueSign
 		//teste ligne 3
 		if (!this.checkLine3()) 
 		{
-			p.sendMessage("Erreur sur la troisième ligne du panneau");
+			p.sendMessage(Messages.getString("BoutiqueSign.THIRDLINEERR"));
 			return false;
 		}		
 		else
@@ -1151,20 +1068,20 @@ public class BoutiqueSign
 			{
 				if(!BoutiqueItems.isValidItem(itemTo.itemId,itemTo.itemDamage))
 				{
-					p.sendMessage("Item incorrect ou interdit sur la troisième ligne");
+					p.sendMessage(Messages.getString("BoutiqueSign.FIRDLINEINCORRECTITEM"));
 					return false;
 				}
 				
 				qtyTo = this.getQtyTo(); 
 				if(qtyTo == null || qtyTo < 0 || qtyTo > 64)
 				{
-					p.sendMessage("Quantité incorrecte sur la troisième ligne");
+					p.sendMessage(Messages.getString("BoutiqueSign.FIRDLINEINCORRECTQTY"));
 					return false;
 				}
 			}
 			else if(moneyTo == null)
 			{
-				p.sendMessage("Somme d'argent incorrecte sur la troisième ligne");
+				p.sendMessage(Messages.getString("BoutiqueSign.FIRDLINEINCORRECTMONEY"));
 				return false;
 			}
 		}
@@ -1184,7 +1101,7 @@ public class BoutiqueSign
 	
 	public static String getChestString(Chest chest)
 	{
-		return (chest != null) ? chest.getBlock().getWorld().getName() + ":" + chest.getBlock().getX() + ":" + chest.getBlock().getY() + ":" + chest.getBlock().getZ() : "";		
+		return (chest != null) ? chest.getBlock().getWorld().getName() + ":" + chest.getBlock().getX() + ":" + chest.getBlock().getY() + ":" + chest.getBlock().getZ() : "";		 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	} 
 	
 	
@@ -1278,7 +1195,7 @@ public class BoutiqueSign
     	String strLigne3Panneau = brokeText[4];
     	String strLigne4Panneau = brokeText[5];
     	
-    	String strLocCoffre = (brokeText.length == 7) ? brokeText[6] : ""; 
+    	String strLocCoffre = (brokeText.length == 7) ? brokeText[6] : "";
   
     	setLocation(strLocPanneau);
     	setOwnerString(strProprio);
@@ -1299,11 +1216,11 @@ public class BoutiqueSign
 		return
 	
 			//Coordonnees du panneau
-			this.getLocationString() + ";" +
+			this.getLocationString() + ";" + //$NON-NLS-1$
 			//Poseur/propriétaire du panneau
-			this.getOwnerString() + ";" +
+			this.getOwnerString() + ";" + //$NON-NLS-1$
 			//Lignes textes du panneau
-			this.getLinesString() + ";" +
+			this.getLinesString() + ";" + //$NON-NLS-1$
 			//Coffre relié eventuellement au panneau
 			this.getChestString()
 		;
@@ -1318,13 +1235,9 @@ public class BoutiqueSign
 
 	public void setLines(String[] split)
 	{
-		/*
 		if(split.length<4)
-		{
-			
 			return;
-		}
-		 */
+
 		
 		this.setLine1(split[0]);
 		this.setLine2(split[1]);
@@ -1335,25 +1248,17 @@ public class BoutiqueSign
 	
 
 	public Sign getSign()
-	{
-		
+	{	
 		Location signloc = BoutiqueSign.getLocationFromString(this.getLocationString());
 		
 		if(signloc == null)
 			return null;
-		
-		
+
 		BlockState blockTest = Bukkit.getServer().getWorld(signloc.getWorld().getName()).getBlockAt(signloc.getBlockX(), signloc.getBlockY(), signloc.getBlockZ()).getState();
 
-		//DEBUG
-		//Bukkit.getServer().getLogger().info("DEBUG: "  + "signloc: " + this.getLocationString());
-		//Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
-		
-		
 		if(blockTest instanceof Sign)
 			return (Sign) blockTest;
 
-		
 		return null;
 	}
 	
@@ -1368,11 +1273,6 @@ public class BoutiqueSign
 		
 		
 		BlockState blockTest = Bukkit.getServer().getWorld(chestloc.getWorld().getName()).getBlockAt(chestloc.getBlockX(), chestloc.getBlockY(), chestloc.getBlockZ()).getState();
-
-		//DEBUG
-		//Bukkit.getServer().getLogger().info("DEBUG: "  + "chestLoc: " + this.getChestString());
-		//Bukkit.getServer().getLogger().info("DEBUG: "  + "blockTest: " + blockTest);
-		
 		
 		if(blockTest instanceof Chest)
 			return (Chest) blockTest;

@@ -2,7 +2,6 @@ package com.danstoncube.plugin.drzoid.Boutique;
 
 import org.bukkit.plugin.Plugin;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 import com.danstoncube.tools.Banque.iConomy5Balance;
 import com.danstoncube.tools.Banque.iConomy6Balance;
 import com.danstoncube.tools.Banque.DummyBalance;
@@ -15,12 +14,12 @@ public class EconomyHandler
 	
 	public static Balance balance = null;
 	
-	public static String currencyName = "Eu";
+	public static String currencyName = Messages.getString("Econ.CURRENCY"); //$NON-NLS-1$
 	
-	public final static String noConomyErr = "Les banques sont en grève.";
-	public final static String noAccountErr = "Ce compte n'éxiste pas :(";
-	public final static String noFundsErr = "You or they do not have enough funds for that.";
-	public final static String oddErr = "Hum, y'a une erreur pas cool :/";
+	public final static String noConomyErr = Messages.getString("Econ.NOECONERR"); //$NON-NLS-1$
+	public final static String noAccountErr = Messages.getString("Econ.NOACCOUNTERR"); //$NON-NLS-1$
+	public final static String noFundsErr = Messages.getString("Econ.NOFUNDSERR"); //$NON-NLS-1$
+	public final static String oddErr = Messages.getString("Econ.UNKNOWNERR"); //$NON-NLS-1$
 
 	public static boolean currencyEnabled = false;
 	
@@ -35,16 +34,16 @@ public class EconomyHandler
 		
 		for (Plugin p : plugin.getServer().getPluginManager().getPlugins())
 		{
-			if (p.getClass().getName().equals("com.iConomy.iConomy")) 
+			if (p.getClass().getName().equals("com.iConomy.iConomy"))  //$NON-NLS-1$
 			{
-				plugin.log.info(plugin.logPrefix + "utilise iConomy5");
+				plugin.log.info(plugin.logPrefix + Messages.getString("Econ.ICO5_HOOKED")); //$NON-NLS-1$
 				balance = new iConomy5Balance(plugin, (com.iConomy.iConomy)p);
 				currencyEnabled = true;
 			}
 
-			if (p.getClass().getName().equals("com.iCo6.iConomy")) 
+			if (p.getClass().getName().equals("com.iCo6.iConomy"))  //$NON-NLS-1$
 			{
-				plugin.log.info(plugin.logPrefix + "utilise iConomy6");
+				plugin.log.info(plugin.logPrefix + Messages.getString("Econ.ICO6_HOOKED")); //$NON-NLS-1$
 				balance = new iConomy6Balance(plugin, (com.iCo6.iConomy)p);
 				currencyEnabled = true;
       		}
@@ -53,7 +52,7 @@ public class EconomyHandler
 		if(balance == null)
 		{
 			balance = new DummyBalance(plugin);
-			plugin.log.severe(plugin.logPrefix + "iConomy 5/6 introuvable ! :(");
+			plugin.log.severe(plugin.logPrefix + Messages.getString("Econ.NOECONHOOKED")); //$NON-NLS-1$
 			currencyEnabled = false;
 		}
 		
@@ -175,13 +174,13 @@ public class EconomyHandler
 	public static String getEconError(int econ) 
 	{
 		if (econ == 0)
-			return "T'es interdit bancaire mec.";
+			return Messages.getString("Econ.NOFUNDSERR2"); //$NON-NLS-1$
 		if (econ == -1)
 			return noConomyErr;
 		if (econ == -2)
-			return "Tu n'as pas assez de thunes, ou bien c'est ton acheteur qui est à sec !";
+			return Messages.getString("Econ.NOFUNDSERR3"); //$NON-NLS-1$
 		if (econ == -3)
 			return oddErr;
-		return "Could not find error code.";
+		return Messages.getString("Econ.UNKNOWNERR2"); //$NON-NLS-1$
 	}
 }

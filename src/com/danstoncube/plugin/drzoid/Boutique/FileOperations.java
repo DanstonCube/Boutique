@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSign;
 
 
 public class FileOperations 
@@ -28,7 +27,7 @@ public class FileOperations
 	{
         if(!plugin.makeFolder.exists())
         {
-        	plugin.log.info(plugin.logPrefix + "Création du dossier Boutique");
+        	plugin.log.info(plugin.logPrefix + Messages.getString("IO.MAKEFOLDER")); //$NON-NLS-1$
         	plugin.makeFolder.mkdir();
         }
         
@@ -40,18 +39,18 @@ public class FileOperations
 	    {
 			checkDataFolder();
 			
-			File fWhitelist = new File(plugin.makeFolder.getAbsolutePath() + File.separator + "config.txt");
+			File fWhitelist = new File(plugin.makeFolder.getAbsolutePath() + File.separator + "config.txt"); //$NON-NLS-1$
 			if (!fWhitelist.exists())
 			{
-				plugin.log.info(plugin.logPrefix + "Config file is missing, creating.");
+				plugin.log.info(plugin.logPrefix + Messages.getString("IO.CREATECONFIG")); //$NON-NLS-1$
 				try
 				{
 					fWhitelist.createNewFile();
-					System.out.println("done.");
+					System.out.println(Messages.getString("IO.DONE")); //$NON-NLS-1$
 				} 
 				catch (IOException ex) 
 				{
-					plugin.log.severe(plugin.logPrefix + "Config file creation FAILED.");
+					plugin.log.severe(plugin.logPrefix + Messages.getString("IO.CREATECONFIGFAILED")); //$NON-NLS-1$
 					ex.printStackTrace();
 				}
 			}
@@ -84,14 +83,15 @@ public class FileOperations
 	
 	
 	public void loadItemsData()
-	{
+	{ 
+		int compteur = 0;
 		try
 		{
-			File itemsFiles = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiqueitems.txt");
+			File itemsFiles = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiqueitems.txt"); //$NON-NLS-1$
 			
 			if (!itemsFiles.exists())
 			{ 
-				plugin.log.info(plugin.logPrefix + "Creation du fichier items...");
+				plugin.log.info(plugin.logPrefix + Messages.getString("IO.CREATEITEMSDB")); //$NON-NLS-1$
 				writeItemsFile(null);
 			}
 			
@@ -100,44 +100,35 @@ public class FileOperations
 	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	        
 	        String strLine;
-	       
-	        
-	        int compteur = 0;
 	        while ((strLine = br.readLine()) != null)
 	        {
 	        	strLine = strLine.trim();
 	        	
-	        	//Boutique.getInstance().log.info("Line: " + strLine);
-	        	
-	        	if(strLine.isEmpty() || strLine.startsWith("#"))
+	        	if(strLine.isEmpty() || strLine.startsWith("#")) //$NON-NLS-1$
 	        		continue;
-	        
 	        
 	        	BoutiqueItem bi = new BoutiqueItem();
 	        	
 	        	
 	        	if(bi.parseString(strLine))
 	        	{
-	        		//TODO: virer debug
-	        		//Boutique.getInstance().log.info("Load item OK: " + strLine);
 	        		BoutiqueItems.put(bi);
 	        		compteur++;
 	        	}
 	        	else
 	        	{
-	        		plugin.log.warning(plugin.logPrefix + "boutiqueitems.txt: ligne incorrecte: " + strLine);
+	        		plugin.log.warning(plugin.logPrefix + Messages.getString("IO.ITEMDBLINEERROR") + strLine); //$NON-NLS-1$
 	        	}
         		
-	        	
 	        }
-	        
-	        plugin.log.info(plugin.logPrefix + compteur + " items chargés depuis boutiqueitems.txt");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
+		
+		plugin.log.info(plugin.logPrefix + compteur + Messages.getString("IO.ITEMCOUNTER")); //$NON-NLS-1$
+	} 
 		
 
 
@@ -145,11 +136,11 @@ public class FileOperations
 	{
 		try
 		{
-			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiquedb.txt");
+			File globalFile = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "boutiquedb.txt"); //$NON-NLS-1$
 			
 			if (!globalFile.exists())
 			{ 
-				plugin.log.info(plugin.logPrefix + "Creation du fichier db...");
+				plugin.log.info(plugin.logPrefix + Messages.getString("IO.CREATESIGNDB")); //$NON-NLS-1$
 				writeGlobalSignFile(null);
 			}
 			
@@ -168,7 +159,7 @@ public class FileOperations
 	        {
 	        	strLine = strLine.trim();
 	        	
-	        	if(strLine.isEmpty() || strLine.startsWith("#"))
+	        	if(strLine.isEmpty() || strLine.startsWith("#")) //$NON-NLS-1$
 	        		continue;
 	        	
 	        	BoutiqueSign bs = new BoutiqueSign();
@@ -184,12 +175,12 @@ public class FileOperations
 	        	else
 	        	{
 	        		//TODO: virer debug
-	        		plugin.log.warning(plugin.logPrefix + " boutiquedb.txt: ligne incorrecte: " + strLine);
+	        		plugin.log.warning(plugin.logPrefix + Messages.getString("IO.SIGNDBLINEERROR") + strLine); //$NON-NLS-1$
 	        	}
 
 	        }
 	        
-	        plugin.log.info(plugin.logPrefix + compteur + " panneaux chargés depuis boutiquedb.txt");
+	        plugin.log.info(plugin.logPrefix + compteur + Messages.getString("IO.SIGNCOUNTER")); //$NON-NLS-1$
 	        
 		}
 		catch(Exception e)
@@ -203,11 +194,11 @@ public class FileOperations
 	private void writeItemsFile(String[] sLines)
 	{
 		String[] s = new String[1];
-		s[0] = "#";
+		s[0] = "#"; //$NON-NLS-1$
 		
 		try 
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiqueitems.txt")));
+			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiqueitems.txt"))); //$NON-NLS-1$
 			for(int i=0;i<s.length;i++)
 			{
 				writer.write(s[i]);
@@ -225,7 +216,7 @@ public class FileOperations
 		} 
 		catch (Exception ex) 
 		{
-			plugin.log.severe(plugin.logPrefix + "Impossible de sauvegarder le fichier items !!!");
+			plugin.log.severe(plugin.logPrefix + Messages.getString("IO.ITEMDBSAVEERROR")); //$NON-NLS-1$
 			ex.printStackTrace();
 		}
 		
@@ -234,10 +225,10 @@ public class FileOperations
 	private void writeGlobalSignFile(String[] sLines) 
 	{
 		String[] s = new String[1];
-		s[0] = "#locsign;owner;line1;line2;line3;line4;[chest]";
+		s[0] = "#locsign;owner;line1;line2;line3;line4;[chest]"; //$NON-NLS-1$
 		try 
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiquedb.txt")));
+			BufferedWriter writer = new BufferedWriter(new FileWriter((plugin.makeFolder.getAbsolutePath() + File.separator + "boutiquedb.txt"))); //$NON-NLS-1$
 			for(int i=0;i<s.length;i++)
 			{
 				writer.write(s[i]);
@@ -255,7 +246,7 @@ public class FileOperations
 		} 
 		catch (Exception ex) 
 		{
-			plugin.log.severe(plugin.logPrefix + "Impossible de sauvegarder le fichier global !!!");
+			plugin.log.severe(plugin.logPrefix + Messages.getString("IO.SIGNDBSAVEERROR")); //$NON-NLS-1$
 			ex.printStackTrace();
 		}
 	}

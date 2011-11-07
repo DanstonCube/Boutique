@@ -38,7 +38,7 @@ public class BoutiqueServerListener extends ServerListener {
                {
             	   PermissionsHandler.permissions = null;
             	   PermissionsHandler.permissionsEnabled = false;
-                   plugin.log.info(plugin.logPrefix + Messages.getString("BoutiqueServerListener.3")); //$NON-NLS-1$
+                   plugin.log.info(plugin.logPrefix + Messages.getString("Perm.UNHOOKED")); //$NON-NLS-1$
                }
         }    
        	

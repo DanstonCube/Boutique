@@ -61,7 +61,7 @@ public class CommandOperator
 					plugin.playerListener.playerSign.remove(p);
 					plugin.playerListener.playerChest.remove(p);
 					p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.STOPBINDCHEST")); //$NON-NLS-1$
-					if (args[0].compareToIgnoreCase("-sc") == 0) //$NON-NLS-1$
+					if (args[0].compareToIgnoreCase("-sc") == 0 || args[0].compareToIgnoreCase("-coffre") == 0 || args[0].compareToIgnoreCase("-chest") == 0)
 						return bool;
 				}
 				
@@ -71,18 +71,25 @@ public class CommandOperator
 					plugin.playerListener.playerSign.remove(p);
 					plugin.playerListener.playerShowcase.remove(p);
 					p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.STOPBINDSHOWCASE")); //$NON-NLS-1$
-					if (args[0].compareToIgnoreCase("-ssc") == 0) //$NON-NLS-1$
+					if (args[0].compareToIgnoreCase("-ssc") == 0 || args[0].compareToIgnoreCase("-vitrine") == 0 || args[0].compareToIgnoreCase("-showcase") == 0)
 						return bool;
 				}
 				
-				
+				if(plugin.playerListener.playerDelShowcase.containsKey(p))
+				{
+					plugin.playerListener.playerDelShowcase.remove(p);
+					p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.STOPDELSHOWCASE")); //$NON-NLS-1$
+					if (args[0].compareToIgnoreCase("-scd") == 0 || args[0].compareToIgnoreCase("-vitrinesuppr") == 0 || args[0].compareToIgnoreCase("-delshowcase") == 0)
+						return bool;
+				}
+				 
 				
 				
 				if (plugin.playerListener.setOwner.containsKey(p))
 				{
 					plugin.playerListener.playerSetSign.remove(p);
 					p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.STOPSETOWNER")); //$NON-NLS-1$
-					if (args[0].compareToIgnoreCase("-so") == 0) //$NON-NLS-1$
+					if (args[0].compareToIgnoreCase("-so") == 0 || args[0].compareToIgnoreCase("-proprio") == 0 || args[0].compareToIgnoreCase("-owner") == 0)
 						return bool;
 				}
 				
@@ -105,6 +112,10 @@ public class CommandOperator
 				{
 					bool = sscCommand(p,args);
 				}
+				else if (args[0].compareToIgnoreCase("-scd") == 0 || args[0].compareToIgnoreCase("-vitrinesuppr") == 0 || args[0].compareToIgnoreCase("-delshowcase") == 0)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				{
+					bool = scdCommand(p,args);
+				}
 				else
 				{
 					bool = false;
@@ -122,7 +133,42 @@ public class CommandOperator
 		return false;
 	}
 
-
+	
+	/* Commande showcasedelete (-scd) */
+	private boolean scdCommand(Player p, String[] args)
+	{
+		if (!PermissionsHandler.canSetPersonalSign(p)) 
+		{
+			p.sendMessage(plugin.chatPrefix + PermissionsHandler.permissionErr);
+			return true;
+		}
+		else if (args.length == 2) 
+		{
+			if (args[1].compareToIgnoreCase("-p") == 0) //$NON-NLS-1$
+			{
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.LEFTCLICKDELSHOWCASEP")); //$NON-NLS-1$
+				plugin.playerListener.playerDelShowcase.put(p, true);
+			}
+			else
+			{
+				p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.INCORRECTARG")); //$NON-NLS-1$
+			}
+		}
+		else if (args.length == 1)
+		{
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Cmd.LEFTCLICKDELSHOWCASE")); //$NON-NLS-1$
+			plugin.playerListener.playerDelShowcase.put(p, false);
+		}
+		else
+		{
+			p.sendMessage(plugin.chatPrefix + ChatColor.WHITE + Messages.getString("Cmd.INCORRECTARGS")); //$NON-NLS-1$
+		}
+		
+		return true;
+	}
+	
+	
+	
 	private boolean sscCommand(Player p, String[] args) 
 	{
 		if (!PermissionsHandler.canSetPersonalSign(p)) 

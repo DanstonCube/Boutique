@@ -33,7 +33,7 @@ public class ShowCaseHandler
 			((ShowCaseStandalone)test).getClass();
 			
 			showcase = (ShowCaseStandalone)test;
-			plugin.log.info("["+plugin.displayname+Messages.getString("ShowCase.HOOKED")); //$NON-NLS-1$ //$NON-NLS-2$
+			plugin.log.info(plugin.logPrefix + Messages.getString("ShowCase.HOOKED")); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		
@@ -48,11 +48,17 @@ public class ShowCaseHandler
 	}
 
 
-	public static void remShowcase(Sign sign, String ShowcaseLoc, Player p)
+	public static void remShowcase(String ShowcaseLoc, Player p)
 	{
 		if(showcase==null)
 			return;
 		
+		Block b = p.getWorld().getBlockAt(BoutiqueSign.getLocationFromString(ShowcaseLoc));
+		
+		if(Shop.isShopBlock(b))
+        {
+        	removeshop(p,b);        	
+        }
 	}
 	
 	

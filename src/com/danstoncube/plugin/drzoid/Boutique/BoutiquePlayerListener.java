@@ -33,6 +33,9 @@ public class BoutiquePlayerListener extends PlayerListener
 	//SignOwner Setting
 	public HashMap<Player, String> setOwner = new HashMap<Player,String>();
 
+
+	public HashMap<Player, Boolean> playerDelShowcase = new HashMap<Player, Boolean>();
+
 	
 
 	public BoutiquePlayerListener(Boutique boutique) 
@@ -88,6 +91,28 @@ public class BoutiquePlayerListener extends PlayerListener
 	private void leftClickShowcase(Player player, Block clickedBlock)
 	{
 		String strLocShowcase = BoutiqueSign.getLocationString(clickedBlock.getLocation());
+		
+		
+		if (playerDelShowcase.containsKey(player))
+		{
+			
+			if(!ShowCaseHandler.isShowCaseOwner(clickedBlock, player))
+			{
+				player.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.NOTYOURSHOWCASE"));
+				return;
+			}
+			
+			
+			ShowCaseHandler.remShowcase(strLocShowcase, player);
+			
+			player.sendMessage(plugin.chatPrefix + Messages.getString("BoutiquePlayerListener.SHOWCASEDELETED"));
+			
+			if (playerDelShowcase.get(player) == false)
+				playerDelShowcase.remove(player);
+						
+			return;
+		}	
+		
 		
 		if (playerSetShowcase.containsKey(player))
 		{

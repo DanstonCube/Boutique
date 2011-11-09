@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;

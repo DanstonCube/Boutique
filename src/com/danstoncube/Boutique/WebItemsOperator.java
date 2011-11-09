@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 public class WebItemsOperator
 {

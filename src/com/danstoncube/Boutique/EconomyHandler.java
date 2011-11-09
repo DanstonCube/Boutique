@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import org.bukkit.plugin.Plugin;
 
@@ -27,35 +27,38 @@ public class EconomyHandler
 	
 	public static void setupEconomy() 
 	{
-		//plugin.log.info(plugin.logPrefix + "Recherche d'iConomy.");
-		
-		
 		Boutique plugin = Boutique.getInstance();
 		
 		for (Plugin p : plugin.getServer().getPluginManager().getPlugins())
 		{
-			if (p.getClass().getName().equals("com.iConomy.iConomy"))  //$NON-NLS-1$
-			{
-				plugin.log.info(plugin.logPrefix + Messages.getString("Econ.ICO5_HOOKED")); //$NON-NLS-1$
-				balance = new iConomy5Balance(plugin, (com.iConomy.iConomy)p);
-				currencyEnabled = true;
-			}
-
+			
+			// Testing for iConomy6
 			if (p.getClass().getName().equals("com.iCo6.iConomy"))  //$NON-NLS-1$
 			{
 				plugin.log.info(plugin.logPrefix + Messages.getString("Econ.ICO6_HOOKED")); //$NON-NLS-1$
 				balance = new iConomy6Balance(plugin, (com.iCo6.iConomy)p);
 				currencyEnabled = true;
+				return;
       		}
+			
+			// Testing for iConomy5
+			if (p.getClass().getName().equals("com.iConomy.iConomy"))  //$NON-NLS-1$
+			{
+				plugin.log.info(plugin.logPrefix + Messages.getString("Econ.ICO5_HOOKED")); //$NON-NLS-1$
+				balance = new iConomy5Balance(plugin, (com.iConomy.iConomy)p);
+				currencyEnabled = true;
+				return;
+			}
+			
 		}
 		
+		// No economy system found
 		if(balance == null)
 		{
 			balance = new DummyBalance(plugin);
 			plugin.log.severe(plugin.logPrefix + Messages.getString("Econ.NOECONHOOKED")); //$NON-NLS-1$
 			currencyEnabled = false;
 		}
-		
 		
 	}
 
@@ -157,7 +160,7 @@ public class EconomyHandler
 	{	
 		if(balance != null)
 		{
-			return BoutiqueSign.formatMoney(balance.balance(pName)) +  BoutiqueSign.formatCurrency(balance.balance(pName));
+			return EconomyHandler.formatMoney(balance.balance(pName)) +  EconomyHandler.formatCurrency(balance.balance(pName));
 		}		
 		return noConomyErr;
 	}
@@ -183,4 +186,28 @@ public class EconomyHandler
 			return oddErr;
 		return Messages.getString("Econ.UNKNOWNERR2"); //$NON-NLS-1$
 	}
+	
+	public static String formatCurrency(Double getAmount)
+	{
+		//TODO: demander le nom de la currency a iconomy
+		return "Eu" + (getAmount > 1 ? "s":"");
+	}
+
+
+	public static String formatMoney(Double money)
+	{
+		float y = (float) (money * 10.0);
+		int i =(int) y;
+		int mod = i % 10;
+		 
+		if(mod == 0)
+		   return String.valueOf(i/10);
+
+		return String.valueOf(i/10) + "." + mod;
+	}
+	
+	
+	
+	
+	
 }

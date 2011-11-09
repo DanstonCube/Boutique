@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import java.util.Locale;
 
@@ -34,7 +34,7 @@ public class CommandOperator
 			if (args.length < 1)
 			{
 				p.sendMessage(plugin.chatPrefix +Messages.getString("Cmd.HOWTO1")); //$NON-NLS-1$
-				p.sendMessage(Messages.getString("Cmd.4")); //$NON-NLS-1$
+				p.sendMessage(Messages.getString("Cmd.USAGE")); //$NON-NLS-1$
 				p.sendMessage(Messages.getString("Cmd.AVAILABLEARGS")); //$NON-NLS-1$
 				//p.sendMessage(ChatColor.AQUA + "-s" + ChatColor.WHITE + " pour modifier les panneaux.");
 				p.sendMessage(ChatColor.AQUA + Messages.getString("Cmd.CHESTCMD") + ChatColor.WHITE + Messages.getString("Cmd.BINDCHEST")); //$NON-NLS-1$ //$NON-NLS-2$

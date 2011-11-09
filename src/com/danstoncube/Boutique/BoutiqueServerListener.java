@@ -1,4 +1,4 @@
-package  com.danstoncube.plugin.drzoid.Boutique;
+package  com.danstoncube.Boutique;
 
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -63,9 +63,9 @@ public class BoutiqueServerListener extends ServerListener {
 		}        
 	
 		//On teste la présence de worldguard
-	    if(WorldGuardOperator.worldguard == null)
+	    if(WorldGuardHandler.worldguard == null)
 	    {
-	    	WorldGuardOperator.setupWorldGuard();
+	    	WorldGuardHandler.setupWorldGuard();
 	    }       	  
 	    
 	    //On teste la présence de showcasestandalone

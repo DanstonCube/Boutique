@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -7,7 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class WorldGuardOperator
+public class WorldGuardHandler
 {
 
 	public static WorldGuardPlugin worldguard = null;

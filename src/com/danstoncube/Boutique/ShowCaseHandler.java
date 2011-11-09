@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class ShowCaseHandler
 		if(showcase==null)
 			return false;
 	
-		return WorldGuardOperator.canBuild(player, b);
+		return WorldGuardHandler.canBuild(player, b);
 	}
 
 

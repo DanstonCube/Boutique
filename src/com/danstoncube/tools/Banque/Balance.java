@@ -28,8 +28,3 @@ public abstract class Balance
 
   public abstract void sub(String paramString, double paramDouble);
 }
-
-/* Location:           G:\Downloads\ShowCaseStandalone.jar
- * Qualified Name:     com.miykeal.showCaseStandalone.Balance.Balance
- * JD-Core Version:    0.6.0
- */

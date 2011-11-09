@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -12,10 +12,10 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignChest;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignDummy;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignServer;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignWebAuction;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignChest;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignDummy;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignServer;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignWebAuction;
 
 @SuppressWarnings("unused")
 public class BoutiqueSignManager
@@ -832,7 +832,7 @@ public class BoutiqueSignManager
 			EconomyHandler.modifyMoney(p.getName(), -bs.getMoneyFrom());
 			
 
-			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGIVE") + BoutiqueSign.formatMoney(bs.getMoneyFrom()) + " " + BoutiqueSign.formatCurrency(bs.getMoneyFrom()) + " " + (bs.isSignServer() ? Messages.getString("Sign.TOSERVER"): Messages.getString("Sign.TO") + signOwner));
+			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.YOUGIVE") + EconomyHandler.formatMoney(bs.getMoneyFrom()) + " " + EconomyHandler.formatCurrency(bs.getMoneyFrom()) + " " + (bs.isSignServer() ? Messages.getString("Sign.TOSERVER"): Messages.getString("Sign.TO") + signOwner));
 			p.sendMessage(plugin.chatPrefix + Messages.getString("Sign.MONEYREMAINING") + EconomyHandler.playerHave(p.getName())); //$NON-NLS-1$
 			
 			
@@ -1184,7 +1184,7 @@ public class BoutiqueSignManager
 	{
 		//TODO: Check worldguard
 		//TODO: Cehck LWC
-		return WorldGuardOperator.canBuild(p, chest.getBlock());
+		return WorldGuardHandler.canBuild(p, chest.getBlock());
 	}
 
 	

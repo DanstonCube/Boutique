@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -12,7 +12,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 
 public class Boutique extends JavaPlugin
 {
@@ -46,7 +45,7 @@ public class Boutique extends JavaPlugin
 	
 	
 	
-	public Configuration config;
+	//public Configuration config;
 	
 	public BoutiqueConfiguration configuration;
 	
@@ -71,7 +70,7 @@ public class Boutique extends JavaPlugin
 		makeFolder = this.getDataFolder();
 		
 		
-		config = this.getConfiguration();
+		//config = this.getConfiguration();
 		configuration = new BoutiqueConfiguration(this);
 		
 		fileio.checkDataFolder();

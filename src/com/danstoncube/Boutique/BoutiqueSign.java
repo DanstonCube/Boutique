@@ -1,4 +1,4 @@
-package com.danstoncube.plugin.drzoid.Boutique;
+package com.danstoncube.Boutique;
 
 
 
@@ -12,9 +12,9 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignChest;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignServer;
-import com.danstoncube.plugin.drzoid.Boutique.SignTypes.BoutiqueSignWebAuction;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignChest;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignServer;
+import com.danstoncube.Boutique.SignTypes.BoutiqueSignWebAuction;
 
 
 public class BoutiqueSign
@@ -348,14 +348,7 @@ public class BoutiqueSign
 		else if (this.isTradeSign())
 		{
 			RenderTradeSign();
-		}
-		else
-		{
-			//TODO: chatprefix + VroumvroumERR
-			//p.sendMessage(Boutique.getInstance().name + "VROUM VROUM, c'est quoi ce panneau de merde ???" );
-			RenderDummySign();
-			return;
-		}
+		}		
 	}
 
 
@@ -399,8 +392,8 @@ public class BoutiqueSign
 		}
 		else if(bs.getMoneyFrom() != null)
 		{
-			getAmount = formatMoney(bs.getMoneyFrom());
-			getTypeText = formatCurrency(bs.getMoneyFrom());
+			getAmount = EconomyHandler.formatMoney(bs.getMoneyFrom());
+			getTypeText = EconomyHandler.formatCurrency(bs.getMoneyFrom());
 			
 			//s.setLine(1, ChatColor.WHITE + "Don de "); //ChatColor.BLACK + giveTypeText);	
 			s.setLine(1, ChatColor.YELLOW + getAmount + " " + getTypeText); //$NON-NLS-1$
@@ -432,7 +425,7 @@ public class BoutiqueSign
 		Sign s = bs.getSign();
 		if(s==null) return;
 		
-		s.setLine(3, ChatColor.RED + "[Err. type]"); //$NON-NLS-1$
+		s.setLine(3, ChatColor.RED + "[Err. type]");
 		s.update();
 	}
 
@@ -547,10 +540,7 @@ public class BoutiqueSign
 		s.update();
 	}
 	
-	private void RenderDummySign()
-	{
-	}
-	
+
 	
 	
 	
@@ -585,7 +575,7 @@ public class BoutiqueSign
 		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.BUY") + ChatColor.GOLD + "]"); // + ChatColor.WHITE + " de lots de"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount ); //ChatColor.BLACK + giveTypeText);			 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + formatMoney(getAmount) + " " + ChatColor.GOLD + formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + EconomyHandler.formatMoney(getAmount) + " " + ChatColor.GOLD + EconomyHandler.formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		s.update();
 	}
 
@@ -608,7 +598,7 @@ public class BoutiqueSign
 		s.setLine(0, ChatColor.LIGHT_PURPLE + Messages.getString("BoutiqueSign.BUY")); 
 		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount );
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount) + " " + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH"));
+		s.setLine(3, ChatColor.WHITE + Messages.getString("BoutiqueSign.FOR") + " " + ChatColor.YELLOW + EconomyHandler.formatMoney(getAmount) + EconomyHandler.formatCurrency(getAmount) + " " + ChatColor.WHITE + Messages.getString("BoutiqueSign.FOREACHBATCH"));
 		
 		if(bs.isSignChest() && bs.getChest() == null)
 		{
@@ -629,17 +619,6 @@ public class BoutiqueSign
 		s.update();
 	}
 
-	public static String formatMoney(Double money)
-	{
-		float y = (float) (money * 10.0);
-		int i =(int) y;
-		int mod = i % 10;
-		 
-		if(mod == 0)
-		   return String.valueOf(i/10);
-
-		return String.valueOf(i/10) + "." + mod;
-	}
 	
 
 	
@@ -838,7 +817,7 @@ public class BoutiqueSign
 		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP"); //$NON-NLS-1$
 		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP"); //$NON-NLS-1$
 		
-		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount);
+		String strAmount = ChatColor.YELLOW + EconomyHandler.formatMoney(getAmount) + EconomyHandler.formatCurrency(getAmount);
 		
 		//mise a jour du panneau
 		
@@ -863,7 +842,7 @@ public class BoutiqueSign
 		s.setLine(0, ChatColor.GOLD + "[" + ChatColor.GREEN + Messages.getString("BoutiqueSign.SELL") + ChatColor.GOLD + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		s.setLine(1, ChatColor.WHITE + Messages.getString("BoutiqueSign.BATCHSOFFCAP") + ChatColor.AQUA + Messages.getString("BoutiqueSign.QTY") + giveAmount );	 //$NON-NLS-1$ //$NON-NLS-2$
 		s.setLine(2, ChatColor.AQUA + giveTypeText);
-		s.setLine(3, ChatColor.YELLOW +  formatMoney(getAmount) + formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.110")); //$NON-NLS-1$
+		s.setLine(3, ChatColor.YELLOW +  EconomyHandler.formatMoney(getAmount) + EconomyHandler.formatCurrency(getAmount) + ChatColor.WHITE + Messages.getString("BoutiqueSign.110")); //$NON-NLS-1$
 		s.update();
 	}
 
@@ -899,7 +878,7 @@ public class BoutiqueSign
 		if(lots > 1)	strNbLot = Messages.getString("BoutiqueSign.BATCHSOFFCAP");
 		else			strNbLot = Messages.getString("BoutiqueSign.BATCHOFFCAP");
 		
-		String strAmount = ChatColor.YELLOW + formatMoney(getAmount) + formatCurrency(getAmount);
+		String strAmount = ChatColor.YELLOW + EconomyHandler.formatMoney(getAmount) + EconomyHandler.formatCurrency(getAmount);
 		
 		//mise a jour du panneau
 		
@@ -966,12 +945,7 @@ public class BoutiqueSign
 	}
 	
 
-	public static String formatCurrency(Double getAmount)
-	{
-		//TODO: demander le nom de la currency a iconomy
-		return "Eu" + (getAmount > 1 ? "s":"");
-	}
-	
+
 	
 	
 	public boolean doAction(Player p)

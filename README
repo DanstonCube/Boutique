@@ -1,3 +1,12 @@
-Nécéssite iConomy 5 ou 6
-Compatible avec Permissions (ou plugin compatible)
-Compatible Mysql pour l'enregistrement des transactions
+Plugin de panneaux de vente/échange/achat/don/donation
+
+- Nécéssite iConomy 5 ou 6
+- Compatible avec Permissions ou tout autre plugin compatible 
+- Compatible Mysql pour l'enregistrement des transactions
+- Compatible avec showcase pour l'afficage de "vitrines"
+- Compatible avec les cubos Worldguard
+
+
+Pour compiler, ajoutez les librairies présente dans le dossier libs/ au BUILD_PATH sous eclipse puis exportez le .jar
+
+(Si quelqu'un m'aide pour maven je veux bien ^^)
